@@ -1,13 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import DMsEntity from "dms.entity"
-import UserEntity from "user.entity"
+import { DmsEntity } from "dms.entity"
+import { UserEntity } from "user.entity"
 
-export class DMsMessagesEntity {
+export class DmsMessagesEntity {
 
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(type => DMsEntity, DMsEntity => DMsEntity.id)
+  @ManyToOne(type => DmsEntity, DMsEntity => DmsEntity.id)
   @JoinColumn()
   dm_id: number
 

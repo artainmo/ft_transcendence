@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import ChannelsEntity from "channels.entity"
-import UserEntity from "user.entity"
+import { ChannelsEntity } from "channels.entity"
+import { UserEntity } from "user.entity"
 
 export class ChannelsMessagesEntity {
 

@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import GamesEntity from "games.entity";
-import MatchHistoryEntity from "match_history.entity";
-import FriendsEntity from "friends.entity";
-import ChannelsEntity from "channels.entity";
-import ChannelsUsersEntity from "channels_users.entity";
-import ChannelsMessagesEntity from "channels_messages.entity";
-import DMsEntity from "dms.entity";
-import DMsMessagesEntity from "dms_messages.entity";
+import { GamesEntity } from "games.entity";
+import { MatchHistoryEntity } from "match_history.entity";
+import { FriendsEntity } from "friends.entity";
+import { ChannelsEntity } from "channels.entity";
+import { ChannelsUsersEntity } from "channels_users.entity";
+import { ChannelsMessagesEntity } from "channels_messages.entity";
+import { DMsEntity } from "dms.entity";
+import { DMsMessagesEntity } from "dms_messages.entity";
 
 @Entity()
 export class UserEntity {
