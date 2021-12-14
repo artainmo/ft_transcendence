@@ -1,5 +1,5 @@
 # ft_transcendence
-i
+
 ft_transcendence tasks:<br>
 /database -> create the database in the backend<br>
 /routes -> create the routes (module, controller, provider) for CRUD requests on database in backend<br>
