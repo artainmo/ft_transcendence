@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import Chat from "./chat";
 import accountType from "../../types/accountType";
 import chatChannelsClass from "../../types/chatChannelsClass";

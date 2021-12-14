@@ -18,16 +18,6 @@ interface authProps2 {
 	account: accountType
 }
 
-interface authProps {
-	changeState: (newState: authState) => void
-	changeAccount: (newAccount: any) => void
-	account: accountType
-	unlog: () => void
-	loginOrSignup: authState
-}
-
-
-
 const LogForm: React.FC<authProps3> = ({ changeState, changeAccount, account, signup }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
@@ -102,7 +92,23 @@ const LoginOrSignup: React.FC<{changeState: (newState: any) => void}> = ({ chang
 			</div>);
 }
 
-const Authentification: React.FC<authProps> = ({ account, changeAccount, changeState, unlog, loginOrSignup}) => {
+const Authentification: React.FC = () => {
+	const empty_account: accountType = {name: '', password: '', avatar: null, victories: 0, losses: 0, matchHistory: [], friends: [], chatChannels: []};
+	const [loginOrSignup, setLoginOrSignup] = useState<authState>(null);
+	const [account, setAccount] = useState<accountType>(empty_account);
+
+	const changeState: (newState: authState) => void  = (newState) => {
+		setLoginOrSignup(newState);
+	}
+
+	const changeAccount: (ewAccount: accountType) => void = (newAccount) => {
+		setAccount({...account, ...newAccount});
+	}
+
+	const unlog: () => void = () => {
+		changeState(null);
+		changeAccount(empty_account);
+	}
 
 	if (loginOrSignup === null) {
 		return (<LoginOrSignup changeState={changeState}/>);
