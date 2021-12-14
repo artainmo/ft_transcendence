@@ -1,7 +1,7 @@
 # ft_transcendence
 
 ft_transcendence tasks:<br>
-/database -> create the database in the backend<br>
+/database -> create the database in the backend !<br>
 /routes -> create the routes (module, controller, provider) for CRUD requests on database in backend<br>
 /gateway -> Create server-side websockets in the backend for chat and game ??? Maybe try to start with this so that Jules can finish the game in the meanwhile<br>
 Docker-compose -> Create docker-compose setup to launch all in one click<br>
