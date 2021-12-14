@@ -6,10 +6,16 @@ import { UserEntity } from "user.entity"
 export class ChannelsEntity {
 
   @PrimaryGeneratedColumn()
-  @OneToMany(type => ChannelsMessagesEntity, ChannelsMessagesEntity => ChannelsMessagesEntity.channel_id)
-  @OneToMany(type => ChannelsUsersEntity, ChannelsUsersEntity => ChannelsUsersEntity.channel_id)
-  @ManyToMany(type => UserEntity, UserEntity => UserEntity.id)
   id: number
+
+  @ManyToMany(type => UserEntity, UserEntity => UserEntity.channels)
+  users: UserEntity[]
+
+  @OneToMany(type => ChannelsMessagesEntity, ChannelsMessagesEntity => ChannelsMessagesEntity.channel)
+  messages: ChannelsMessagesEntity[]
+
+  @OneToMany(type => ChannelsUsersEntity, ChannelsUsersEntity => ChannelsUsersEntity.channel)
+  channel_users: ChannelsUsersEntity[]
 
   @Column()
   type: string

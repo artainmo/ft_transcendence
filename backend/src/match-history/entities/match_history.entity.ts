@@ -7,17 +7,16 @@ export class MatchHistoryEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
+    @ManyToOne(type => UserEntity, UserEntity => UserEntity.matchHistory)
     @JoinColumn()
-    user1_id: number;
+    me: UserEntity;
 
     @Column()
-    user1_score: string;
-
-    @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
-    @JoinColumn()
-    user2_id: number;
+    my_score: string;
 
     @Column()
-    user2_score: string;
+    opponent: string;
+
+    @Column()
+    opponent_score: string;
 }

@@ -1,1 +1,3 @@
-export class CreateDmDto {}
+export class CreateDmDto {
+  block: boolean
+}

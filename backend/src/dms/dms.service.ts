@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDmDto } from './dto/create-dm.dto';
 import { UpdateDmDto } from './dto/update-dm.dto';
+
+import { CreateDmMessageDto } from './dto/create-dm_message.dto';
+import { UpdateDmMessageDto } from './dto/update-dm_message.dto';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DmsMessagesEntity } from "entities/dms_messages.entity";

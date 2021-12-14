@@ -7,13 +7,13 @@ export class ChannelsUsersEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.id)
+  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.channels_users)
   @JoinColumn()
-  channel_id: number
+  channel: ChannelsEntity
 
-  @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
+  @ManyToOne(type => UserEntity, UserEntity => UserEntity.channels_users)
   @JoinColumn()
-  user_id: number
+  user: UserEntity
 
   @Column()
   owner: boolean

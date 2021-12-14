@@ -5,9 +5,13 @@ import { UserEntity } from "user.entity"
 export class DmsEntity {
 
   @PrimaryGeneratedColumn()
-  @OneToMany(type => DmsMessagesEntity, DMsMessagesEntity => DmsMessagesEntity.dm_id)
-  @ManyToMany(type => UserEntity, UserEntity => UserEntity.id)
   id: number
+
+  @ManyToMany(type => UserEntity, UserEntity => UserEntity.dms)
+  users: UserEntity[]
+
+  @OneToMany(type => DmsMessagesEntity, DMsMessagesEntity => DmsMessagesEntity.dm)
+  messages: DmsMessagesEntity[]
 
   @Column()
   block: boolean

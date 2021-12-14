@@ -3,14 +3,10 @@ import { UserEntity } from "user.entity"
 
 @Entity()
 export class FriendsEntity {
+    @PrimaryGeneratedColumn()
+    id: number
 
-    @PrimaryColumn()
-    @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
+    @ManyToOne(type => UserEntity, UserEntity => UserEntity.friends)
     @JoinColumn()
-    user1_id: number;
-
-    @PrimaryColumn()
-    @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
-    @JoinColumn()
-    user2_id: number;
+    user: UserEntity;
 }

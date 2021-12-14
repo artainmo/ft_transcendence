@@ -7,13 +7,13 @@ export class GamesEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(type => UserEntity, UserEntity => UserEntity.id)
+    @OneToOne(type => UserEntity)
     @JoinColumn()
-    user1_id: number;
+    user1: UserEntity;
 
-    @OneToOne(type => UserEntity, UserEntity => UserEntity.id)
+    @OneToOne(type => UserEntity)
     @JoinColumn()
-    user2_id: number;
+    user2: UserEntity;
 
     @Column()
     ballspeed: number;

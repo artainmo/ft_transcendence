@@ -7,13 +7,13 @@ export class DmsMessagesEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(type => DmsEntity, DMsEntity => DmsEntity.id)
+  @ManyToOne(type => UserEntity, UserEntity => UserEntity.dms_messages)
   @JoinColumn()
-  dm_id: number
+  user: UserEntity
 
-  @ManyToOne(type => UserEntity, UserEntity => UserEntity.id)
+  @ManyToOne(type => DmsEntity, DMsEntity => DmsEntity.messages)
   @JoinColumn()
-  user_id: number
+  dm: DmsEntity
 
   @Column()
   content: string
