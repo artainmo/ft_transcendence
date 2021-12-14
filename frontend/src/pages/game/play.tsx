@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import accountType from '../../types/accountType';
 import { dataBaseGames } from '../../types/database';
-import PongGame from './components/PongGame';
 
 const dataBaseMaps = ['black', 'white', 'winter', 'summer', 'night'];
 
@@ -30,6 +29,7 @@ interface playProps2 {
 interface playProps {
   account: accountType
   changeAccount: (newAccount: accountType) => void
+  backHome: () => void
 }
 
 const PreGamePage: React.FC<playProps2> = ({ account, changeAccount, getGame, changeGetGame, changeGame, game }) => {
@@ -100,7 +100,7 @@ const CreateGame: React.FC<playProps3> = ({ account, changeAccount, changeGetGam
           </form>)
 }
 
-const Play: React.FC<playProps> = ({ account, changeAccount }) => {
+const Play: React.FC<playProps> = ({ account, changeAccount, backHome }) => {
   const [getGame, setGetGame] = useState<"create" | "join" | null>(null);
   const [game, setGame] = useState<gameType | null>(null);
 
@@ -116,15 +116,13 @@ const Play: React.FC<playProps> = ({ account, changeAccount }) => {
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
               <h1>GAME</h1>
-              {/* <GamePong account={account} changeAccount={changeAccount} backToPage={backToPage} game={game}/> */
-                <PongGame />
-              }
+              {/* <GamePong account={account} changeAccount={changeAccount} game={game}/> */}
             </div>);
   } else if (game !== null) {
     return <PreGamePage account={account} changeAccount={changeAccount} getGame={getGame} changeGetGame={changeGetGame} changeGame={changeGame} game={game}/>;
   } else if (getGame === null) {
     return (<div>
-              {/* <button onClick={()=>{backToPage("home")}}>Back</button> */}
+              <button onClick={()=>{backHome()}}>Back</button>
               <h1>Play Pong</h1>
               <button onClick={()=>changeGetGame("create")}>Create Game</button><>&nbsp;&nbsp;&nbsp;</>
               <button onClick={()=>changeGetGame("join")}>Join Game</button>

@@ -28,18 +28,18 @@ const Home: React.FC<homeProps> = ({ account, changeAccount, unlog }) => {
 		setMenuPage(newMenuType);
 	}
 
-	// const backToPage: (page: menuType) => void = (page) => {
-	// 	setMenuPage(page);
-	// }
+	const backHome: () => void = () => {
+		setMenuPage("home");
+	}
 
 	if (menuPage === "home") {
 		return (<HomeDisplay changeMenuPage={changeMenuPage}/>);
 	} else if (menuPage === "play") {
-		return <Play account={account} changeAccount={changeAccount}/>;
+		return <Play account={account} changeAccount={changeAccount} backHome={backHome}/>;
 	} else if (menuPage === "chat") {
-		return <ChatChannelsView account={account} changeAccount={changeAccount}/>;
+		return <ChatChannelsView account={account} changeAccount={changeAccount} backHome={backHome}/>;
 	} else if (menuPage === "profile") {
-		return <Profile account={account} changeAccount={changeAccount} unlog={unlog}/>;
+		return <Profile account={account} changeAccount={changeAccount} unlog={unlog} backHome={backHome}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

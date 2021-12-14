@@ -13,7 +13,7 @@ interface chatProps2 {
 interface chatProps {
 	account: accountType
 	changeAccount: (newAccount: any) => void
-  // backToPage: (newPage: string) => void
+	backHome: () => void
 }
 
 const JoinChannel: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => {
@@ -134,7 +134,7 @@ const NewDM: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => 
           </div>);
 }
 
-const ChatChannelsView: React.FC<chatProps> = ({ account, changeAccount }) => {
+const ChatChannelsView: React.FC<chatProps> = ({ account, changeAccount, backHome }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
@@ -151,7 +151,7 @@ const ChatChannelsView: React.FC<chatProps> = ({ account, changeAccount }) => {
       return (<Chat account={account} changeAccount={changeAccount} changeChat={changeChat} chatIndex={currentChat}/>);
     } else {
       return (<div>
-                {/* <button onClick={()=>{backToPage("home")}}>Back</button> */}
+                <button onClick={()=>{backHome()}}>Back</button>
                 <h1>Chat</h1>
                 <button onClick={()=> {setNewdm(!newdm); setNewchannel(false); setJoinchannel(false);}}>New DM</button><>&nbsp;&nbsp;&nbsp;</>
                 <button onClick={()=>{setNewchannel(!newchannel); setNewdm(false); setJoinchannel(false);}}>New Channel</button><>&nbsp;&nbsp;&nbsp;</>

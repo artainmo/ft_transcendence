@@ -14,6 +14,7 @@ interface profileProps {
 	account: accountType
 	changeAccount: (newAccount: any) => void
 	unlog: () => void
+	backHome: () => void
 }
 
 interface FriendsProps {
@@ -65,7 +66,7 @@ const Friends: React.FC<FriendsProps> = ({ account, changeAccount, changeAccount
           </div>);
 }
 
-const Profile: React.FC<profileProps> = ({ account, changeAccount, unlog }) => {
+const Profile: React.FC<profileProps> = ({ account, changeAccount, unlog, backHome }) => {
   const [ownAccount, setOwnAccount] = useState<boolean>(true);
 
   const changeAccountOwner: () => void = () => {
@@ -73,9 +74,9 @@ const Profile: React.FC<profileProps> = ({ account, changeAccount, unlog }) => {
   }
 
   return (<div>
-              {/* {ownAccount && <><button onClick={()=>{backToPage("home")}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>} */}
+              {ownAccount && <><button onClick={()=>{backHome()}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               {ownAccount && <button onClick={()=>{unlog()}}>Log out</button>}
-              {!ownAccount && <><button onClick={()=>{/*backToPage("profile");*/ changeAccount(g_copyAccount); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
+              {!ownAccount && <><button onClick={()=>{changeAccount(g_copyAccount); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               <h1>Profile</h1>
               {account.avatar ? <img src={account.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {account.name}</p>

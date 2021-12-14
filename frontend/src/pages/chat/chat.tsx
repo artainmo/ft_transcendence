@@ -20,11 +20,8 @@ interface chatProps2 {
 interface chatProps {
 	account: accountType
 	changeAccount: (newAccount: any) => void
-  backToPage?: () => void
   chatIndex: number
   changeChat: (newChat: number | null) => void
-  block?: string
-  back?: () => void
 }
 
 const AddUsers: React.FC<chatProps3> = ({ account, changeAccount, chatIndex }) => {
@@ -182,13 +179,12 @@ const Message: React.FC<chatProps2> = ({ account, changeAccount, chatIndex, bloc
           </div>);
 }
 
-const Chat: React.FC<chatProps> = ({ account, changeAccount, backToPage, chatIndex, changeChat }) => {
+const Chat: React.FC<chatProps> = ({ account, changeAccount, chatIndex, changeChat }) => {
   let dm: boolean;
   account.chatChannels[chatIndex].dmOrChannel === "dm" ? dm = true : dm = false;
 
   const back: () => void = () => {
     changeChat(null);
-    // backToPage("chat");
   }
 
   const setBlock: () => void = () => {
