@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDmDto } from './dto/create-dm.dto';
 import { UpdateDmDto } from './dto/update-dm.dto';
-
 import { CreateDmMessageDto } from './dto/create-dm_message.dto';
 import { UpdateDmMessageDto } from './dto/update-dm_message.dto';
-
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DmsMessagesEntity } from "entities/dms_messages.entity";
@@ -19,23 +17,43 @@ export class DmsService {
     private DmsMessagesRepo: Repository<DmsMessagesEntity>
   ) {}
 
-  create(createDmDto: CreateDmDto) {
-    return 'This action adds a new dm';
+  create(createDmDto: CreateDmDto): void {
+    await this.DmsRepo.save(createDmDto);
   }
 
-  findAll() {
-    return `This action returns all dms`;
+  findAll(): Promise<DmsEntity[]> {
+    return await this.DmsRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dm`;
+  findOne(id: number): Promise<DmsEntity> {
+    return await this.DmsRepo.findOne(id);
   }
 
-  update(id: number, updateDmDto: UpdateDmDto) {
-    return `This action updates a #${id} dm`;
+  update(id: number, updateDmDto: UpdateDmDto): void {
+    await this.DmsRepo.update(id, updateDmDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} dm`;
+    await this.DmsRepo.delete(id);
+  }
+
+  createMessage(createDmMessageDto: CreateDmMessageDto): void {
+    await this.DmsMessagesRepo.save(createDmMessageDto);
+  }
+
+  findAllMessages(): Promise<DmsMessagesEntity[]> {
+    return await this.DmsMessagesRepo.find();
+  }
+
+  findOneMessage(id: number): Promise<DmsMessagesEntity> {
+    return await this.DmsMessagesRepo.findOne(id);
+  }
+
+  updateMessage(id: number, updateDmMessageDto: UpdateDmMessageDto): void {
+    await this.DmsMessagesRepo.update(id, updateDmMessageDto);
+  }
+
+  removeMessage(id: number) {
+    await this.DmsMessagesRepo.delete(id);
   }
 }
