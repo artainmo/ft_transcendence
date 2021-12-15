@@ -12,23 +12,23 @@ export class GamesService {
     private GamesRepo: Repository<GamesEntity>
   ) {}
 
-  create(createGameDto: CreateGameDto) {
-    return 'This action adds a new game';
+  async create(createGameDto: CreateGameDto): void {
+    await this.GamesRepo.save(createGameDto);
   }
 
-  findAll() {
-    return `This action returns all games`;
+  async findAll(): Promise<GamesEntity[]> {
+    return await this.GamesRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} game`;
+  async findOne(id: number): Promise<GamesEntity> {
+    return await this.GamesRepo.findOne(id);
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
+  async update(id: number, updateGameDto: UpdateGameDto): void {
+    await this.GamesRepo.update(id, updateGameDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} game`;
+  async remove(id: number): void {
+    await this.GamesRepo.delete(id);
   }
 }

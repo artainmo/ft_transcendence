@@ -12,23 +12,23 @@ export class FriendsService {
     private FriendsRepo: Repository<FriendsEntity>
   ) {}
 
-  create(createFriendDto: CreateFriendDto) {
-    return 'This action adds a new friend';
+  async create(createFriendDto: CreateFriendDto): void {
+    await this.FriendsRepo.save(createFriendDto);
   }
 
-  findAll() {
-    return `This action returns all friends`;
+  async findAll(): Promise<FriendsEntity[]> {
+    return await this.FriendsRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} friend`;
+  async findOne(id: number): Promise<FriendsEntity> {
+    return await this.FriendsRepo.findOne(id);
   }
 
-  update(id: number, updateFriendDto: UpdateFriendDto) {
-    return `This action updates a #${id} friend`;
+  async update(id: number, updateFriendDto: UpdateFriendDto): void {
+    await this.FriendsRepo.update(id, updateFriendDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} friend`;
+  async remove(id: number): void {
+    await this.FriendsRepo.delete(id);
   }
 }

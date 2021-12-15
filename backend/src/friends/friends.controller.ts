@@ -9,7 +9,7 @@ export class FriendsController {
 
   @Post()
   create(@Body() createFriendDto: CreateFriendDto) {
-    return this.friendsService.create(createFriendDto);
+    this.friendsService.create(createFriendDto);
   }
 
   @Get()
@@ -24,11 +24,11 @@ export class FriendsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFriendDto: UpdateFriendDto) {
-    return this.friendsService.update(+id, updateFriendDto);
+    this.friendsService.update(+id, updateFriendDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.friendsService.remove(+id);
+    this.friendsService.remove(+id);
   }
 }

@@ -12,23 +12,27 @@ export class UserService {
     private UserRepo: Repository<UserEntity>
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto): void {
+    await this.UserRepo.save(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(): Promise<UserEntity[]> {
+    return await this.UserRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<UserEntity> {
+    return await this.UserRepo.findOne(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): void {
+    await this.UserRepo.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): void {
+    await this.UserRepo.delete(id);
   }
 }
+
+//Fill the above functions, use UserEntity as return !
+//Create frontend/src/api/user with a ResponseUserDto that is similar to UserEntity in properties, also copy the other dtos (create(without id) and update(partial of create)) !
+//Call the already existing functions that lie in the controller from the frontend/api/user !

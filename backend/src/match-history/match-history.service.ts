@@ -12,23 +12,23 @@ export class MatchHistoryService {
     private MatchHistoryRepo: Repository<MatchHistoryEntity>
   ) {}
 
-  create(createMatchHistoryDto: CreateMatchHistoryDto) {
-    return 'This action adds a new matchHistory';
+  create(createMatchHistoryDto: CreateMatchHistoryDto): void {
+    await this.MatchHistoryRepo.save(createMatchHistoryDto);
   }
 
-  findAll() {
-    return `This action returns all matchHistory`;
+  findAll(): Promise<MatchHistoryEntity[]>  {
+    return await this.MatchHistoryRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} matchHistory`;
+  findOne(id: number): Promise<MatchHistoryEntity> {
+    return await this.MatchHistoryRepo.findOne(id);;
   }
 
-  update(id: number, updateMatchHistoryDto: UpdateMatchHistoryDto) {
-    return `This action updates a #${id} matchHistory`;
+  update(id: number, updateMatchHistoryDto: UpdateMatchHistoryDto): void  {
+    await this.MatchHistoryRepo.update(id, updateMatchHistoryDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} matchHistory`;
+  remove(id: number): void {
+    await this.MatchHistoryRepo.delete(id);
   }
 }

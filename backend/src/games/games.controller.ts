@@ -9,7 +9,7 @@ export class GamesController {
 
   @Post()
   create(@Body() createGameDto: CreateGameDto) {
-    return this.gamesService.create(createGameDto);
+    this.gamesService.create(createGameDto);
   }
 
   @Get()
@@ -24,11 +24,11 @@ export class GamesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gamesService.update(+id, updateGameDto);
+    this.gamesService.update(+id, updateGameDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.gamesService.remove(+id);
+    this.gamesService.remove(+id);
   }
 }

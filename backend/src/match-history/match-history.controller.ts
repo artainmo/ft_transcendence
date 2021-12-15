@@ -9,7 +9,7 @@ export class MatchHistoryController {
 
   @Post()
   create(@Body() createMatchHistoryDto: CreateMatchHistoryDto) {
-    return this.matchHistoryService.create(createMatchHistoryDto);
+    this.matchHistoryService.create(createMatchHistoryDto);
   }
 
   @Get()
@@ -24,11 +24,11 @@ export class MatchHistoryController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMatchHistoryDto: UpdateMatchHistoryDto) {
-    return this.matchHistoryService.update(+id, updateMatchHistoryDto);
+    this.matchHistoryService.update(+id, updateMatchHistoryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.matchHistoryService.remove(+id);
+    this.matchHistoryService.remove(+id);
   }
 }
