@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { GamesEntity } from "games.entity";
-import { MatchHistoryEntity } from "match_history.entity";
-import { FriendsEntity } from "friends.entity";
-import { ChannelsEntity } from "channels.entity";
-import { ChannelsUsersEntity } from "channels_users.entity";
-import { ChannelsMessagesEntity } from "channels_messages.entity";
-import { DmsEntity } from "dms.entity";
-import { DmsMessagesEntity } from "dms_messages.entity";
+import { GamesEntity } from "../../games/entities/games.entity";
+import { MatchHistoryEntity } from "../../match-history/entities/match_history.entity";
+import { FriendsEntity } from "../../friends/entities/friends.entity";
+import { ChannelsEntity } from "../../channels/entities/channels.entity";
+import { ChannelsUsersEntity } from "../../channels/entities/channels_users.entity";
+import { ChannelsMessagesEntity } from "../../channels/entities/channels_messages.entity";
+import { DmsEntity } from "../../dms/entities/dms.entity";
+import { DmsMessagesEntity } from "../../dms/entities/dms_messages.entity";
 
 @Entity()
 export class UserEntity {
@@ -30,7 +30,7 @@ export class UserEntity {
     twoFactorAuthenticationSecret: string;
 
     @Column()
-    status: boolean;
+    online: boolean;
 
     @Column()
     nbrVicotry: number;
@@ -41,7 +41,7 @@ export class UserEntity {
     @OneToMany(type => MatchHistoryEntity, MatchHistoryEntity => MatchHistoryEntity.me)
     matchHistory: MatchHistoryEntity[]
 
-    @OneToMany(type => FriendsEntity, FriendsEntity => FriendsEntity.user)
+    @OneToMany(type => FriendsEntity, FriendsEntity => FriendsEntity.me)
     friends: FriendsEntity[]
 
     @ManyToMany(type => DmsEntity, DMsEntity => DmsEntity.users)

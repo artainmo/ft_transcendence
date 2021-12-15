@@ -1,4 +1,4 @@
 export class CreateFriendDto {
-  user1_id: number;
-  user2_id: number;
+  me: UserEntity;
+  friend_id: number;
 }

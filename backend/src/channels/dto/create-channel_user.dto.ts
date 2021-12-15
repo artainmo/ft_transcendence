@@ -1,6 +1,6 @@
 export class CreateChannelUserDto {
-  channel_id: number
-  user_id: number
+  channel: ChannelsEntity
+  user: UserEntity
   owner: boolean
   administrator: boolean
 }

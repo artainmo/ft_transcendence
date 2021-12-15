@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { UserEntity } from "user.entity"
+import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class MatchHistoryEntity {
@@ -15,7 +15,7 @@ export class MatchHistoryEntity {
     my_score: string;
 
     @Column()
-    opponent: string;
+    opponent_id: number;
 
     @Column()
     opponent_score: string;

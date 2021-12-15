@@ -1,6 +1,6 @@
 export class CreateGameDto {
-  user1_id: number;
-  user2_id: number;
+  user1: UserEntity;
+  user2: UserEntity;
   ballspeed: number;
   map: string;
 }

@@ -1,6 +1,6 @@
 export class CreateDmMessageDto {
-  dm_id: number
-  user_id: number
+  user: UserEntity
+  dm: DmsEntity
   content: string
   order: number
 }

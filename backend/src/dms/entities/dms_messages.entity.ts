@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { DmsEntity } from "dms.entity"
-import { UserEntity } from "user.entity"
+import { UserEntity } from "../../user/entities/user.entity"
 
 export class DmsMessagesEntity {
 

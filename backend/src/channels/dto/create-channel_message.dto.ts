@@ -1,6 +1,6 @@
 export class CreateChannelMessageDto {
-  channel_id: number
-  user_id: number
+  channel: ChannelsEntity
+  user: UserEntity
   content: string
   order: number
 }
