@@ -1,9 +1,9 @@
-import { ChannelsEntity } from "../entities/channels.entity"
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateChannelDto } from "./create-channel.dto"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateChannelUserDto {
-  channel: ChannelsEntity
-  user: UserEntity
+  channel: CreateChannelDto
+  user: CreateUserDto
   owner: boolean
   administrator: boolean
 }

@@ -1,11 +1,11 @@
-import { ChannelsMessagesEntity } from "../entities/channels_messages.entity"
-import { ChannelsUsersEntity } from "../entities/channels_users.entity"
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateChannelMessageDto } from "./create-channel_message.dto"
+import { CreateChannelUserDto } from "./create-channel_user.dto"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateChannelDto {
-  users: UserEntity[]
-  messages: ChannelsMessagesEntity[]
-  channel_users: ChannelsUsersEntity[]
+  users: CreateUserDto[]
+  messages: CreateChannelMessageDto[]
+  channel_users: CreateChannelUserDto[]
   type: string
   password: string
   name: string
