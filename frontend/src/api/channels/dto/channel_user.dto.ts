@@ -1,4 +1,4 @@
-export class ResponseChannelUserDto {
+export class ChannelUserDto {
   id: number
   channel: ChannelsEntity
   user: UserEntity

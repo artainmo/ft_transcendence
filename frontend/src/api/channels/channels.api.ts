@@ -1,26 +1,26 @@
-import { API_ENDPOINT } from "../api_endpoint.tsx"
-import { CreateChannelDto } from "dto/create-channel.dto.tsx"
-import { UpdateChannelDto } from "dto/update-channel.dto.tsx"
-import { ResponseChannelDto } from "dto/response-channel.dto.tsx"
-import { CreateChannelMessageDto } from "dto/create-channel_message.dto.tsx"
-import { UpdateChannelMessageDto } from "dto/update-channel_message.dto.tsx"
-import { ResponseChannelMessageDto } from "dto/response-channel_message.dto.tsx"
-import { CreateChannelUserDto } from "dto/create-channel_user.dto.tsx"
-import { UpdateChannelUserDto } from "dto/update-channel_user.dto.tsx"
-import { ResponseChannelUserDto } from "dto/response-channel_user.dto.tsx"
-axios = require('axios');
+import { API_ENDPOINT } from "../api_endpoint"
+import { CreateChannelDto } from "./dto/create-channel.dto"
+import { UpdateChannelDto } from "./dto/update-channel.dto"
+import { ChannelDto } from "./dto/channel.dto"
+import { CreateChannelMessageDto } from "./dto/create-channel_message.dto"
+import { UpdateChannelMessageDto } from "./dto/update-channel_message.dto"
+import { ChannelMessageDto } from "./dto/channel_message.dto"
+import { CreateChannelUserDto } from "./dto/create-channel_user.dto"
+import { UpdateChannelUserDto } from "./dto/update-channel_user.dto"
+import { ChannelUserDto } from "./dto/channel_user.dto"
+const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
 export const addChannel: (createChannelDto: CreateChannelDto) => void = async (createChannelDto) => {
   await axios.post("/channels", { data: createChannelDto });
 }
 
-export const getAllChannels: () => ResponseChannelDto[] = async () => {
+export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
   const response = await axios.get("/channels");
   return response.data;
 }
 
-export const getChannel: (id: number) => ResponseChannelDto = async (id) => {
+export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
   const response = await axios.get(`/channels?id=${id}`);
   return response.data;
 }
@@ -37,12 +37,12 @@ export const addChannelMessage: (createChannelMessageDto: CreateChannelMessageDt
   await axios.post("/channels/message", { data: createChannelMessageDto });
 }
 
-export const getAllChannelsMessages: () => ResponseChannelMessageDto[] = async () => {
+export const getAllChannelsMessages: () => Promise<ChannelMessageDto[]> = async () => {
   const response = await axios.get("/channels/message");
   return response.data;
 }
 
-export const getChannelMessage: (id: number) => ResponseChannelMessageDto = async (id) => {
+export const getChannelMessage: (id: number) => Promise<ChannelMessageDto> = async (id) => {
   const response = await axios.get(`/channels/message?id=${id}`);
   return response.data;
 }
@@ -59,12 +59,12 @@ export const addChannelUser: (createChannelUserDto: CreateChannelUserDto) => voi
   await axios.post("/channels/user", { data: createChannelUserDto });
 }
 
-export const getAllChannelsUsers: () => ResponseChannelUserDto[] = async () => {
+export const getAllChannelsUsers: () => Promise<ChannelUserDto[]> = async () => {
   const response = await axios.get("/channels/user");
   return response.data;
 }
 
-export const getChannelUser: (id: number) => ResponseChannelUserDto = async (id) => {
+export const getChannelUser: (id: number) => Promise<ChannelUserDto> = async (id) => {
   const response = await axios.get(`/channels/user?id=${id}`);
   return response.data;
 }

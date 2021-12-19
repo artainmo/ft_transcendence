@@ -1,20 +1,20 @@
-import { API_ENDPOINT } from "../api_endpoint.tsx"
-import { CreateFriendDto } from "dto/create-friend.dto.tsx"
-import { UpdateFriendDto } from "dto/update-friend.dto.tsx"
-import { ResponseFriendDto } from "dto/response-friend.dto.tsx"
-axios = require('axios');
+import { API_ENDPOINT } from "../api_endpoint"
+import { CreateFriendDto } from "./dto/create-friend.dto"
+import { UpdateFriendDto } from "./dto/update-friend.dto"
+import { FriendDto } from "./dto/friend.dto"
+const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
 export const addFriend: (createFriendDto: CreateFriendDto) => void = async (createFriendDto) => {
   await axios.post("/user", { data: createFriendDto });
 }
 
-export const getAllFriends: () => ResponseFriendDto[] = async () => {
+export const getAllFriends: () => Promise<FriendDto[]> = async () => {
   const response = await axios.get("/user");
   return response.data;
 }
 
-export const getFriend: (id: number) => ResponseFriendDto = async (id) => {
+export const getFriend: (id: number) => Promise<FriendDto> = async (id) => {
   const response = await axios.get(`/user?id=${id}`);
   return response.data;
 }

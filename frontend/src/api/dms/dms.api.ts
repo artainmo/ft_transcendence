@@ -1,23 +1,23 @@
-import { API_ENDPOINT } from "../api_endpoint.tsx"
-import { CreateDmDto } from "dto/create-dm.dto.tsx"
-import { UpdateDmDto } from "dto/update-dm.dto.tsx"
-import { ResponseDmDto } from "dto/response-dm.dto.tsx"
-import { CreateDmMessageDto } from "dto/create-dm_message.dto.tsx"
-import { UpdateDmMessageDto } from "dto/update-dm_message.dto.tsx"
-import { ResponseDmMessageDto } from "dto/response-dm_message.dto.tsx"
-axios = require('axios');
+import { API_ENDPOINT } from "../api_endpoint"
+import { CreateDmDto } from "./dto/create-dm.dto"
+import { UpdateDmDto } from "./dto/update-dm.dto"
+import { DmDto } from "./dto/dm.dto"
+import { CreateDmMessageDto } from "./dto/create-dm_message.dto"
+import { UpdateDmMessageDto } from "./dto/update-dm_message.dto"
+import { DmMessageDto } from "./dto/dm_message.dto"
+const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
 export const addDm: (createDmDto: CreateDmDto) => void = async (createDmDto) => {
   await axios.post("/dms", { data: createDmDto });
 }
 
-export const getAllDms: () => ResponseDmDto[] = async () => {
+export const getAllDms: () => Promise<DmDto[]> = async () => {
   const response = await axios.get("/dms");
   return response.data;
 }
 
-export const getDm: (id: number) => ResponseDmDto = async (id) => {
+export const getDm: (id: number) => Promise<DmDto> = async (id) => {
   const response = await axios.get(`/dms?id=${id}`);
   return response.data;
 }
@@ -34,12 +34,12 @@ export const addDmMessage: (createDmMessageDto: CreateDmMessageDto) => void = as
   await axios.post("/dms/message", { data: createDmMessageDto });
 }
 
-export const getAllDmsMessages: () => ResponseDmMessageDto[] = async () => {
+export const getAllDmsMessages: () => Promise<DmMessageDto[]> = async () => {
   const response = await axios.get("/dms/message");
   return response.data;
 }
 
-export const getDm: (id: number) => ResponseDmMessageDto = async (id) => {
+export const getDm: (id: number) => Promise<DmMessageDto> = async (id) => {
   const response = await axios.get(`/dms/message?id=${id}`);
   return response.data;
 }

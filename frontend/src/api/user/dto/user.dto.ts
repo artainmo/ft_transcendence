@@ -1,5 +1,5 @@
-export class ResponseUserDto {
-  id: number,
+export class UserDto {
+  id: number;
   name: string;
   login: string;
   avatar: string;

@@ -1,20 +1,20 @@
-import { API_ENDPOINT } from "../api_endpoint.tsx"
-import { CreateGameDto } from "dto/create-game.dto.tsx"
-import { UpdateGameDto } from "dto/update-game.dto.tsx"
-import { ResponseGameDto } from "dto/response-game.dto.tsx"
-axios = require('axios');
+import { API_ENDPOINT } from "../api_endpoint"
+import { CreateGameDto } from "./dto/create-game.dto"
+import { UpdateGameDto } from "./dto/update-game.dto"
+import { GameDto } from "./dto/game.dto"
+const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
 export const addGame: (createGameDto: CreateGameDto) => void = async (createGameDto) => {
   await axios.post("/user", { data: createGameDto });
 }
 
-export const getAllGames: () => ResponseGameDto[] = async () => {
+export const getAllGames: () => Promise<GameDto[]> = async () => {
   const response = await axios.get("/user");
   return response.data;
 }
 
-export const getGame: (id: number) => ResponseGameDto = async (id) => {
+export const getGame: (id: number) => Promise<GameDto> = async (id) => {
   const response = await axios.get(`/user?id=${id}`);
   return response.data;
 }

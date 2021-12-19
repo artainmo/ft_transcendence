@@ -1,4 +1,4 @@
-export class ResponseMatchHistoryDto {
+export class MatchHistoryDto {
   id: number;
   me: UserEntity;
   my_score: string;

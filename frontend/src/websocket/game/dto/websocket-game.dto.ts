@@ -1,4 +1,5 @@
 export class WebsocketGameDto {
+  room: string;
   index: number;
   ballX: number;
   ballY: number;

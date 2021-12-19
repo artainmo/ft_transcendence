@@ -1,20 +1,20 @@
-import { API_ENDPOINT } from "../api_endpoint.tsx"
-import { CreateUserDto } from "dto/create-user.dto.tsx"
-import { UpdateUserDto } from "dto/update-user.dto.tsx"
-import { ResponseUserDto } from "dto/response-user.dto.tsx"
-axios = require('axios');
+import { API_ENDPOINT } from "../api_endpoint"
+import { CreateUserDto } from "./dto/create-user.dto"
+import { UpdateUserDto } from "./dto/update-user.dto"
+import { UserDto } from "./dto/user.dto"
+const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
 export const addUser: (createUserDto: CreateUserDto) => void = async (createUserDto) => {
   await axios.post("/user", { data: createUserDto });
 }
 
-export const getAllUsers: () => ResponseUserDto[] = async () => {
+export const getAllUsers: () => Promise<UserDto[]> = async () => {
   const response = await axios.get("/user");
   return response.data;
 }
 
-export const getUser: (id: number) => ResponseUserDto = async (id) => {
+export const getUser: (id: number) => Promise<UserDto> = async (id) => {
   const response = await axios.get(`/user?id=${id}`);
   return response.data;
 }
