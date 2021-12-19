@@ -1,7 +1,8 @@
-export class GameDto {
-  id: number;
-  user1: UserEntity;
-  user2: UserEntity;
+import { UserDto } from "../../user/dto/user.dto"
+
+export interface GameDto {
+  user1: UserDto;
+  user2: UserDto;
   ballspeed: number;
   map: string;
 }

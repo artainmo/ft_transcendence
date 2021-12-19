@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateMatchHistoryDto } from './create-match-history.dto';
+import { UpdateUserDto } from "../../user/dto/update-user.dto"
 
-export class UpdateMatchHistoryDto extends PartialType(CreateMatchHistoryDto) {}
+export interface UpdateMatchHistoryDto {
+  me?: UpdateUserDto;
+  my_score?: string;
+  opponent_id?: number;
+  opponent_score?: string;
+}

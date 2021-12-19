@@ -39,7 +39,7 @@ export const getAllDmsMessages: () => Promise<DmMessageDto[]> = async () => {
   return response.data;
 }
 
-export const getDm: (id: number) => Promise<DmMessageDto> = async (id) => {
+export const getDmMessage: (id: number) => Promise<DmMessageDto> = async (id) => {
   const response = await axios.get(`/dms/message?id=${id}`);
   return response.data;
 }

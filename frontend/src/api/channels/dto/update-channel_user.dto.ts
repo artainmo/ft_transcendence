@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateChannelUserDto } from './create-channel_user.dto';
+import { UpdateChannelDto } from "./update-channel.dto"
+import { UpdateUserDto } from "../../user/dto/update-user.dto"
 
-export class UpdateChannelUserDto extends PartialType(CreateChannelUserDto) {}
+export interface UpdateChannelUserDto {
+  channel?: UpdateChannelDto
+  user?: UpdateUserDto
+  owner?: boolean
+  administrator?: boolean
+}

@@ -1,4 +1,4 @@
-export class WebsocketChatDto {
+export interface WebsocketChatDto {
   room: string;
   message: string;
   sender: string;

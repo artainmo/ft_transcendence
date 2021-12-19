@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateGameDto } from './create-game.dto';
+import { UpdateUserDto } from "../../user/dto/update-user.dto"
 
-export class UpdateGameDto extends PartialType(CreateGameDto) {}
+export interface UpdateGameDto {
+  user1?: UpdateUserDto;
+  user2?: UpdateUserDto;
+  ballspeed?: number;
+  map?: string;
+}

@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateDmDto } from './create-dm.dto';
+import { UpdateDmMessageDto } from "./update-dm_message.dto"
+import { UpdateUserDto } from "../../user/dto/update-user.dto"
 
-export class UpdateDmDto extends PartialType(CreateDmDto) {}
+export interface UpdateDmDto {
+  users?: UpdateUserDto[]
+  messages?: UpdateDmMessageDto[]
+  block?: boolean
+}

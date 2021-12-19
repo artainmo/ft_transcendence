@@ -1,4 +1,4 @@
-export class WebsocketGameDto {
+export interface WebsocketGameDto {
   room: string;
   index: number;
   ballX: number;
