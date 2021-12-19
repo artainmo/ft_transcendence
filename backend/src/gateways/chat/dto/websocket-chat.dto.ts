@@ -1,5 +1,5 @@
 export class WebsocketChatDto {
-  room: string;
-  message: string;
-  sender: string;
+  message: string
+  room: string
+  sender: string
 }
