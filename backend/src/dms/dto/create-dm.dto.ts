@@ -1,8 +1,8 @@
-import { DmsMessagesEntity } from "../entities/dms_messages.entity"
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateDmMessageDto } from "./create-dm_message.dto"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateDmDto {
-  users: UserEntity[]
-  messages: DmsMessagesEntity[]
+  users: CreateUserDto[]
+  messages: CreateDmMessageDto[]
   block: boolean
 }

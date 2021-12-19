@@ -1,10 +1,10 @@
-import { MatchHistoryEntity } from "../../match-history/entities/match_history.entity";
-import { FriendsEntity } from "../../friends/entities/friends.entity";
-import { ChannelsEntity } from "../../channels/entities/channels.entity";
-import { ChannelsUsersEntity } from "../../channels/entities/channels_users.entity";
-import { ChannelsMessagesEntity } from "../../channels/entities/channels_messages.entity";
-import { DmsEntity } from "../../dms/entities/dms.entity";
-import { DmsMessagesEntity } from "../../dms/entities/dms_messages.entity";
+import { CreateMatchHistoryDto } from "../../match-history/dto/create-match-history.dto";
+import { CreateFriendDto } from "../../friends/dto/create-friend.dto";
+import { CreateChannelDto } from "../../channels/dto/create-channel.dto";
+import { CreateChannelUserDto } from "../../channels/dto/create-channel_user.dto";
+import { CreateChannelMessageDto } from "../../channels/dto/create-channel_message.dto";
+import { CreateDmDto } from "../../dms/dto/create-dm.dto";
+import { CreateDmMessageDto } from "../../dms/dto/create-dm_message.dto";
 
 export class CreateUserDto {
   name: string;
@@ -15,11 +15,11 @@ export class CreateUserDto {
   online: boolean;
   nbrVicotry: number;
   nbrLoss: number;
-  matchHistory: MatchHistoryEntity[]
-  friends: FriendsEntity[]
-  dms: DmsEntity[]
-  dms_messages: DmsMessagesEntity[]
-  channels: ChannelsEntity[]
-  channels_messages: ChannelsMessagesEntity[]
-  channels_users: ChannelsUsersEntity[]
+  matchHistory: CreateMatchHistoryDto[]
+  friends: CreateFriendDto[]
+  dms: CreateDmDto[]
+  dms_messages: CreateDmMessageDto[]
+  channels: CreateChannelDto[]
+  channels_messages: CreateChannelMessageDto[]
+  channels_users: CreateChannelUserDto[]
 }

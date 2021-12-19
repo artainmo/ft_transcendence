@@ -1,9 +1,9 @@
-import { DmsEntity } from "../entities/dms.entity"
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateDmDto } from "./create-dm.dto"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateDmMessageDto {
-  user: UserEntity
-  dm: DmsEntity
+  user: CreateUserDto
+  dm: CreateDmDto
   content: string
   order: number
 }

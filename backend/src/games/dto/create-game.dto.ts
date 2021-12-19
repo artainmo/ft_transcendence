@@ -1,8 +1,8 @@
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateGameDto {
-  user1: UserEntity;
-  user2: UserEntity;
+  user1: CreateUserDto;
+  user2: CreateUserDto;
   ballspeed: number;
   map: string;
 }

@@ -1,6 +1,6 @@
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateFriendDto {
-  me: UserEntity;
+  me: CreateUserDto;
   friend_id: number;
 }

@@ -1,7 +1,7 @@
-import { UserEntity } from "../../user/entities/user.entity"
+import { CreateUserDto } from "../../user/dto/create-user.dto"
 
 export class CreateMatchHistoryDto {
-  me: UserEntity;
+  me: CreateUserDto;
   my_score: string;
   opponent_id: number;
   opponent_score: string;
