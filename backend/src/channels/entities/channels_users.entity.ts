@@ -1,13 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { ChannelsEntity } from "channels.entity"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { ChannelsEntity } from "./channels.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
+@Entity()
 export class ChannelsUsersEntity {
 
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.channels_users)
+  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.channel_users)
   @JoinColumn()
   channel: ChannelsEntity
 

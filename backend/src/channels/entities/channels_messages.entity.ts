@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { ChannelsEntity } from "channels.entity"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { ChannelsEntity } from "./channels.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
+@Entity()
 export class ChannelsMessagesEntity {
 
   @PrimaryGeneratedColumn()

@@ -3,7 +3,7 @@ import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 import { UpdateMatchHistoryDto } from './dto/update-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MatchHistoryEntity } from "entities/match_history.entity"
+import { MatchHistoryEntity } from "./entities/match_history.entity"
 
 @Injectable()
 export class MatchHistoryService {
@@ -12,23 +12,23 @@ export class MatchHistoryService {
     private MatchHistoryRepo: Repository<MatchHistoryEntity>
   ) {}
 
-  create(createMatchHistoryDto: CreateMatchHistoryDto): void {
+  async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     await this.MatchHistoryRepo.save(createMatchHistoryDto);
   }
 
-  findAll(): Promise<MatchHistoryEntity[]>  {
+  async findAll(): Promise<MatchHistoryEntity[]>  {
     return await this.MatchHistoryRepo.find();
   }
 
-  findOne(id: number): Promise<MatchHistoryEntity> {
+  async findOne(id: number): Promise<MatchHistoryEntity> {
     return await this.MatchHistoryRepo.findOne(id);;
   }
 
-  update(id: number, updateMatchHistoryDto: UpdateMatchHistoryDto): void  {
+  async update(id: number, updateMatchHistoryDto: UpdateMatchHistoryDto): Promise<void>  {
     await this.MatchHistoryRepo.update(id, updateMatchHistoryDto);
   }
 
-  remove(id: number): void {
+  async remove(id: number): Promise<void> {
     await this.MatchHistoryRepo.delete(id);
   }
 }

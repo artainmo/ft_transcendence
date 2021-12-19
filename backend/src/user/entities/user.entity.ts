@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { GamesEntity } from "../../games/entities/games.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm";
 import { MatchHistoryEntity } from "../../match-history/entities/match_history.entity";
 import { FriendsEntity } from "../../friends/entities/friends.entity";
 import { ChannelsEntity } from "../../channels/entities/channels.entity";
@@ -44,7 +43,7 @@ export class UserEntity {
     @OneToMany(type => FriendsEntity, FriendsEntity => FriendsEntity.me)
     friends: FriendsEntity[]
 
-    @ManyToMany(type => DmsEntity, DMsEntity => DmsEntity.users)
+    @ManyToMany(type => DmsEntity, DmsEntity => DmsEntity.users)
     dms: DmsEntity[]
 
     @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.user)

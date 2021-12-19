@@ -7,9 +7,9 @@ import { CreateChannelUserDto } from './dto/create-channel_user.dto';
 import { UpdateChannelUserDto } from './dto/update-channel_user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ChannelsMessagesEntity } from "entities/channels_messages.entity";
-import { ChannelsUsersEntity } from "entities/channels_users.entity";
-import { ChannelsEntity } from "entities/channels.entity";
+import { ChannelsMessagesEntity } from "./entities/channels_messages.entity";
+import { ChannelsUsersEntity } from "./entities/channels_users.entity";
+import { ChannelsEntity } from "./entities/channels.entity";
 
 @Injectable()
 export class ChannelsService {
@@ -22,63 +22,63 @@ export class ChannelsService {
     private ChannelsMessagesRepo: Repository<ChannelsMessagesEntity>
   ) {}
 
-  create(createChannelDto: CreateChannelDto): void {
+  async create(createChannelDto: CreateChannelDto): Promise<void> {
     await this.ChannelsRepo.save(createChannelDto);
   }
 
-  findAll(): Promise<ChannelsEntity[]> {
+  async findAll(): Promise<ChannelsEntity[]> {
     return await this.ChannelsRepo.find();
   }
 
-  findOne(id: number): Promise<ChannelsEntity> {
+  async findOne(id: number): Promise<ChannelsEntity> {
     return await this.ChannelsRepo.findOne(id);
   }
 
-  update(id: number, updateChannelDto: UpdateChannelDto): void {
+  async update(id: number, updateChannelDto: UpdateChannelDto): Promise<void> {
     await this.ChannelsRepo.update(id, updateChannelDto);
   }
 
-  remove(id: number): void {
+  async remove(id: number): Promise<void> {
     await this.ChannelsRepo.delete(id);
   }
 
-  createMessage(createChannelMessageDto: CreateChannelMessageDto): void {
+  async createMessage(createChannelMessageDto: CreateChannelMessageDto): Promise<void> {
     await this.ChannelsMessagesRepo.save(createChannelMessageDto);
   }
 
-  findAllMessages(): Promise<ChannelsMessagesEntity[]> {
+  async findAllMessages(): Promise<ChannelsMessagesEntity[]> {
     return await this.ChannelsMessagesRepo.find();
   }
 
-  findOneMessage(id: number): Promise<ChannelsMessagesEntity> {
+  async findOneMessage(id: number): Promise<ChannelsMessagesEntity> {
     return await this.ChannelsMessagesRepo.findOne(id);
   }
 
-  updateMessage(id: number, updateChannelMessageDto: UpdateChannelMessageDto): void {
+  async updateMessage(id: number, updateChannelMessageDto: UpdateChannelMessageDto): Promise<void> {
     await this.ChannelsMessagesRepo.update(id, updateChannelMessageDto);
   }
 
-  removeMessage(id: number): void {
+  async removeMessage(id: number): Promise<void> {
     await this.ChannelsMessagesRepo.delete(id);
   }
 
-  createUser(createChannelUserDto: CreateChannelUsersDto): void {
+  async createUser(createChannelUserDto: CreateChannelUserDto): Promise<void> {
     await this.ChannelsUsersRepo.save(createChannelUserDto);
   }
 
-  findAllUsers(): Promise<ChannelsUsersEntity[]> {
+  async findAllUsers(): Promise<ChannelsUsersEntity[]> {
     return await this.ChannelsUsersRepo.find();
   }
 
-  findOneUser(id: number): Promise<ChannelsUsersEntity> {
+  async findOneUser(id: number): Promise<ChannelsUsersEntity> {
     return await this.ChannelsUsersRepo.findOne(id);
   }
 
-  updateUser(id: number, updateChannelUserDto: UpdateChannelUserDto): void {
+  async updateUser(id: number, updateChannelUserDto: UpdateChannelUserDto): Promise<void> {
     await this.ChannelsUsersRepo.update(id, updateChannelUserDto);
   }
 
-  removeuser(id: number): void {
+  async removeUser(id: number): Promise<void> {
     await this.ChannelsUsersRepo.delete(id);
   }
 }

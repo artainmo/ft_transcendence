@@ -3,7 +3,7 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GamesEntity } from 'entities/games.entity';
+import { GamesEntity } from './entities/games.entity';
 
 @Injectable()
 export class GamesService {
@@ -12,7 +12,7 @@ export class GamesService {
     private GamesRepo: Repository<GamesEntity>
   ) {}
 
-  async create(createGameDto: CreateGameDto): void {
+  async create(createGameDto: CreateGameDto): Promise<void> {
     await this.GamesRepo.save(createGameDto);
   }
 
@@ -24,11 +24,11 @@ export class GamesService {
     return await this.GamesRepo.findOne(id);
   }
 
-  async update(id: number, updateGameDto: UpdateGameDto): void {
+  async update(id: number, updateGameDto: UpdateGameDto): Promise<void> {
     await this.GamesRepo.update(id, updateGameDto);
   }
 
-  async remove(id: number): void {
+  async remove(id: number): Promise<void> {
     await this.GamesRepo.delete(id);
   }
 }

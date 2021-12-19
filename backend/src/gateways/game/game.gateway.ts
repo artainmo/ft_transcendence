@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
-import { WebsocketGameDto } from "dto/websocket-game.dto";
+import { WebsocketGameDto } from "./dto/websocket-game.dto";
 
 @WebSocketGateway(80, { namespace: 'game' })
 export class GameGateway {
@@ -8,7 +8,7 @@ export class GameGateway {
   server: Server;
 
   @SubscribeMessage('message')
-  handleMessage(client: Socket, message: WebsocketChatDto): string {
+  handleMessage(client: Socket, message: WebsocketGameDto): void {
     this.server.to(message.room).emit("message", message)
   }
 

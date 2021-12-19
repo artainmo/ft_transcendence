@@ -5,8 +5,8 @@ import { CreateDmMessageDto } from './dto/create-dm_message.dto';
 import { UpdateDmMessageDto } from './dto/update-dm_message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DmsMessagesEntity } from "entities/dms_messages.entity";
-import { DmsEntity } from "entities/dms.entity";
+import { DmsMessagesEntity } from "./entities/dms_messages.entity";
+import { DmsEntity } from "./entities/dms.entity";
 
 @Injectable()
 export class DmsService {
@@ -17,43 +17,43 @@ export class DmsService {
     private DmsMessagesRepo: Repository<DmsMessagesEntity>
   ) {}
 
-  create(createDmDto: CreateDmDto): void {
+  async create(createDmDto: CreateDmDto): Promise<void> {
     await this.DmsRepo.save(createDmDto);
   }
 
-  findAll(): Promise<DmsEntity[]> {
+  async findAll(): Promise<DmsEntity[]> {
     return await this.DmsRepo.find();
   }
 
-  findOne(id: number): Promise<DmsEntity> {
+  async findOne(id: number): Promise<DmsEntity> {
     return await this.DmsRepo.findOne(id);
   }
 
-  update(id: number, updateDmDto: UpdateDmDto): void {
+  async update(id: number, updateDmDto: UpdateDmDto): Promise<void> {
     await this.DmsRepo.update(id, updateDmDto);
   }
 
-  remove(id: number) {
+  async remove(id: number): Promise<void> {
     await this.DmsRepo.delete(id);
   }
 
-  createMessage(createDmMessageDto: CreateDmMessageDto): void {
+  async createMessage(createDmMessageDto: CreateDmMessageDto): Promise<void> {
     await this.DmsMessagesRepo.save(createDmMessageDto);
   }
 
-  findAllMessages(): Promise<DmsMessagesEntity[]> {
+  async findAllMessages(): Promise<DmsMessagesEntity[]> {
     return await this.DmsMessagesRepo.find();
   }
 
-  findOneMessage(id: number): Promise<DmsMessagesEntity> {
+  async findOneMessage(id: number): Promise<DmsMessagesEntity> {
     return await this.DmsMessagesRepo.findOne(id);
   }
 
-  updateMessage(id: number, updateDmMessageDto: UpdateDmMessageDto): void {
+  async updateMessage(id: number, updateDmMessageDto: UpdateDmMessageDto): Promise<void> {
     await this.DmsMessagesRepo.update(id, updateDmMessageDto);
   }
 
-  removeMessage(id: number) {
+  async removeMessage(id: number): Promise<void> {
     await this.DmsMessagesRepo.delete(id);
   }
 }

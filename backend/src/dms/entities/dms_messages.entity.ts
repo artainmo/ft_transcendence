@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { DmsEntity } from "dms.entity"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { DmsEntity } from "./dms.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
+@Entity()
 export class DmsMessagesEntity {
 
   @PrimaryGeneratedColumn()
@@ -11,7 +12,7 @@ export class DmsMessagesEntity {
   @JoinColumn()
   user: UserEntity
 
-  @ManyToOne(type => DmsEntity, DMsEntity => DmsEntity.messages)
+  @ManyToOne(type => DmsEntity, DmsEntity => DmsEntity.messages)
   @JoinColumn()
   dm: DmsEntity
 

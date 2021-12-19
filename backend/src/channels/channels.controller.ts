@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { CreateChannelMessageDto } from './dto/create-channel_messages.dto';
-import { UpdateChannelMessageDto } from './dto/update-channel_messages.dto';
-import { CreateChannelUserDto } from './dto/create-channel_users.dto';
-import { UpdateChannelUserDto } from './dto/update-channel_users.dto';
+import { CreateChannelMessageDto } from './dto/create-channel_message.dto';
+import { UpdateChannelMessageDto } from './dto/update-channel_message.dto';
+import { CreateChannelUserDto } from './dto/create-channel_user.dto';
+import { UpdateChannelUserDto } from './dto/update-channel_user.dto';
 
 @Controller('channels')
 export class ChannelsController {
@@ -37,52 +37,52 @@ export class ChannelsController {
   }
 
   @Post('/message')
-  create(@Body() createChannelMessageDto: CreateChannelMessageDto) {
+  createMessage(@Body() createChannelMessageDto: CreateChannelMessageDto) {
     return this.channelsService.createMessage(createChannelMessageDto);
   }
 
   @Get('/message')
-  findAll() {
+  findAllMessages() {
     return this.channelsService.findAllMessages();
   }
 
   @Get('/message/:id')
-  findOne(@Param('id') id: string) {
+  findOneMessage(@Param('id') id: string) {
     return this.channelsService.findOneMessage(+id);
   }
 
   @Patch('/message/:id')
-  update(@Param('id') id: string, @Body() updateChannelMessageDto: UpdateChannelMessageDto) {
+  updateMessage(@Param('id') id: string, @Body() updateChannelMessageDto: UpdateChannelMessageDto) {
     return this.channelsService.updateMessage(+id, updateChannelMessageDto);
   }
 
   @Delete('/message/:id')
-  remove(@Param('id') id: string) {
+  removeMessage(@Param('id') id: string) {
     return this.channelsService.removeMessage(+id);
   }
 
   @Post('/user')
-  create(@Body() createChannelUserDto: CreateChannelUserDto) {
+  createUser(@Body() createChannelUserDto: CreateChannelUserDto) {
     return this.channelsService.createUser(createChannelUserDto);
   }
 
   @Get('/user')
-  findAll() {
+  findAllUsers() {
     return this.channelsService.findAllUsers();
   }
 
   @Get('/user/:id')
-  findOne(@Param('id') id: string) {
+  findOneUser(@Param('id') id: string) {
     return this.channelsService.findOneUser(+id);
   }
 
   @Patch('/user/:id')
-  update(@Param('id') id: string, @Body() updateChannelUserDto: UpdateChannelUserDto) {
+  updateUser(@Param('id') id: string, @Body() updateChannelUserDto: UpdateChannelUserDto) {
     return this.channelsService.updateUser(+id, updateChannelUserDto);
   }
 
   @Delete('/user/:id')
-  remove(@Param('id') id: string) {
+  removeUser(@Param('id') id: string) {
     return this.channelsService.removeUser(+id);
   }
 }
