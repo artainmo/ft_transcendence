@@ -22,6 +22,16 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @Get('/name/:name')
+  findOneByName(@Param('name') name: string) {
+    return this.userService.findOneByName(name);
+  }
+
+  @Get('/login/:login')
+  findOneByLogin(@Param('login') login: string) {
+    return this.userService.findOneByLogin(login);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     this.userService.update(+id, updateUserDto);

@@ -1,130 +1,131 @@
-import React, { useState } from 'react';
-import accountType from '../../types/accountType';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
-import { dataBaseAccounts } from '../../types/database';
+import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
+import { getUserByName, getUserByLogin, createNewUser, addUser } from "../../api/user/user.api";
 
-type authState = "login" | "signup" | "done" | null;
+const CLIENT_ID = '433eb612bd72cf577b98ad16b16bc482ddf45b46c37f326595b7600495b11807';
+const REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A3000';
 
-interface authProps3 {
-	changeState: (newState: authState) => void
-	changeAccount: (newAccount: any) => void
-	account: accountType
-	signup: boolean
-}
-
-interface authProps2 {
-	changeState: (newState: authState) => void
-	changeAccount: (newAccount: any) => void
-	account: accountType
-}
-
-const LogForm: React.FC<authProps3> = ({ changeState, changeAccount, account, signup }) => {
+const LogForm: React.FC<{changeAccountId: (id: number) => void, signup: boolean}> = ({ changeAccountId, signup }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
-	let [wrongPassword, setWrongPassword] = useState<boolean>(false);;
+	let [name, setName] = useState<string>('');
+	let [login, setLogin] = useState<string>('');
+	let [avatar, setAvatar] = useState<string>('');
 
-	const onSubmitLogin: () => void = () => {
-		if (dataBaseAccounts.find(e => e[0].toLowerCase() === account.name.toLowerCase() && e[1] === account.password) !== undefined) {
-			changeState("done");
-			setNonExistingAccount(false);
-		} else if (dataBaseAccounts.find(e => e[0].toLowerCase() === account.name.toLowerCase()) !== undefined) {
-						setWrongPassword(true);
-						setNonExistingAccount(false);
-						changeAccount({password: '', avatar: null});
-		} else {
+	const onSubmitLogin: () => void = async () => {
+		let userInDatabase = await getUserByName(name);
+		if (userInDatabase === null) {
 			setNonExistingAccount(true);
-			setWrongPassword(false);
-			changeAccount({name: '', password: '', avatar: null});
+			setName('');
+			setLogin('');
+			setAvatar('');
+		} else {
+			setNonExistingAccount(false);
+			changeAccountId(userInDatabase!.id)
 		}
 	}
 
-	const onSubmitSignup: () => void = () => {
-		if (dataBaseAccounts.find(e => e[0].toLowerCase() === account.name.toLowerCase()) !== undefined) {
-			changeAccount({name: '', password: '', avatar: null});
-			setAccountAlreadyInUse(true);
-		} else {
-			changeState("done");
+	const onSubmitSignup: () => void = async () => {
+		let userInDatabaseByName = await getUserByName(name);
+		let userInDatabaseByLogin = await getUserByLogin(login);
+		if (userInDatabaseByName === null && userInDatabaseByLogin === null) {
+			await addUser(createNewUser(name, login, avatar));
+			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
+			changeAccountId(userInDatabase!.id)
+		} else {
+			setAccountAlreadyInUse(true);
+			setName('');
+			setLogin('');
+			setAvatar('');
 		}
 	}
 
 	return (<div>
-					<form>
 						<label>Name:</label><br/>
-						<input required type="text" value={account.name} onChange={(e)=>changeAccount({name: e.target.value})}/><br/><br/>
-						<label>Password:</label><br/>
-						<input required type="password" value={account.password} onChange={(e)=>changeAccount({password: e.target.value})}/>
+						<input required type="text" value={name} onChange={(e)=>setName(e.target.value)}/>
+						{signup && <br/>}
+						{signup && <br/>}
+						{signup && <label>Login:</label>}
+						{signup && <br/>}
+						{signup && <input required type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/>}
 						{signup && <br/>}
 						{signup && <br/>}
 						{signup && <label>Download Avatar Image: </label>}
-						{signup && <input type="file" id="fileInput" onChange={(e)=> e.target.files && changeAccount({avatar: URL.createObjectURL(e.target.files[0])})}/>}
+						{signup && <input type="file" id="fileInput" onChange={(e)=> e.target.files && setAvatar(URL.createObjectURL(e.target.files[0]))}/>}
 						<br/><br/>
 						{accountAlreadyInUse && <p>This account already exists, try another one</p>}
 						{nonExistingAccount && <p>This account does not exist, try another one</p>}
-						{wrongPassword && <p>Try another password</p>}
-						<input type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}/>
-					</form>
+						<button type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}>Submit</button>
 				</div>);
 }
 
-const Signup: React.FC<authProps2> = ({ changeState, changeAccount, account }) => {
+const Signup: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
 	return (<div>
-				<button onClick={()=>{changeState(null)}}>Back</button>
-				<h1>Sign up</h1>
-				<LogForm changeState={changeState} changeAccount={changeAccount} signup={true} account={account}/>
-			</div>);
+						<button onClick={()=>{changeAccountId(-1)}}>Back</button>
+						<h1>Sign up</h1>
+						<LogForm changeAccountId={changeAccountId} signup={true}/>
+					</div>);
 }
 
-const Login: React.FC<authProps2> = ({ changeState, changeAccount, account }) => {
+const Login: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
 	return (<div>
-				<button onClick={()=>{changeState(null)}}>Back</button>
-				<h1>Log in</h1>
-				<LogForm changeState={changeState} changeAccount={changeAccount} signup={false} account={account}/>
-			</div>);
+						<button onClick={()=>{changeAccountId(-1)}}>Back</button>
+						<h1>Log in</h1>
+						<LogForm changeAccountId={changeAccountId} signup={false}/>
+					</div>);
 }
 
-const LoginOrSignup: React.FC<{changeState: (newState: any) => void}> = ({ changeState }) => {
+const LoginOrSignup: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
 	return (<div>
-				<h1>Pong Game</h1>
-				<button onClick={()=>{changeState('login')}}>Log in</button><>&nbsp;&nbsp;&nbsp;</>
-				<button onClick={()=>{changeState('signup')}}>Sign up</button><>&nbsp;&nbsp;&nbsp;</>
-				<button onClick={()=>{changeState('done')}}>Intra 42 login</button>
-			</div>);
+						<h1>Pong Game</h1>
+						<button onClick={()=>{changeAccountId(-3)}}>Log in</button><>&nbsp;&nbsp;&nbsp;</>
+						<button onClick={()=>{changeAccountId(-2)}}>Sign up</button><>&nbsp;&nbsp;&nbsp;</>
+						<button onClick={()=>{window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;}}>Intra 42 login</button>
+					</div>);
 }
 
 const Authentification: React.FC = () => {
-	const empty_account: accountType = {name: '', password: '', avatar: null, victories: 0, losses: 0, matchHistory: [], friends: [], chatChannels: []};
-	const [loginOrSignup, setLoginOrSignup] = useState<authState>(null);
-	const [account, setAccount] = useState<accountType>(empty_account);
+	const [searchParams] = useSearchParams(); //Will enable the extraction of queryparams
+	const AUTH_CODE = searchParams.get('code'); //code queryparam extraction gives us an authorization code necessary for OAuth access token generation
+	const [accountId, setAccountId] = useState<number>(-1); //As long as accountid is set to -1 no account yet
 
-	const changeState: (newState: authState) => void  = (newState) => {
-		setLoginOrSignup(newState);
+	useEffect(() => {
+		const user42 = async () => {
+			if (AUTH_CODE !== null) {
+				const ACCESS_TOKEN = await OAuth42_access_token(AUTH_CODE);
+				if (ACCESS_TOKEN !== null) {
+					const user = await OAuth42_user(ACCESS_TOKEN);
+					let userInDatabase = await getUserByName(user.name);
+					if (userInDatabase === null) {
+						await addUser(createNewUser(user.name, user.login, user.avatar));
+						userInDatabase = await getUserByName(user.name);
+					}
+					setAccountId(userInDatabase!.id)
+				}
+			}
+		}
+		user42();
+	}, [AUTH_CODE]);
+
+	const changeAccountId: (id: number) => void = (id) => {
+		setAccountId(id);
 	}
 
-	const changeAccount: (ewAccount: accountType) => void = (newAccount) => {
-		setAccount({...account, ...newAccount});
-	}
-
-	const unlog: () => void = () => {
-		changeState(null);
-		changeAccount(empty_account);
-	}
-
-	if (loginOrSignup === null) {
-		return (<LoginOrSignup changeState={changeState}/>);
-	} else if (loginOrSignup === "done") {
-		return (<Home account={account} changeAccount={changeAccount} unlog={unlog}/>);
-	} else if (loginOrSignup === "signup") {
-		return (<Signup changeState={changeState} changeAccount={changeAccount} account={account}/>);
-	} else if (loginOrSignup === "login"){
-		return (<Login changeState={changeState} changeAccount={changeAccount} account={account}/>);
+	if (accountId === -1) {
+		return (<LoginOrSignup changeAccountId={changeAccountId}/>);
+	} else if (accountId > -1) {
+		// return (<Home accountId={accountId} changeAccountId={changeAccountId}/>);
+		return (<h1>Home</h1>);
+	} else if (accountId === -2) {
+		return (<Signup changeAccountId={changeAccountId}/>);
+	} else if (accountId === -3){
+		return (<Login changeAccountId={changeAccountId}/>);
 	} else {
 		return <h1>Authentification Error</h1>;
 	}
 }
 
-
 export default Authentification;
-
-//A user must log in using the OAuth system of 42 intranet
-//A user must be able to activate a 2-factor authentication (like google authenticatoror an SMS etc...)

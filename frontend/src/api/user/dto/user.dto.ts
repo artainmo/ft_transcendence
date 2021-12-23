@@ -7,6 +7,7 @@ import { DmDto } from "../../dms/dto/dm.dto";
 import { DmMessageDto } from "../../dms/dto/dm_message.dto";
 
 export interface UserDto {
+  id: number;
   name: string;
   login: string;
   avatar: string;

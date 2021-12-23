@@ -13,7 +13,7 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<void> {
-    await this.UserRepo.save(createUserDto);
+      await this.UserRepo.save(createUserDto);
   }
 
   async findAll(): Promise<UserEntity[]> {
@@ -22,6 +22,14 @@ export class UserService {
 
   async findOne(id: number): Promise<UserEntity> {
     return await this.UserRepo.findOne(id);
+  }
+
+  async findOneByName(name: string): Promise<UserEntity> {
+    return await this.UserRepo.findOne({ where: { name: name }});
+  }
+
+  async findOneByLogin(login: string): Promise<UserEntity> {
+    return await this.UserRepo.findOne({ where: { login: login }});
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<void> {
