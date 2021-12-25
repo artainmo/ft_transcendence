@@ -20,6 +20,12 @@ export class MatchHistoryService {
     return await this.MatchHistoryRepo.find();
   }
 
+  async findMatchHistoryOfUser(login: string): Promise<MatchHistoryEntity[]> {
+    return await this.MatchHistoryRepo.find({
+      relations: ['me'],
+      where: { me: {login: login} }});
+  }
+
   async findOne(id: number): Promise<MatchHistoryEntity> {
     return await this.MatchHistoryRepo.findOne(id);;
   }

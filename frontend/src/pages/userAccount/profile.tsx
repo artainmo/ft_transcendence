@@ -1,92 +1,143 @@
-import React, { useState } from 'react';
-import accountType from '../../types/accountType';
+import React, { useState, useEffect } from 'react';
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { dataBaseAccounts } from '../../types/database';
+import { getUser, getAllUsers } from "../../api/user/user.api";
+import { addFriend, createNewFriend, getFriendsOfUser, removeFriend } from "../../api/friends/friends.api";
+import { UserDto } from "../../api/user/dto/user.dto";
+import { FriendDto } from "../../api/friends/dto/friend.dto";
+import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
+import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
 
-let g_copyAccount: accountType;
-
-interface profileProps2 {
-	account: accountType
-	changeAccount: (newAccount: any) => void
-}
+let g_remember_account: UserDto;
 
 interface profileProps {
-	account: accountType
-	changeAccount: (newAccount: any) => void
-	unlog: () => void
-	backHome: () => void
+	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
+	changeMenuPage: (newMenuPage: string) => void
 }
 
 interface FriendsProps {
-  account: accountType
-  changeAccount: (newAccount: any) => void
-  changeAccountOwner: () => void
-  ownAccount: boolean
+	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
+	ownAccount: boolean,
+	changeAccountOwner: () => void,
+	renderPage: () => void
 }
 
-const FindFriends: React.FC<profileProps2> = ({ account, changeAccount }) => {
-  const [searchResults, setSearchResults] = useState<string[][]>([]);
+interface FindFriendsProps {
+	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
+	userFriends: UserDto[],
+	renderPage: () => void
+}
+
+const FindFriends: React.FC<FindFriendsProps> = ({ user, changeUser, userFriends, renderPage }) => {
+	const [searchResults, setSearchResults] = useState<UserDto[]>([]);
   const [searchText, setSearchText] = useState<string>('');
 
-  const handleSearch: (searchValue: string) => void = (searchValue) => {
-    let searchResults: string[][] = [];
+	const isPartOfFriends: (account: UserDto) => boolean = (account) => {
+		const find = userFriends.find((friend) => account.id === friend.id);
+		return (find !== undefined);
+	}
 
-    dataBaseAccounts.forEach((item) => searchValue.length !== 0 && !account.friends.includes(item)
-                              && item[0].includes(searchValue) && item[0] !== account.name && searchResults.push(item))
+  const handleSearch: (searchValue: string) => void = async (searchValue) => {
+    let search: UserDto[] = [];
+		const allUsers = await getAllUsers();
+
+    allUsers.forEach((item) => searchValue.length !== 0 && !isPartOfFriends(item)
+                              && item.login.includes(searchValue) && item.login !== user.login && search.push(item))
     setSearchText(searchValue);
-    setSearchResults(searchResults);
+    setSearchResults(search);
   }
 
   return (<div>
             <input type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
-                                            <span>{item[0]}</span><>&nbsp;&nbsp;&nbsp;</>
+                                            <span>{item.login}</span><>&nbsp;&nbsp;&nbsp;</>
                                             <button onClick={(e)=> {
-                                                                    let tmp = account.friends;
-                                                                    tmp.push(item);
-                                                                    changeAccount({friends: tmp});
-                                                                    handleSearch("");}}>Add Friend</button>
+																																		addFriend(createNewFriend(user, item.id));
+																																		addFriend(createNewFriend(item, user.id));
+                                                                    handleSearch("");
+																																		renderPage();}}>Add Friend</button>
                                          </div>)}
           </div>);
 }
 
-const Friends: React.FC<FriendsProps> = ({ account, changeAccount, changeAccountOwner, ownAccount }) => {
+const Friends: React.FC<FriendsProps> = ({ user, changeUser, ownAccount, changeAccountOwner, renderPage }) => {
+	const [userFriends, setUserFriends] = useState<UserDto[]>([]);
 
-  const seeFriendProfile: (friendInfo: string[]) => void = (friendInfo) => {
-    g_copyAccount = account;
+	const getFriendFromId: (friend_id: number) => Promise<UserDto | null> = async (friend_id) => {
+		const friend = await getUser(friend_id);
+		if (friend === null) return null;
+		return friend;
+	}
+
+	useEffect(() => {
+		const getUserFriends: () => void = async () => {
+			let friends: FriendDto[] = await getFriendsOfUser(user.login);
+			let friends1: (UserDto | null)[] = await Promise.all(friends.map(async (item): Promise<UserDto | null> => { return await getFriendFromId(item.friend_id); }));
+			// @ts-ignore
+			let friends2: UserDto[] = friends1.filter((friend) => friend !== null);
+			setUserFriends(friends2);
+		}
+		getUserFriends();
+	})
+
+  const seeFriendProfile: (friend: UserDto) => void = (friend) => {
+    g_remember_account = user;
+		if (friend === null) return ;
+		changeUser(friend);
     changeAccountOwner();
-    changeAccount({name: friendInfo[0], password: '', avatar: null, victories: 0, losses: 0, matchHistory: [], friends: []});
   }
 
   return (<div>
             <h3>Friends</h3>
-            {account.friends.length ? account.friends.map((elem) => <p onClick={()=>seeFriendProfile(elem)}>{`${elem[0]}: ${elem[2]}`}</p>) : <p>No friends</p>}
-            {ownAccount && <FindFriends account={account} changeAccount={changeAccount}/>}
+            {userFriends.length ? userFriends.map((elem) => <div>
+																															<span onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;&nbsp;</>
+																															{ownAccount && <button onClick={(e)=> {removeFriend(user.id, elem.id); removeFriend(elem.id, user.id); renderPage();}}>Remove Friend</button>}
+																														</div>)
+																	: <p>No friends</p>}
+						<br/>
+            {ownAccount && <FindFriends user={user} changeUser={changeUser} userFriends={userFriends} renderPage={renderPage}/>}
           </div>);
 }
 
-const Profile: React.FC<profileProps> = ({ account, changeAccount, unlog, backHome }) => {
+const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) => {
   const [ownAccount, setOwnAccount] = useState<boolean>(true);
+	const [userMatchHistory, setUserMatchHistory] = useState<MatchHistoryDto[]>([]);
+	const [render, setRender] = useState<boolean>(true);
 
-  const changeAccountOwner: () => void = () => {
+	useEffect(() => {
+		const getUserMatchHistory: () => void = async () => {
+			let matchHistory = await getMatchHistoryOfUser(user.login);
+			setUserMatchHistory(matchHistory);
+		}
+		getUserMatchHistory();
+	}, [user])
+
+	const changeAccountOwner: () => void = () => {
     setOwnAccount(!ownAccount);
   }
 
+	const renderPage: () => void = () => {
+    setRender(!render);
+  }
+
   return (<div>
-              {ownAccount && <><button onClick={()=>{backHome()}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
-              {ownAccount && <button onClick={()=>{unlog()}}>Log out</button>}
-              {!ownAccount && <><button onClick={()=>{changeAccount(g_copyAccount); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
+              {ownAccount && <><button onClick={()=>{changeMenuPage('home')}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
+              {ownAccount && <button onClick={()=>{changeUser(null)}}>Log out</button>}
+              {!ownAccount && <><button onClick={()=>{changeUser(g_remember_account); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               <h1>Profile</h1>
-              {account.avatar ? <img src={account.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
-              <p>Name: {account.name}</p>
+              {user.avatar ? <img src={user.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
+              <p>Name: {user.name}</p>
+							<p>Login: {user.login}</p>
               <h3>Stats</h3>
-              <p>Victories: {account.victories}</p>
-              <p>Losses: {account.losses}</p>
-              <p>Ratio: {(account.victories / account.losses) ? (account.victories / account.losses) : 0}</p>
+              <p>Victories: {user.nbrVicotry}</p>
+              <p>Losses: {user.nbrLoss}</p>
+              <p>Ratio: {(user.nbrVicotry / user.nbrLoss) ? (user.nbrVicotry / user.nbrLoss) : 0}</p>
               <h3>Match History</h3>
-              {account.matchHistory.length ? account.matchHistory.map((elem)=><p>{elem}</p>) : <p>No matches</p>}
-              <Friends account={account} changeAccount={changeAccount} changeAccountOwner={changeAccountOwner} ownAccount={ownAccount}/>
+              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{elem}</p>) : <p>No matches</p>}
+              <Friends user={user} changeUser={changeUser} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner} renderPage={renderPage}/>
           </div>);
 }
 

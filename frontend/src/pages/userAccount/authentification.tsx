@@ -3,11 +3,13 @@ import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
 import { getUserByName, getUserByLogin, createNewUser, addUser } from "../../api/user/user.api";
+import { UserDto } from "../../api/user/dto/user.dto";
+
 
 const CLIENT_ID = '433eb612bd72cf577b98ad16b16bc482ddf45b46c37f326595b7600495b11807';
 const REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A3000';
 
-const LogForm: React.FC<{changeAccountId: (id: number) => void, signup: boolean}> = ({ changeAccountId, signup }) => {
+const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: boolean}> = ({ changeUser, signup }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
 	let [name, setName] = useState<string>('');
@@ -23,7 +25,7 @@ const LogForm: React.FC<{changeAccountId: (id: number) => void, signup: boolean}
 			setAvatar('');
 		} else {
 			setNonExistingAccount(false);
-			changeAccountId(userInDatabase!.id)
+			changeUser(userInDatabase)
 		}
 	}
 
@@ -34,7 +36,7 @@ const LogForm: React.FC<{changeAccountId: (id: number) => void, signup: boolean}
 			await addUser(createNewUser(name, login, avatar));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
-			changeAccountId(userInDatabase!.id)
+			changeUser(userInDatabase);
 		} else {
 			setAccountAlreadyInUse(true);
 			setName('');
@@ -62,27 +64,27 @@ const LogForm: React.FC<{changeAccountId: (id: number) => void, signup: boolean}
 				</div>);
 }
 
-const Signup: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
+const Signup: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
 	return (<div>
-						<button onClick={()=>{changeAccountId(-1)}}>Back</button>
+						<button onClick={()=>{changePage("start")}}>Back</button>
 						<h1>Sign up</h1>
-						<LogForm changeAccountId={changeAccountId} signup={true}/>
+						<LogForm changeUser={changeUser} signup={true}/>
 					</div>);
 }
 
-const Login: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
+const Login: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
 	return (<div>
-						<button onClick={()=>{changeAccountId(-1)}}>Back</button>
+						<button onClick={()=>{changePage("start")}}>Back</button>
 						<h1>Log in</h1>
-						<LogForm changeAccountId={changeAccountId} signup={false}/>
+						<LogForm changeUser={changeUser} signup={false}/>
 					</div>);
 }
 
-const LoginOrSignup: React.FC<{changeAccountId: (id: number) => void}> = ({ changeAccountId }) => {
+const Start: React.FC<{changePage: (newPage: string) => void}> = ({ changePage }) => {
 	return (<div>
 						<h1>Pong Game</h1>
-						<button onClick={()=>{changeAccountId(-3)}}>Log in</button><>&nbsp;&nbsp;&nbsp;</>
-						<button onClick={()=>{changeAccountId(-2)}}>Sign up</button><>&nbsp;&nbsp;&nbsp;</>
+						<button onClick={()=>{changePage('login')}}>Log in</button><>&nbsp;&nbsp;&nbsp;</>
+						<button onClick={()=>{changePage('signup')}}>Sign up</button><>&nbsp;&nbsp;&nbsp;</>
 						<button onClick={()=>{window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;}}>Intra 42 login</button>
 					</div>);
 }
@@ -90,7 +92,8 @@ const LoginOrSignup: React.FC<{changeAccountId: (id: number) => void}> = ({ chan
 const Authentification: React.FC = () => {
 	const [searchParams] = useSearchParams(); //Will enable the extraction of queryparams
 	const AUTH_CODE = searchParams.get('code'); //code queryparam extraction gives us an authorization code necessary for OAuth access token generation
-	const [accountId, setAccountId] = useState<number>(-1); //As long as accountid is set to -1 no account yet
+	const [user, setUser] = useState<UserDto | null>(null);
+	const [page, setPage] = useState<string>('start');
 
 	useEffect(() => {
 		const user42 = async () => {
@@ -103,26 +106,30 @@ const Authentification: React.FC = () => {
 						await addUser(createNewUser(user.name, user.login, user.avatar));
 						userInDatabase = await getUserByName(user.name);
 					}
-					setAccountId(userInDatabase!.id)
+					setUser(userInDatabase)
 				}
 			}
 		}
 		user42();
 	}, [AUTH_CODE]);
 
-	const changeAccountId: (id: number) => void = (id) => {
-		setAccountId(id);
+	const changeUser: (newUser: UserDto | null) => void = (newUser) => {
+		setUser(newUser);
 	}
 
-	if (accountId === -1) {
-		return (<LoginOrSignup changeAccountId={changeAccountId}/>);
-	} else if (accountId > -1) {
-		// return (<Home accountId={accountId} changeAccountId={changeAccountId}/>);
-		return (<h1>Home</h1>);
-	} else if (accountId === -2) {
-		return (<Signup changeAccountId={changeAccountId}/>);
-	} else if (accountId === -3){
-		return (<Login changeAccountId={changeAccountId}/>);
+	const changePage: (newPage: string) => void = (newPage) => {
+		setPage(newPage);
+	}
+
+	if (user !== null) {
+		if (page !== "start") changePage("start");
+		return (<Home user={user} changeUser={changeUser}/>);
+	} else if (page === "start") {
+		return (<Start changePage={changePage}/>);
+	} else if (page === "signup") {
+		return (<Signup changePage={changePage} changeUser={changeUser}/>);
+	} else if (page === "login"){
+		return (<Login changePage={changePage} changeUser={changeUser}/>);
 	} else {
 		return <h1>Authentification Error</h1>;
 	}

@@ -17,6 +17,11 @@ export class MatchHistoryController {
     return this.matchHistoryService.findAll();
   }
 
+  @Get('/user/:login')
+  findMatchHistoryOfUser(@Param('login') login: string) {
+    return this.matchHistoryService.findMatchHistoryOfUser(login);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.matchHistoryService.findOne(+id);

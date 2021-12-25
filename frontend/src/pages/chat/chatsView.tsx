@@ -134,7 +134,7 @@ const NewDM: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => 
           </div>);
 }
 
-const ChatChannelsView: React.FC<chatProps> = ({ account, changeAccount, backHome }) => {
+const ChatsView: React.FC<chatProps> = ({ account, changeAccount, backHome }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
@@ -166,7 +166,7 @@ const ChatChannelsView: React.FC<chatProps> = ({ account, changeAccount, backHom
 }
 
 
-export default ChatChannelsView;
+export default ChatsView;
 
 // • Through the chat interface users should be able to ask other players to do a Pong
 // match

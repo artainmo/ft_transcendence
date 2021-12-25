@@ -20,8 +20,18 @@ export class FriendsService {
     return await this.FriendsRepo.find();
   }
 
-  async findOne(id: number): Promise<FriendsEntity> {
-    return await this.FriendsRepo.findOne(id);
+  async findFriendsOfUser(login: string): Promise<FriendsEntity[]> {
+    return await this.FriendsRepo.find({
+      relations: ['me'],
+      where: { me: {login: login} }
+    });
+  }
+
+  async findOne(userId: number, friendId: number): Promise<FriendsEntity> {
+    return await this.FriendsRepo.findOne({
+      relations: ['me'],
+      where: { me: {id: userId}, friend_id: friendId }
+    });
   }
 
   async update(id: number, updateFriendDto: UpdateFriendDto): Promise<void> {

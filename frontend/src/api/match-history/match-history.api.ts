@@ -14,15 +14,20 @@ export const getAllMatchHistory: () => Promise<MatchHistoryDto[]> = async () => 
   return response.data;
 }
 
+export const getMatchHistoryOfUser: (userLogin: string) => Promise<MatchHistoryDto[]> = async (userLogin) => {
+  const response = await axios.get(`/match-history/user/${userLogin}`);
+  return response.data;
+}
+
 export const getMatchHistory: (id: number) => Promise<MatchHistoryDto> = async (id) => {
-  const response = await axios.get(`/match-history?id=${id}`);
+  const response = await axios.get(`/match-history/${id}`);
   return response.data;
 }
 
 export const updateMatchHistory: (id: number, updateMatchHistoryDto: UpdateMatchHistoryDto) => void = async (id, updateMatchHistoryDto) => {
-  await axios.patch(`/match-history?id=${id}`, { data: updateMatchHistoryDto });
+  await axios.patch(`/match-history/${id}`, { data: updateMatchHistoryDto });
 }
 
 export const removeMatchHistory: (id: number) => void = async (id) => {
-  await axios.delete(`/match-history?id=${id}`);
+  await axios.delete(`/match-history/${id}`);
 }

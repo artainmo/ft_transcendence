@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import accountType from '../../types/accountType';
 import Profile from '../userAccount/profile';
-import ChatChannelsView from '../chat/chatChannelsView';
-import Play from '../game/play'
+import ChatsView from '../chat/chatsView';
+import Play from '../game/play';
+import { UserDto } from "../../api/user/dto/user.dto";
 
-type menuType = "home" | "play" | "chat" | "profile";
-
-interface homeProps {
-	account: accountType
-	changeAccount: (newAccount: accountType) => void
-	unlog: () => void
-}
-
-const HomeDisplay: React.FC<{ changeMenuPage: (newMenuType: menuType) => void}> = ({ changeMenuPage }) => {
+const HomeDisplay: React.FC<{changeMenuPage: (newMenuPage: string) => void}> = ({ changeMenuPage }) => {
 	return (<div>
 				<h1>Welcome to the Pong Game</h1>
 				<button onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
@@ -21,25 +13,23 @@ const HomeDisplay: React.FC<{ changeMenuPage: (newMenuType: menuType) => void}> 
 			</div>);
 }
 
-const Home: React.FC<homeProps> = ({ account, changeAccount, unlog }) => {
-	const [menuPage, setMenuPage] = useState<menuType>("home");
+const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => void}> = ({ user, changeUser }) => {
+	const [menuPage, setMenuPage] = useState<string>("home");
 
-	const changeMenuPage: (newMenuType: menuType) => void = (newMenuType) => {
-		setMenuPage(newMenuType);
-	}
-
-	const backHome: () => void = () => {
-		setMenuPage("home");
+	const changeMenuPage: (newMenuPage: string) => void = (newMenuPage) => {
+		setMenuPage(newMenuPage);
 	}
 
 	if (menuPage === "home") {
 		return (<HomeDisplay changeMenuPage={changeMenuPage}/>);
 	} else if (menuPage === "play") {
-		return <Play account={account} changeAccount={changeAccount} backHome={backHome}/>;
+		return (<h1>Play</h1>);
+		// return <Play user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "chat") {
-		return <ChatChannelsView account={account} changeAccount={changeAccount} backHome={backHome}/>;
+		return (<h1>Chat</h1>);
+		// return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "profile") {
-		return <Profile account={account} changeAccount={changeAccount} unlog={unlog} backHome={backHome}/>;
+		return <Profile user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

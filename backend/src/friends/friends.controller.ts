@@ -17,9 +17,14 @@ export class FriendsController {
     return this.friendsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendsService.findOne(+id);
+  @Get('/user/:login')
+  findFriendsOfUser(@Param('login') login: string) {
+    return this.friendsService.findFriendsOfUser(login);
+  }
+
+  @Get(':userId/:friendId')
+  findOne(@Param('userId') userId: number, @Param('friendId') friendId: number) {
+    return this.friendsService.findOne(userId, friendId);
   }
 
   @Patch(':id')
