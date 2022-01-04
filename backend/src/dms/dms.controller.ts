@@ -11,12 +11,17 @@ export class DmsController {
 
   @Post()
   create(@Body() createDmDto: CreateDmDto) {
-    this.dmsService.create(createDmDto);
+    return this.dmsService.create(createDmDto);
   }
 
   @Get()
   findAll() {
     return this.dmsService.findAll();
+  }
+
+  @Get('/user/:login')
+  findDmsOfUser(@Param('login') login: string) {
+    return this.dmsService.findDmsOfUser(login);
   }
 
   @Get(':id')

@@ -12,8 +12,8 @@ export class UserService {
     private UserRepo: Repository<UserEntity>
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<void> {
-      await this.UserRepo.save(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+      return await this.UserRepo.save(createUserDto);
   }
 
   async findAll(): Promise<UserEntity[]> {

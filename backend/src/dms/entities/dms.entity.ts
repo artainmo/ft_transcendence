@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, JoinTable } from "typeorm";
 import { DmsMessagesEntity } from "./dms_messages.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
@@ -9,6 +9,7 @@ export class DmsEntity {
   id: number
 
   @ManyToMany(type => UserEntity, UserEntity => UserEntity.dms)
+  @JoinTable()
   users: UserEntity[]
 
   @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm)

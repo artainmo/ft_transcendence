@@ -26,8 +26,7 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 		return (<h1>Play</h1>);
 		// return <Play user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "chat") {
-		return (<h1>Chat</h1>);
-		// return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
+		return <ChatsView user={user} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "profile") {
 		return <Profile user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else {

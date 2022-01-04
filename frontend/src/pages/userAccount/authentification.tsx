@@ -103,8 +103,7 @@ const Authentification: React.FC = () => {
 					const user = await OAuth42_user(ACCESS_TOKEN);
 					let userInDatabase = await getUserByName(user.name);
 					if (userInDatabase === null) {
-						await addUser(createNewUser(user.name, user.login, user.avatar));
-						userInDatabase = await getUserByName(user.name);
+						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
 					}
 					setUser(userInDatabase)
 				}

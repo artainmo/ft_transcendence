@@ -21,6 +21,11 @@ export class ChannelsController {
     return this.channelsService.findAll();
   }
 
+  @Get('/user/:login')
+  findChannelsOfUser(@Param('login') login: string) {
+    return this.channelsService.findChannelsOfUser(login);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.channelsService.findOne(+id);

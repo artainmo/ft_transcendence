@@ -4,7 +4,7 @@ import { UpdateDmDto } from './dto/update-dm.dto';
 import { CreateDmMessageDto } from './dto/create-dm_message.dto';
 import { UpdateDmMessageDto } from './dto/update-dm_message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Equal } from 'typeorm';
 import { DmsMessagesEntity } from "./entities/dms_messages.entity";
 import { DmsEntity } from "./entities/dms.entity";
 
@@ -17,12 +17,18 @@ export class DmsService {
     private DmsMessagesRepo: Repository<DmsMessagesEntity>
   ) {}
 
-  async create(createDmDto: CreateDmDto): Promise<void> {
-    await this.DmsRepo.save(createDmDto);
+  async create(createDmDto: CreateDmDto): Promise<DmsEntity> {
+    return await this.DmsRepo.save(createDmDto);
   }
 
   async findAll(): Promise<DmsEntity[]> {
     return await this.DmsRepo.find();
+  }
+
+  async findDmsOfUser(login: string): Promise<DmsEntity[]> {
+    return await this.DmsRepo.find({
+      where: { users: Equal({login: login}) }
+    });
   }
 
   async findOne(id: number): Promise<DmsEntity> {

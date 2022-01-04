@@ -6,7 +6,7 @@ import { UpdateChannelMessageDto } from './dto/update-channel_message.dto';
 import { CreateChannelUserDto } from './dto/create-channel_user.dto';
 import { UpdateChannelUserDto } from './dto/update-channel_user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Equal } from 'typeorm';
 import { ChannelsMessagesEntity } from "./entities/channels_messages.entity";
 import { ChannelsUsersEntity } from "./entities/channels_users.entity";
 import { ChannelsEntity } from "./entities/channels.entity";
@@ -22,12 +22,19 @@ export class ChannelsService {
     private ChannelsMessagesRepo: Repository<ChannelsMessagesEntity>
   ) {}
 
-  async create(createChannelDto: CreateChannelDto): Promise<void> {
-    await this.ChannelsRepo.save(createChannelDto);
+  async create(createChannelDto: CreateChannelDto): Promise<ChannelsEntity> {
+    return await this.ChannelsRepo.save(createChannelDto);
   }
 
   async findAll(): Promise<ChannelsEntity[]> {
     return await this.ChannelsRepo.find();
+  }
+
+  async findChannelsOfUser(login: string): Promise<ChannelsEntity[]> {
+    return await this.ChannelsRepo.find({
+      relations: ['users'],
+      where: { users: Equal({login: login})}
+    });
   }
 
   async findOne(id: number): Promise<ChannelsEntity> {

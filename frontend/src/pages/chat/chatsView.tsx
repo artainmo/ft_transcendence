@@ -1,87 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Chat from './chat';
-import accountType from '../../types/accountType';
-import chatChannelsClass from '../../types/chatChannelsClass';
-import { dataBaseAccounts, dataBaseChannels } from '../../types/database';
+import { getDmsOfUser, createNewDm, addDm } from "../../api/dms/dms.api";
+import { getChannelsOfUser, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
+import { getAllUsers } from "../../api/user/user.api";
+import { UserDto } from "../../api/user/dto/user.dto";
+import { DmDto } from "../../api/dms/dto/dm.dto";
+import { ChannelDto } from "../../api/channels/dto/channel.dto";
+import { CreateChannelDto } from "../../api/channels/dto/create-channel.dto";
+import { CreateDmDto } from "../../api/dms/dto/create-dm.dto";
 
-interface chatProps2 {
-	account: accountType
-	changeAccount: (newAccount: any) => void
-  changeChat: (newChat: number | null) => void
+interface joinChannelProps {
+	user: UserDto,
+	channels: ChannelDto[],
+  changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
+}
+
+interface newChannelProps {
+	user: UserDto,
+	channels: ChannelDto[],
+  changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
+}
+
+interface newDmProps {
+	user: UserDto,
+	dms: DmDto[],
+  changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
 }
 
 interface chatProps {
-	account: accountType
-	changeAccount: (newAccount: any) => void
-	backHome: () => void
+	user: UserDto,
+	changeMenuPage: (newMenuPage: string) => void
 }
 
-const JoinChannel: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => {
-  const [searchResults, setSearchResults] = useState<number[]>([]);
+const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrentChat }) => {
+  const [searchResults, setSearchResults] = useState<ChannelDto[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleSearch: (searchValue: string) => void = (searchValue) => {
-    let searchResults: number[] = [];
+	const isPartOfChannels: (channel: ChannelDto) => boolean = (channel) => {
+		const find = channels.find((myChannel) => myChannel.name === channel.name);
+		return (find !== undefined);
+	}
 
-    dataBaseChannels.forEach((item, index) => searchValue.length !== 0 && item.specific !== "private"
-                            && !account.chatChannels.some((elem: any)=> elem.dmOrChannel === "channel" && elem.name === item.name)
-                            && item.name.includes(searchValue) && searchResults.push(index))
+  const handleSearch: (searchValue: string) => void = async (searchValue) => {
+		let search: ChannelDto[] = [];
+		const allChannels = await getAllChannels();
+
+    allChannels.forEach((item) => searchValue.length !== 0 && item.type !== "private"
+                            && !isPartOfChannels(item) && item.name.includes(searchValue)
+														&& search.push(item))
     setSearchText(searchValue);
-    setSearchResults(searchResults);
+    setSearchResults(search);
   }
 
-  const onSubmitDM: (channelIndex: number) => void = (channelIndex) => {
-      let tmp = account.chatChannels;
-
-      if (dataBaseChannels[channelIndex].specific === "password" && dataBaseChannels[channelIndex].password !== password) {
-          setPassword('');
-          return ;
-      }
-      dataBaseChannels[channelIndex].users.push({name: account.name, administrator: false, mute: false});
-      tmp.push(dataBaseChannels[channelIndex]);
-      changeAccount({chatChannels: tmp});
-      changeChat(account.chatChannels.length - 1);
-  }
+  const onSubmit: (channel: ChannelDto) => void = async (channel) => {
+			if (channel.type === "password" && channel.password !== password) {
+				setPassword('');
+				return ;
+			}
+			await addChannelUser(createNewChannelUser(channel, user, false, false));
+			changeCurrentChat(channel);
+	}
 
   return (<div>
             <br/>
             <input type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
-                                            <span>{dataBaseChannels[item].name}</span><>&nbsp;&nbsp;&nbsp;</>
-                                            <button onClick={(e)=>{onSubmitDM(item)}}>Join</button><>&nbsp;&nbsp;&nbsp;</>
-                                            {dataBaseChannels[item].specific === "password" && <><label>Password: </label>
+                                            <span>{item.name}</span><>&nbsp;&nbsp;&nbsp;</>
+                                            <button onClick={(e)=>{onSubmit(item)}}>Join</button><>&nbsp;&nbsp;&nbsp;</>
+                                            {item.type === "password" && <><label>Password: </label>
                                             <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/></>}
                                          </div>)}
           </div>);
 }
 
-const NewChannel: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => {
+const NewChannel: React.FC<newChannelProps> = ({ user, channels, changeCurrentChat }) => {
   const [name, setName] = useState<string>('');
-  const [nameAlreadyInUse, setNameAlreadyInUse] = useState<boolean>(false);
-  const [specific, setSpecific] = useState<"non-block" | "block" | "public" | "private" | "password" | ''>('');
+  const [type, setType] = useState<"public" | "private" | "password" | "">('');
   const [password, setPassword] = useState<string>('');
+	const [nameAlreadyInUse, setNameAlreadyInUse] = useState<boolean>(false);
 
-  const onSubmitChannel: () => void = () => {
-      if (account.chatChannels.some((elem)=> elem.dmOrChannel === "channel" && elem.name === name)
-          || dataBaseChannels.some((elem)=> elem.name === name)) {
+  const onSubmit: (newChannel: CreateChannelDto) => void = async (newChannel) => {
+      if (channels.some((channel)=> channel.name === newChannel.name)) {
         setName('');
         setNameAlreadyInUse(true);
       } else {
-        let newChannel = new chatChannelsClass("channel", specific, password, name, [], account.name, [{name: account.name, administrator: true, mute: false}]);
-        let tmp = account.chatChannels;
-
-        tmp.push(newChannel);
-        // dataBaseChannels.push(newChannel); //Real database should exist so that no error occurs when leaving created channel
-        changeAccount({chatChannels: tmp});
-        changeChat(account.chatChannels.length - 1);
-        setNameAlreadyInUse(false);
+				const NewChannel: ChannelDto = await addChannel(newChannel);
+				await addChannelUser(createNewChannelUser(NewChannel, user, true, true));
+	      changeCurrentChat(NewChannel);
       }
-  }
-
-  const changeSpecific: (newValue: "non-block" | "block" | "public" | "private" | "password" | '') => void = (newValue) => {
-    setSpecific(newValue)
   }
 
   return (<div>
@@ -90,37 +98,41 @@ const NewChannel: React.FC<chatProps2> = ({ account, changeAccount, changeChat }
               <label>Channel name: </label>
               <input type="text" value={name} name="channelname" onChange={(e)=>setName(e.target.value)} required/><br/><br/>
               <label>public</label>
-              <input type="radio" name="specific" onChange={()=>changeSpecific("public")} required/><>&nbsp;&nbsp;&nbsp;</>
+              <input type="radio" name="channeltype" onChange={()=>setType("public")} required/><>&nbsp;&nbsp;&nbsp;</>
               <label>private</label>
-              <input type="radio" name="specific" onChange={()=>changeSpecific("private")} required/><>&nbsp;&nbsp;&nbsp;</>
+              <input type="radio" name="channeltype" onChange={()=>setType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
               <label>password</label>
-              <input type="radio"name="specific" onChange={()=>changeSpecific("password")} required/><br/><br/>
-              {specific === "password" && <><input type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
+              <input type="radio"name="channeltype" onChange={()=>setType("password")} required/><br/><br/>
+              {type === "password" && <><input type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
               {nameAlreadyInUse && <p>Name already exists try another one</p>}
-              <input type="submit" onClick={()=>onSubmitChannel()}/>
+              <input type="submit" onClick={()=>onSubmit(createNewChannel([user], name, type, password))}/>
             </form>
           </div>)
 }
 
-const NewDM: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => {
-  const [searchResults, setSearchResults] = useState<string[][]>([]);
-  const [searchText, setSearchText] = useState<string>('');
+const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
+	const [searchResults, setSearchResults] = useState<UserDto[]>([]);
+	const [searchText, setSearchText] = useState<string>('');
 
-  const handleSearch: (searchValue: string) => void = (searchValue) => {
-    let searchResults: string[][] = [];
+	const isPartOfDms: (account: UserDto) => boolean = (account) => {
+		const find = dms.find((dm) => dm.users.some((user) => user.id === account.id));
+		return (find !== undefined);
+	}
 
-    dataBaseAccounts.forEach((item) => searchValue.length !== 0
-                            && !account.chatChannels.some((elem)=> elem.dmOrChannel === "dm" && elem.name === item[0])
-                            && item[0].includes(searchValue) && item[0] !== account.name && searchResults.push(item))
+  const handleSearch: (searchValue: string) => void = async (searchValue) => {
+    let search: UserDto[] = [];
+		const allUsers = await getAllUsers();
+
+    allUsers.forEach((item) => searchValue.length !== 0 && !isPartOfDms(item)
+                            && item.login.includes(searchValue) && item.login !== user.login && search.push(item))
     setSearchText(searchValue);
     setSearchResults(searchResults);
   }
 
-  const onSubmitDM: (name: string) => void = (name) => {
-      let tmp = account.chatChannels;
-      tmp.push(new chatChannelsClass("dm", "non-block", null, name, [], null, [{name: account.name, administrator: false, mute: false}, {name: name, administrator: false, mute: false}]));
-      changeAccount({chatChannels: tmp});
-      changeChat(account.chatChannels.length - 1);
+  const onSubmit: (user2: UserDto) => void = async (user2) => {
+			const newDm: CreateDmDto = createNewDm(user, user2);
+			const NewDm: DmDto = await addDm(newDm);
+      changeCurrentChat(NewDm);
   }
 
   return (<div>
@@ -128,19 +140,31 @@ const NewDM: React.FC<chatProps2> = ({ account, changeAccount, changeChat }) => 
             <input type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
-                                            <span>{item[0]}</span><>&nbsp;&nbsp;&nbsp;</>
-                                            <button onClick={(e)=> {onSubmitDM(item[0])}}>Start DM</button>
+                                            <span>{item.login}</span><>&nbsp;&nbsp;&nbsp;</>
+                                            <button onClick={(e)=> {onSubmit(item)}}>Start DM</button>
                                          </div>)}
           </div>);
 }
 
-const ChatsView: React.FC<chatProps> = ({ account, changeAccount, backHome }) => {
+const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
-    const [currentChat, setCurrentChat] = useState<number | null>(null);
+		const [dms, setDms] = useState<DmDto[]>([]);
+		const [channels, setChannels] = useState<ChannelDto[]>([]);
+    const [currentChat, setCurrentChat] = useState<DmDto | ChannelDto | null>(null);
 
-    const changeChat: (newChat: number | null) => void = (newChat) => {
+		useEffect(()=>{
+			const getChats: () => void = async () => {
+				const userDms = await getDmsOfUser(user.login);
+				const userChannels = await getChannelsOfUser(user.login);
+				setDms(userDms);
+				setChannels(userChannels);
+			}
+			getChats();
+		})
+
+    const changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void = (newChat) => {
       setNewchannel(false);
       setNewdm(false);
       setJoinchannel(false);
@@ -148,26 +172,25 @@ const ChatsView: React.FC<chatProps> = ({ account, changeAccount, backHome }) =>
     }
 
     if (currentChat !== null) {
-      return (<Chat account={account} changeAccount={changeAccount} changeChat={changeChat} chatIndex={currentChat}/>);
+      // return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
+			return (<button onClick={()=> changeCurrentChat(null)}>Back</button>)
     } else {
       return (<div>
-                <button onClick={()=>{backHome()}}>Back</button>
+                <button onClick={()=>{changeMenuPage('home')}}>Back</button>
                 <h1>Chat</h1>
                 <button onClick={()=> {setNewdm(!newdm); setNewchannel(false); setJoinchannel(false);}}>New DM</button><>&nbsp;&nbsp;&nbsp;</>
                 <button onClick={()=>{setNewchannel(!newchannel); setNewdm(false); setJoinchannel(false);}}>New Channel</button><>&nbsp;&nbsp;&nbsp;</>
                 <button onClick={()=> {setJoinchannel(!joinchannel); setNewchannel(false); setNewdm(false);}}>Join Channel</button>
-                {newdm && <NewDM account={account} changeAccount={changeAccount} changeChat={changeChat}/>}
-                {newchannel && <NewChannel account={account} changeAccount={changeAccount} changeChat={changeChat}/>}
-                {joinchannel && <JoinChannel account={account} changeAccount={changeAccount} changeChat={changeChat}/>}
+                {newdm && <NewDm user={user} dms={dms} changeCurrentChat={changeCurrentChat}/>}
+                {newchannel && <NewChannel user={user} channels={channels} changeCurrentChat={changeCurrentChat}/>}
+                {joinchannel && <JoinChannel user={user} channels={channels} changeCurrentChat={changeCurrentChat}/>}
                 <br/><br/>
-                {account.chatChannels.length ? account.chatChannels.map((item, index)=><p onClick={()=>changeChat(index)}>{`${item.name} -- ${item.dmOrChannel}`}</p>) : <p>No chats</p>}
+                {channels.map((item)=><p onClick={()=>changeCurrentChat(item)}>{`${item.name} -- channel`}</p>)}
+								{dms.map((item)=><p onClick={()=>changeCurrentChat(item)}>{`${item.users[0].id === user.id ? item.users[1].login : item.users[0].login} -- dm`}</p>)}
+								{!channels.length && !dms.length && <p>No chats</p>}
               </div>);
     }
 }
 
 
 export default ChatsView;
-
-// • Through the chat interface users should be able to ask other players to do a Pong
-// match
-// • Through the chat interface users must be able to see other players profiles

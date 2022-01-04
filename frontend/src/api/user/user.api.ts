@@ -5,8 +5,9 @@ import { UserDto } from "./dto/user.dto"
 const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
-export const addUser: (createUserDto: CreateUserDto) => void = async (createUserDto) => {
-  await axios.post("/user", createUserDto);
+export const addUser: (createUserDto: CreateUserDto) => Promise<UserDto> = async (createUserDto) => {
+  const response = await axios.post("/user", createUserDto);
+  return response.data;
 }
 
 export const createNewUser: (name: string, login: string, avatar: string) => CreateUserDto = (name, login, avatar) => {

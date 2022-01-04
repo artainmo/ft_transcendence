@@ -8,11 +8,25 @@ import { ChannelMessageDto } from "./dto/channel_message.dto"
 import { CreateChannelUserDto } from "./dto/create-channel_user.dto"
 import { UpdateChannelUserDto } from "./dto/update-channel_user.dto"
 import { ChannelUserDto } from "./dto/channel_user.dto"
+import { CreateUserDto } from "../user/dto/create-user.dto"
 const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
-export const addChannel: (createChannelDto: CreateChannelDto) => void = async (createChannelDto) => {
-  await axios.post("/channels", { data: createChannelDto });
+export const addChannel: (createChannelDto: CreateChannelDto) => Promise<ChannelDto> = async (createChannelDto) => {
+  const response = await axios.post("/channels", createChannelDto);
+  return response.data
+}
+
+export const createNewChannel: (users: CreateUserDto[], name: string, type: string, password: string) => CreateChannelDto = (users, name, type, password) => {
+  let createChannelDto: CreateChannelDto = {
+    users: users,
+    messages: [],
+    channel_users: [],
+    type: type,
+    password: password,
+    name: name
+  }
+  return createChannelDto;
 }
 
 export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
@@ -20,21 +34,26 @@ export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
   return response.data;
 }
 
+export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
+  const response = await axios.get(`/channels/user/${userLogin}`);
+  return response.data;
+}
+
 export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
-  const response = await axios.get(`/channels?id=${id}`);
+  const response = await axios.get(`/channels/${id}`);
   return response.data;
 }
 
 export const updateChannel: (id: number, updateChannelDto: UpdateChannelDto) => void = async (id, updateChannelDto) => {
-  await axios.patch(`/channels?id=${id}`, { data: updateChannelDto });
+  await axios.patch(`/channels/${id}`, updateChannelDto);
 }
 
 export const removeChannel: (id: number) => void = async (id) => {
-  await axios.delete(`/channels?id=${id}`);
+  await axios.delete(`/channels/${id}`);
 }
 
 export const addChannelMessage: (createChannelMessageDto: CreateChannelMessageDto) => void = async (createChannelMessageDto) => {
-  await axios.post("/channels/message", { data: createChannelMessageDto });
+  await axios.post("/channels/message", createChannelMessageDto);
 }
 
 export const getAllChannelsMessages: () => Promise<ChannelMessageDto[]> = async () => {
@@ -43,20 +62,30 @@ export const getAllChannelsMessages: () => Promise<ChannelMessageDto[]> = async 
 }
 
 export const getChannelMessage: (id: number) => Promise<ChannelMessageDto> = async (id) => {
-  const response = await axios.get(`/channels/message?id=${id}`);
+  const response = await axios.get(`/channels/message/${id}`);
   return response.data;
 }
 
 export const updateChannelMessage: (id: number, updateChannelMessageDto: UpdateChannelMessageDto) => void = async (id, updateChannelMessageDto) => {
-  await axios.patch(`/channels/message?id=${id}`, { data: updateChannelMessageDto });
+  await axios.patch(`/channels/message/${id}`, updateChannelMessageDto);
 }
 
 export const removeChannelMessage: (id: number) => void = async (id) => {
-  await axios.delete(`/channels/message?id=${id}`);
+  await axios.delete(`/channels/message/${id}`);
 }
 
 export const addChannelUser: (createChannelUserDto: CreateChannelUserDto) => void = async (createChannelUserDto) => {
-  await axios.post("/channels/user", { data: createChannelUserDto });
+  await axios.post("/channels/user", createChannelUserDto);
+}
+
+export const createNewChannelUser: (channel: CreateChannelDto, user: CreateUserDto, administrator: boolean, owner: boolean) => CreateChannelUserDto = (channel, user, owner, administrator) => {
+  let createChannelUserDto: CreateChannelUserDto = {
+    channel: channel,
+    user: user,
+    owner: owner,
+    administrator: administrator,
+  }
+  return createChannelUserDto;
 }
 
 export const getAllChannelsUsers: () => Promise<ChannelUserDto[]> = async () => {
@@ -65,14 +94,14 @@ export const getAllChannelsUsers: () => Promise<ChannelUserDto[]> = async () => 
 }
 
 export const getChannelUser: (id: number) => Promise<ChannelUserDto> = async (id) => {
-  const response = await axios.get(`/channels/user?id=${id}`);
+  const response = await axios.get(`/channels/user/${id}`);
   return response.data;
 }
 
 export const updateChannelUser: (id: number, updateChannelUserDto: UpdateChannelUserDto) => void = async (id, updateChannelUserDto) => {
-  await axios.patch(`/channels/user?id=${id}`, { data: updateChannelUserDto });
+  await axios.patch(`/channels/user/${id}`, updateChannelUserDto);
 }
 
 export const removeChannelUser: (id: number) => void = async (id) => {
-  await axios.delete(`/channels/user?id=${id}`);
+  await axios.delete(`/channels/user/${id}`);
 }
