@@ -9,14 +9,14 @@ export class ChannelsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToMany(type => UserEntity, UserEntity => UserEntity.channels)
+  @ManyToMany(type => UserEntity, UserEntity => UserEntity.channels, {eager: true})
   @JoinTable()
   users: UserEntity[]
 
-  @OneToMany(type => ChannelsUsersEntity, ChannelsUsersEntity => ChannelsUsersEntity.channel)
+  @OneToMany(type => ChannelsUsersEntity, ChannelsUsersEntity => ChannelsUsersEntity.channel, {eager: true})
   channel_users: ChannelsUsersEntity[]
 
-  @OneToMany(type => ChannelsMessagesEntity, ChannelsMessagesEntity => ChannelsMessagesEntity.channel)
+  @OneToMany(type => ChannelsMessagesEntity, ChannelsMessagesEntity => ChannelsMessagesEntity.channel, {eager: true})
   messages: ChannelsMessagesEntity[]
 
   @Column()

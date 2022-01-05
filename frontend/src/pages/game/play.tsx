@@ -141,7 +141,7 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage }) => {
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
               <h1>GAME</h1>
-              {/* <GamePong/> */}
+              {/* <GamePong user={user} game={game}/> */}
             </div>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;

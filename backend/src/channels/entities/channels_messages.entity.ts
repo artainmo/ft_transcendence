@@ -8,7 +8,7 @@ export class ChannelsMessagesEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, {eager: true})
   @JoinColumn()
   user: UserEntity
 

@@ -27,7 +27,7 @@ export class DmsService {
 
   async findDmsOfUser(login: string): Promise<DmsEntity[]> {
     return await this.DmsRepo.find({
-      where: { users: Equal({login: login}) }
+      relations: ['users']
     });
   }
 

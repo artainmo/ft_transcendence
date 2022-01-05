@@ -8,11 +8,11 @@ export class DmsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToMany(type => UserEntity, UserEntity => UserEntity.dms)
+  @ManyToMany(type => UserEntity, UserEntity => UserEntity.dms, {eager: true})
   @JoinTable()
   users: UserEntity[]
 
-  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm)
+  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm, {eager: true})
   messages: DmsMessagesEntity[]
 
   @Column()

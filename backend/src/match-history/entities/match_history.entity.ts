@@ -20,3 +20,4 @@ export class MatchHistoryEntity {
     @Column()
     opponent_score: string;
 }
+//Maybe change the users to a manytomany like in dms????
