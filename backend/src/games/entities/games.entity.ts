@@ -11,7 +11,7 @@ export class GamesEntity {
     @JoinColumn()
     user1: UserEntity;
 
-    @OneToOne(type => UserEntity)
+    @OneToOne(type => UserEntity, {nullable: true})
     @JoinColumn()
     user2: UserEntity;
 

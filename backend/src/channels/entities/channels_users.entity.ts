@@ -8,13 +8,13 @@ export class ChannelsUsersEntity {
   @PrimaryGeneratedColumn()
   id: number
 
+  @ManyToOne(() => UserEntity)
+  @JoinColumn()
+  user: UserEntity
+
   @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.channel_users)
   @JoinColumn()
   channel: ChannelsEntity
-
-  @ManyToOne(type => UserEntity, UserEntity => UserEntity.channels_users)
-  @JoinColumn()
-  user: UserEntity
 
   @Column()
   owner: boolean

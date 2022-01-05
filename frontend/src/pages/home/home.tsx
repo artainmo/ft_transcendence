@@ -23,10 +23,10 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	if (menuPage === "home") {
 		return (<HomeDisplay changeMenuPage={changeMenuPage}/>);
 	} else if (menuPage === "play") {
-		return (<h1>Play</h1>);
-		// return <Play user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
+		return <Play user={user} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "chat") {
-		return <ChatsView user={user} changeMenuPage={changeMenuPage}/>;
+		return (<h1>Chat</h1>);
+		// return <ChatsView user={user} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "profile") {
 		return <Profile user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else {

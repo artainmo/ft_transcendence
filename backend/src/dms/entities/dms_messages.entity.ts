@@ -8,7 +8,7 @@ export class DmsMessagesEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(type => UserEntity, UserEntity => UserEntity.dms_messages)
+  @ManyToOne(() => UserEntity)
   @JoinColumn()
   user: UserEntity
 

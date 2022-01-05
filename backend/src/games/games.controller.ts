@@ -9,7 +9,7 @@ export class GamesController {
 
   @Post()
   create(@Body() createGameDto: CreateGameDto) {
-    this.gamesService.create(createGameDto);
+    return this.gamesService.create(createGameDto);
   }
 
   @Get()

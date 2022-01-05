@@ -46,15 +46,6 @@ export class UserEntity {
     @ManyToMany(type => DmsEntity, DmsEntity => DmsEntity.users)
     dms: DmsEntity[]
 
-    @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.user)
-    dms_messages: DmsMessagesEntity[]
-
     @ManyToMany(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.users)
     channels: ChannelsEntity[]
-
-    @OneToMany(type => ChannelsMessagesEntity, ChannelsMessagesEntity => ChannelsMessagesEntity.user)
-    channels_messages: ChannelsMessagesEntity[]
-
-    @OneToMany(type => ChannelsUsersEntity, ChannelsUsersEntity => ChannelsUsersEntity.user)
-    channels_users: ChannelsUsersEntity[]
 }

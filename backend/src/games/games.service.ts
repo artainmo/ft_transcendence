@@ -12,16 +12,16 @@ export class GamesService {
     private GamesRepo: Repository<GamesEntity>
   ) {}
 
-  async create(createGameDto: CreateGameDto): Promise<void> {
-    await this.GamesRepo.save(createGameDto);
+  async create(createGameDto: CreateGameDto): Promise<GamesEntity> {
+    return await this.GamesRepo.save(createGameDto);
   }
 
   async findAll(): Promise<GamesEntity[]> {
-    return await this.GamesRepo.find();
+    return await this.GamesRepo.find({ relations: ["user1", "user2"] });
   }
 
   async findOne(id: number): Promise<GamesEntity> {
-    return await this.GamesRepo.findOne(id);
+    return await this.GamesRepo.findOne(id, { relations: ["user1", "user2"] });
   }
 
   async update(id: number, updateGameDto: UpdateGameDto): Promise<void> {

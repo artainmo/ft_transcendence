@@ -55,7 +55,7 @@ export const getUserByLogin: (login: string) => Promise<UserDto | null> = async 
 }
 
 export const updateUser: (id: number, updateUserDto: UpdateUserDto) => void = async (id, updateUserDto) => {
-  await axios.patch(`/user/${id}`, { data: updateUserDto });
+  await axios.patch(`/user/${id}`, updateUserDto);
 }
 
 export const removeUser: (id: number) => void = async (id) => {
