@@ -62,7 +62,7 @@ export const getUserByLogin: (login: string) => Promise<UserDto | null> = async 
 
 export const updateUser: (id: number, updateUserDto: UpdateUserDto) => void = async (id, updateUserDto) => {
   await axios.patch(`/user/${id}`, updateUserDto);
-} //TypeORM bug: Cannot query across many-to-many for property channels
+} //TypeORM bug: Cannot query across many-to-many for property channels | use addUser instead .save will update if already exist
 
 export const removeUser: (id: number) => void = async (id) => {
   await axios.delete(`/user/${id}`);

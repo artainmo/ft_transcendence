@@ -1,9 +1,3 @@
-import { CreateDmDto } from "./create-dm.dto"
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { DmMessageDto } from "./dm_message.dto";
 
-export interface CreateDmMessageDto {
-  user: CreateUserDto
-  dm: CreateDmDto
-  content: string
-  order: number
-}
+export type CreateDmMessageDto = Omit<DmMessageDto, "id">;

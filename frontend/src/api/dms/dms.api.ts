@@ -5,7 +5,7 @@ import { DmDto } from "./dto/dm.dto"
 import { CreateDmMessageDto } from "./dto/create-dm_message.dto"
 import { UpdateDmMessageDto } from "./dto/update-dm_message.dto"
 import { DmMessageDto } from "./dto/dm_message.dto"
-import { CreateUserDto } from "../user/dto/create-user.dto"
+import { UserDto } from "../user/dto/user.dto"
 const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
@@ -14,7 +14,7 @@ export const addDm: (createDmDto: CreateDmDto) => Promise<DmDto> = async (create
   return response.data;
 }
 
-export const createNewDm: (user1: CreateUserDto, user2: CreateUserDto) => CreateDmDto = (user1, user2) => {
+export const createNewDm: (user1: UserDto, user2: UserDto) => CreateDmDto = (user1, user2) => {
   let createDmDto: CreateDmDto = {
     users: [user1, user2],
     messages: [],

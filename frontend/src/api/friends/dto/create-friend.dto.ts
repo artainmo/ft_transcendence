@@ -1,6 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { FriendDto } from "./friend.dto";
 
-export interface CreateFriendDto {
-  me: CreateUserDto;
-  friend_id: number;
-}
+export type CreateFriendDto = Omit<FriendDto, "id">

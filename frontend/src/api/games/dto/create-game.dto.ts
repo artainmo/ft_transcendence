@@ -1,8 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { GameDto } from "./game.dto";
 
-export interface CreateGameDto {
-  user1: CreateUserDto;
-  user2: CreateUserDto | null;
-  ballspeed: number;
-  map: string;
-}
+export type CreateGameDto = Omit<GameDto, "id">;

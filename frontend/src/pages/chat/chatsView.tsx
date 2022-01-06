@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 // import Chat from './chat';
 import { createNewDm, addDm } from "../../api/dms/dms.api";
-import { addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels, updateChannel } from "../../api/channels/channels.api";
-import { getAllUsers, getCompleteUser, updateUser, addUser } from "../../api/user/user.api";
+import { addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
+import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";

@@ -1,9 +1,3 @@
-import { UpdateChannelDto } from "./update-channel.dto"
-import { UpdateUserDto } from "../../user/dto/update-user.dto"
+import { ChannelMessageDto } from "./channel_message.dto";
 
-export interface UpdateChannelMessageDto {
-  channel?: UpdateChannelDto
-  user?: UpdateUserDto
-  content?: string
-  order?: number
-}
+export type UpdateChannelMessageDto = Partial<ChannelMessageDto>;
