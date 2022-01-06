@@ -45,12 +45,8 @@ export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
 }
 
 export const updateChannel: (id: number, updateChannelDto: Partial<ChannelDto>) => void = async (id, updateChannelDto) => {
-  // let channel = await getChannel(id);
-  // await removeChannel(id);
-  // channel = {...channel, ...updateChannelDto};
-  // await addChannel(channel);
   await axios.patch(`/channels/${id}`, updateChannelDto);
-}
+} //TypeORM bug: Cannot query across many-to-many for property users
 
 export const removeChannel: (id: number) => void = async (id) => {
   await axios.delete(`/channels/${id}`);

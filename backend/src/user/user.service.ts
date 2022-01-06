@@ -39,8 +39,9 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<void> {
-    await this.UserRepo.update(id, updateUserDto);
-  }
+    console.log(updateUserDto);
+    await this.UserRepo.save(updateUserDto);
+  } //TypeORM bug: Cannot query across many-to-many for property channels | .save method from create is used instead
 
   async remove(id: number): Promise<void> {
     await this.UserRepo.delete(id);
