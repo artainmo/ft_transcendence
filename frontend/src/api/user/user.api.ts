@@ -42,6 +42,12 @@ export const getUser: (id: number) => Promise<UserDto | null> = async (id) => {
   return response.data;
 }
 
+export const getCompleteUser: (id: number) => Promise<UserDto | null> = async (id) => {
+  const response = await axios.get(`/user/complete/${id}`);
+  if (response.data === "") { return null; }
+  return response.data;
+}
+
 export const getUserByName: (name: string) => Promise<UserDto | null> = async (name) => {
   const response = await axios.get(`/user/name/${name}`);
   if (response.data === "") { return null; }

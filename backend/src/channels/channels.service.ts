@@ -30,12 +30,12 @@ export class ChannelsService {
     return await this.ChannelsRepo.find();
   }
 
-  async findChannelsOfUser(login: string): Promise<ChannelsEntity[]> {
-    return await this.ChannelsRepo.find({
-      relations: ['users'],
-      where: { users: Equal({login: login})}
-    });
-  }
+  // async findChannelsOfUser(login: string): Promise<ChannelsEntity[]> {
+  //   return await this.ChannelsRepo.find({
+  //     relations: ['users'],
+  //     where: { users: Equal({login: login})}
+  //   });
+  // }
 
   async findOne(id: number): Promise<ChannelsEntity> {
     return await this.ChannelsRepo.findOne(id);

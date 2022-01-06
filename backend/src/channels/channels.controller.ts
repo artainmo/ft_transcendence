@@ -21,10 +21,10 @@ export class ChannelsController {
     return this.channelsService.findAll();
   }
 
-  @Get('/user/:login')
-  findChannelsOfUser(@Param('login') login: string) {
-    return this.channelsService.findChannelsOfUser(login);
-  }
+  // @Get('/user/:login')
+  // findChannelsOfUser(@Param('login') login: string) {
+  //   return this.channelsService.findChannelsOfUser(login);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -34,7 +34,7 @@ export class ChannelsController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto) {
     return this.channelsService.update(+id, updateChannelDto);
-  }
+  }//TypeORM bugs, thus using a way around
 
   @Delete(':id')
   remove(@Param('id') id: string) {

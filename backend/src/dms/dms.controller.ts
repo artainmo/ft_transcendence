@@ -19,10 +19,10 @@ export class DmsController {
     return this.dmsService.findAll();
   }
 
-  @Get('/user/:login')
-  findDmsOfUser(@Param('login') login: string) {
-    return this.dmsService.findDmsOfUser(login);
-  }
+  // @Get('/user/:login')
+  // findDmsOfUser(@Param('login') login: string) {
+  //   return this.dmsService.findDmsOfUser(login);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

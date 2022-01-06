@@ -28,10 +28,10 @@ export const getAllDms: () => Promise<DmDto[]> = async () => {
   return response.data;
 }
 
-export const getDmsOfUser: (userLogin: string) => Promise<DmDto[]> = async (userLogin) => {
-  const response = await axios.get(`/dms/user/${userLogin}`);
-  return response.data;
-}
+// export const getDmsOfUser: (userLogin: string) => Promise<DmDto[]> = async (userLogin) => {
+//   const response = await axios.get(`/dms/user/${userLogin}`);
+//   return response.data;
+// }
 
 export const getDm: (id: number) => Promise<DmDto> = async (id) => {
   const response = await axios.get(`/dms/${id}`);

@@ -34,17 +34,21 @@ export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
   return response.data;
 }
 
-export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
-  const response = await axios.get(`/channels/user/${userLogin}`);
-  return response.data;
-}
+// export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
+//   const response = await axios.get(`/channels/user/${userLogin}`);
+//   return response.data;
+// }
 
 export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
   const response = await axios.get(`/channels/${id}`);
   return response.data;
 }
 
-export const updateChannel: (id: number, updateChannelDto: UpdateChannelDto) => void = async (id, updateChannelDto) => {
+export const updateChannel: (id: number, updateChannelDto: Partial<ChannelDto>) => void = async (id, updateChannelDto) => {
+  // let channel = await getChannel(id);
+  // await removeChannel(id);
+  // channel = {...channel, ...updateChannelDto};
+  // await addChannel(channel);
   await axios.patch(`/channels/${id}`, updateChannelDto);
 }
 

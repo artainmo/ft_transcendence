@@ -12,7 +12,7 @@ export class DmsEntity {
   @JoinTable()
   users: UserEntity[]
 
-  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm, {eager: true})
+  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm, {eager: true, cascade: true})
   messages: DmsMessagesEntity[]
 
   @Column()

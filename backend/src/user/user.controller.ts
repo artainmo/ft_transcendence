@@ -22,6 +22,11 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @Get('/complete/:id')
+  findCompleteOne(@Param('id') id: string) {
+    return this.userService.findCompleteOne(+id);
+  }
+
   @Get('/name/:name')
   findOneByName(@Param('name') name: string) {
     return this.userService.findOneByName(name);
