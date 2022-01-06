@@ -1,8 +1,3 @@
-import { CreateDmMessageDto } from "./create-dm_message.dto"
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { DmsEntity } from "../entities/dms.entity";
 
-export class CreateDmDto {
-  users: CreateUserDto[]
-  messages: CreateDmMessageDto[]
-  block: boolean
-}
+export type CreateDmDto = Omit<DmsEntity, "id">;

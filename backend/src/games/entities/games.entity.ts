@@ -3,7 +3,6 @@ import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class GamesEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 

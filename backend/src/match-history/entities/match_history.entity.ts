@@ -3,7 +3,6 @@ import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class MatchHistoryEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 

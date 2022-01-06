@@ -4,7 +4,6 @@ import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class ChannelsUsersEntity {
-
   @PrimaryGeneratedColumn()
   id: number
 

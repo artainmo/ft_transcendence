@@ -9,7 +9,6 @@ import { DmsMessagesEntity } from "../../dms/entities/dms_messages.entity";
 
 @Entity()
 export class UserEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
