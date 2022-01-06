@@ -11,16 +11,16 @@ Docker-compose -> Create docker-compose setup to launch all in one click<br>
 /gateway -> Create client-side web socket functions for chat and game !<br>
 Login option with OAuth system of 42 intranet !<br>
 Finish the chat <br>
-subject.pdf -> Review pdf and other functionalities that have to be added<br>
 
-Jules:
+Jules:<br>
 Finish the game
 
-Alissio:
-docker
-encrypt password
+Alissio:<br>
+docker<br>
+encrypt password<br>
 protect against SQL injection
 
-Other:
-Double authentification
+Other:<br>
+Double authentification<br>
 css/material-ui
+subject.pdf -> Review pdf and other functionalities that have to be added<br>
