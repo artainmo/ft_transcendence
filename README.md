@@ -16,11 +16,11 @@ subject.pdf -> Review pdf and other functionalities that have to be added<br>
 Jules:
 Finish the game
 
-Yves:
-Double authentification
-encrypt password
-
 Alissio:
 docker
-css/material-ui
+encrypt password
 protect against SQL injection
+
+Other:
+Double authentification
+css/material-ui
