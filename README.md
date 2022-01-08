@@ -22,5 +22,5 @@ protect against SQL injection
 
 Other:<br>
 Double authentification<br>
-css/material-ui
+css/material-ui<br>
 subject.pdf -> Review pdf and other functionalities that have to be added<br>
