@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "t
 import { DmsEntity } from "./dms.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
-@Entity()
+@Entity({ orderBy: { order: "DESC" } })
 export class DmsMessagesEntity {
   @PrimaryGeneratedColumn()
   id: number

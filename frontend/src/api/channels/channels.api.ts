@@ -56,6 +56,16 @@ export const addChannelMessage: (createChannelMessageDto: CreateChannelMessageDt
   await axios.post("/channels/message", createChannelMessageDto);
 }
 
+export const createNewChannelMessage: (user: UserDto, channel: ChannelDto, content: string, order: number) => CreateChannelMessageDto = (user, channel, content, order) => {
+  let createChannelMessageDto: CreateChannelMessageDto = {
+    user: user,
+    channel: channel,
+    content: content,
+    order: order
+  }
+  return createChannelMessageDto;
+}
+
 export const getAllChannelsMessages: () => Promise<ChannelMessageDto[]> = async () => {
   const response = await axios.get("/channels/message");
   return response.data;

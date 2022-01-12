@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import Chat from './chat';
+import Chat from './chat';
 import { createNewDm, addDm } from "../../api/dms/dms.api";
 import { addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
 import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
@@ -26,7 +26,7 @@ interface newDmProps {
   changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
 }
 
-interface chatProps {
+interface chatsViewProps {
 	user: UserDto,
 	changeMenuPage: (newMenuPage: string) => void
 }
@@ -147,7 +147,7 @@ const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
           </div>);
 }
 
-const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
+const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
@@ -173,8 +173,7 @@ const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
     }
 
     if (currentChat !== null) {
-      // return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
-			return (<button onClick={()=> changeCurrentChat(null)}>Back</button>)
+      return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
     } else {
       return (<div>
                 <button onClick={()=>{changeMenuPage('home')}}>Back</button>

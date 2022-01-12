@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { getUser, getAllUsers } from "../../api/user/user.api";
+import { getUser, getAllUsers, updateUser } from "../../api/user/user.api";
 import { addFriend, createNewFriend, getFriendsOfUser, removeFriend } from "../../api/friends/friends.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { FriendDto } from "../../api/friends/dto/friend.dto";
 import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
+import { disconnect } from "../../websocket/chat/chat.socket";
 
 let g_remember_account: UserDto;
 
@@ -123,14 +124,21 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) =
     setRender(!render);
   }
 
+	const logout: () => void = async () => {
+		if (user.online === true) await updateUser(user.id, {online: false});
+		disconnect();
+		changeUser(null);
+	}
+
   return (<div>
               {ownAccount && <><button onClick={()=>{changeMenuPage('home')}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
-              {ownAccount && <button onClick={()=>{changeUser(null)}}>Log out</button>}
+              {ownAccount && <button onClick={()=>{logout()}}>Log out</button>}
               {!ownAccount && <><button onClick={()=>{changeUser(g_remember_account); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               <h1>Profile</h1>
               {user.avatar ? <img src={user.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {user.name}</p>
 							<p>Login: {user.login}</p>
+							<p>{user.online ? "Connected" : "Disconnected"}</p>
               <h3>Stats</h3>
               <p>Victories: {user.nbrVicotry}</p>
               <p>Losses: {user.nbrLoss}</p>

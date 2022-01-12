@@ -50,6 +50,16 @@ export const addDmMessage: (createDmMessageDto: CreateDmMessageDto) => void = as
   await axios.post("/dms/message", createDmMessageDto);
 }
 
+export const createNewDmMessage: (user: UserDto, dm: DmDto, content: string, order: number) => CreateDmMessageDto = (user, dm, content, order) => {
+  let createDmMessageDto: CreateDmMessageDto = {
+    user: user,
+    dm: dm,
+    content: content,
+    order: order
+  }
+  return createDmMessageDto;
+}
+
 export const getAllDmsMessages: () => Promise<DmMessageDto[]> = async () => {
   const response = await axios.get("/dms/message");
   return response.data;

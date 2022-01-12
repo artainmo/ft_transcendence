@@ -1,26 +1,32 @@
-// import React, { useState } from 'react';
-//
-//
+import React, { useState, useEffect } from 'react';
+import { addDm, getDm, addDmMessage, createNewDmMessage } from "../../api/dms/dms.api";
+import { addChannel, removeChannel, updateChannelUser, getChannel, addChannelMessage, createNewChannelMessage } from "../../api/channels/channels.api";
+import { UserDto } from "../../api/user/dto/user.dto";
+import { DmDto } from "../../api/dms/dto/dm.dto";
+import { ChannelDto } from "../../api/channels/dto/channel.dto";
+import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
+import { listen, joinRoom, leaveRoom, send } from "../../websocket/chat/chat.socket";
+
 // interface chatProps3 {
 // 	account: accountType
 // 	changeAccount: (newAccount: any) => void
 //   chatIndex: number
 // }
-//
-// interface chatProps2 {
-// 	account: accountType
-// 	changeAccount: (newAccount: any) => void
-//   chatIndex: number
-//   block: string
-// }
-//
-// interface chatProps {
-// 	account: accountType
-// 	changeAccount: (newAccount: any) => void
-//   chatIndex: number
-//   changeChat: (newChat: number | null) => void
-// }
-//
+
+interface messageProps {
+	user: UserDto,
+	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
+	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
+	currentChatLatestUpdates: () => void,
+	dm: boolean
+}
+
+interface chatProps {
+	user: UserDto,
+	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
+	currentChat: any //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
+}
+
 // const AddUsers: React.FC<chatProps3> = ({ account, changeAccount, chatIndex }) => {
 //   const [searchResults, setSearchResults] = useState<string[][]>([]);
 //   const [searchText, setSearchText] = useState<string>('');
@@ -153,68 +159,90 @@
 //           </div>)
 // }
 //
-// const Message: React.FC<chatProps2> = ({ account, changeAccount, chatIndex, block }) => {
-//   const [message, setMessage] = useState<string>('');
-//
-//   const changeMessage: (newMessage: string) => void = (newMessage) => {
-//     setMessage(newMessage);
-//   }
-//
-//   const submitMessage: () => void = () => {
-//     let tmp = account.chatChannels;
-//
-//     tmp[chatIndex].history.push({name: account.name, message: message})
-//     changeAccount({chatChannels: tmp});
-//     changeMessage('');
-//   }
-//
-//   return (<div>
-//             {account.chatChannels[chatIndex].history.map((elem)=> <p>{`${elem.name} --- ${elem.message}`}</p>)}
-//             <input type="text" value={message} onChange={(e)=>changeMessage(e.target.value)}/>
-//             {block !== "block" ? <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>
-//                                 : <input type="submit" value="Message" onClick={(e)=>submitMessage()} disabled/>}
-//           </div>);
-// }
-//
-// const Chat: React.FC<chatProps> = ({ account, changeAccount, chatIndex, changeChat }) => {
-//   let dm: boolean;
-//   account.chatChannels[chatIndex].dmOrChannel === "dm" ? dm = true : dm = false;
-//
-//   const back: () => void = () => {
-//     changeChat(null);
-//   }
-//
-//   const setBlock: () => void = () => {
-//     let tmp = account.chatChannels;
-//     tmp[chatIndex].specific === "non-block" ?
-//           tmp[chatIndex].specific = "block" : tmp[chatIndex].specific = "non-block";
-//     changeAccount({chatChannels: tmp});
-//   }
-//
-//   const leaveChannel: () => void = () => {
-//     let tmp = account.chatChannels;
-//     // let channelIndex = dataBaseChannels.findIndex((item)=>(item.name === account.chatChannels[chatIndex].name));
-//
-//     // dataBaseChannels[channelIndex].users = dataBaseChannels[channelIndex].users.filter((item)=>item.name !== account.name);
-//     // if (dataBaseChannels[channelIndex].users.length === 0) {
-//     //   dataBaseChannels.filter((item, index)=> index !== channelIndex);
-//     // } else {
-//     //   dataBaseChannels[channelIndex].owner = dataBaseChannels[channelIndex].users[0];
-//     //   dataBaseChannels[channelIndex].users[0].administrator = true;
-//     // }
-//     tmp = tmp.filter((item)=> (item.name !== tmp[chatIndex].name || item.dmOrChannel === "dm"));
-//     changeAccount({chatChannels: tmp});
-//     back();
-//   }
-//
-//   return (<div>
-//             <button onClick={()=>back()}>Back</button>
-//             {dm && <button onClick={()=>setBlock()}>{account.chatChannels[chatIndex].specific === "non-block" ? "Block" : "Unblock"}</button>}
-//             {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
-//             <h1>{account.chatChannels[chatIndex].name}</h1>
-//             {!dm && <ChannelInfo account={account} changeAccount={changeAccount} chatIndex={chatIndex}/>}
-//             <Message account={account} changeAccount={changeAccount} chatIndex={chatIndex} block={account.chatChannels[chatIndex].specific}/>
-//           </div>);
-// }
-//
-// export default Chat
+const Message: React.FC<messageProps> = ({ user, changeCurrentChat, currentChat, currentChatLatestUpdates, dm }) => {
+  const [message, setMessage] = useState<string>('');
+
+	 // eslint-disable-next-line
+	useEffect(()=> currentChatLatestUpdates(), []); //This has to be called to set the order of messages correctly
+
+  const submitMessage: () => void = async () => {
+		await currentChatLatestUpdates();
+		if (dm) {
+			await addDmMessage(createNewDmMessage(user, currentChat, message, currentChat.messages.length + 1));
+		} else {
+			await addChannelMessage(createNewChannelMessage(user, currentChat, message, currentChat.messages.length + 1));
+		}
+		send({room: currentChat.id, content: "new message"});
+    setMessage('');
+		await currentChatLatestUpdates();
+  }
+
+  return (<div>
+            {currentChat.messages.map((message: any)=><p>{`${message.user.login} --- ${message.content}`}</p>)}
+            <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
+            {dm && (currentChat.block !== "block" ? <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>
+                                : <input type="submit" value="Message" onClick={(e)=>submitMessage()} disabled/>)}
+						{!dm && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
+          </div>);
+}
+
+const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => {
+  let dm: boolean = ("block" in currentChat);
+
+	useEffect(() => {
+		console.log("YES");
+		joinRoom(currentChat.id);
+		listen((response: string) => {
+			console.log(response);
+			if (response === "new message") currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
+		});
+		return () => { leaveRoom(currentChat.id); }
+		 // eslint-disable-next-line
+	}, [])
+
+	const currentChatLatestUpdates: () => void = async () => {
+		if (dm) {
+			currentChat = await getDm(currentChat.id);
+		} else {
+			currentChat = await getChannel(currentChat.id);
+		}
+		changeCurrentChat(currentChat);
+	}
+
+  const setBlock: () => void = async () => {
+		await currentChatLatestUpdates();
+		currentChat.block = !currentChat.block;
+		await addDm(currentChat);
+		changeCurrentChat(currentChat);
+  }
+
+  const leaveChannel: () => void = async () => {
+		await currentChatLatestUpdates();
+		currentChat.users = currentChat.users.filter((channelUser: UserDto) => channelUser.id !== user.id);
+		currentChat.channel_users = currentChat.channel_users.filter((channelUser: ChannelUserDto) => channelUser.user.id !== user.id);
+		await addChannel(currentChat); //updateChannel should be used but bugs... Thus addChannel which calls save is used as it can update too if element already exists... And it works!!
+		if (currentChat.users.length === 0) {
+			await removeChannel(currentChat.id);
+			changeCurrentChat(null);
+			return ;
+		}
+		if (currentChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.owner === true) === undefined) {
+			let newOwner: ChannelUserDto | undefined = currentChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.administrator === true);
+			if (newOwner === undefined) newOwner = currentChat.channel_users[0];
+			await updateChannelUser(newOwner!.id, {owner: true, administrator: true});
+		}
+    changeCurrentChat(null);
+  }
+
+  return (<div>
+            <button onClick={()=>changeCurrentChat(null)}>Back</button>
+            {dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
+            {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
+						{dm && <h1>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
+            {!dm && <h1>{currentChat.name}</h1>}
+            {/* {!dm && <ChannelInfo account={account} changeAccount={changeAccount} chatIndex={chatIndex}/>} */}
+            <Message user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm}/>
+          </div>);
+}
+
+export default Chat

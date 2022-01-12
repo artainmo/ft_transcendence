@@ -1,7 +1,7 @@
-import socketIOClient from "socket.io-client";
 import { WebsocketGameDto } from "./dto/websocket-game.dto";
+import { io } from "socket.io-client";
 
-const socket = socketIOClient("http://127.0.0.1:80/game");
+const socket = io("http://localhost:80/game");
 
 export const listen: (callbackFunc: (response: WebsocketGameDto) => void) => void = (callbackFunc) => {
   socket.on('message', callbackFunc);
