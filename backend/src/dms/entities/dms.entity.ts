@@ -16,4 +16,7 @@ export class DmsEntity {
 
   @Column()
   block: boolean
+
+  @Column()
+  user_id_who_initiated_blocking: number
 }

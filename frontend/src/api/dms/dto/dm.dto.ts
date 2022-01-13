@@ -6,4 +6,5 @@ export interface DmDto {
   users: UserDto[]
   messages: DmMessageDto[]
   block: boolean
+  user_id_who_initiated_blocking: number
 }
