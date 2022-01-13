@@ -4,7 +4,6 @@ import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class DmsEntity {
-
   @PrimaryGeneratedColumn()
   id: number
 
@@ -12,7 +11,7 @@ export class DmsEntity {
   @JoinTable()
   users: UserEntity[]
 
-  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm, {eager: true})
+  @OneToMany(type => DmsMessagesEntity, DmsMessagesEntity => DmsMessagesEntity.dm, {eager: true, cascade: true})
   messages: DmsMessagesEntity[]
 
   @Column()

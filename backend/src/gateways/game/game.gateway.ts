@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from "socket.io";
 import { WebsocketGameDto } from "./dto/websocket-game.dto";
 
-@WebSocketGateway(80, { namespace: 'game' })
+@WebSocketGateway(80, { namespace: 'game' , cors: true })
 export class GameGateway {
   @WebSocketServer()
   server: Server;

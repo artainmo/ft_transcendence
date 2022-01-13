@@ -8,7 +8,7 @@ import { ChannelMessageDto } from "./dto/channel_message.dto"
 import { CreateChannelUserDto } from "./dto/create-channel_user.dto"
 import { UpdateChannelUserDto } from "./dto/update-channel_user.dto"
 import { ChannelUserDto } from "./dto/channel_user.dto"
-import { CreateUserDto } from "../user/dto/create-user.dto"
+import { UserDto } from "../user/dto/user.dto"
 const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
@@ -17,7 +17,7 @@ export const addChannel: (createChannelDto: CreateChannelDto) => Promise<Channel
   return response.data
 }
 
-export const createNewChannel: (users: CreateUserDto[], name: string, type: string, password: string) => CreateChannelDto = (users, name, type, password) => {
+export const createNewChannel: (users: UserDto[], name: string, type: string, password: string) => CreateChannelDto = (users, name, type, password) => {
   let createChannelDto: CreateChannelDto = {
     users: users,
     messages: [],
@@ -34,10 +34,10 @@ export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
   return response.data;
 }
 
-export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
-  const response = await axios.get(`/channels/user/${userLogin}`);
-  return response.data;
-}
+// export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
+//   const response = await axios.get(`/channels/user/${userLogin}`);
+//   return response.data;
+// }
 
 export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
   const response = await axios.get(`/channels/${id}`);
@@ -46,7 +46,7 @@ export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
 
 export const updateChannel: (id: number, updateChannelDto: UpdateChannelDto) => void = async (id, updateChannelDto) => {
   await axios.patch(`/channels/${id}`, updateChannelDto);
-}
+} //TypeORM bug: Cannot query across many-to-many for property users
 
 export const removeChannel: (id: number) => void = async (id) => {
   await axios.delete(`/channels/${id}`);
@@ -54,6 +54,16 @@ export const removeChannel: (id: number) => void = async (id) => {
 
 export const addChannelMessage: (createChannelMessageDto: CreateChannelMessageDto) => void = async (createChannelMessageDto) => {
   await axios.post("/channels/message", createChannelMessageDto);
+}
+
+export const createNewChannelMessage: (user: UserDto, channel: ChannelDto, content: string, order: number) => CreateChannelMessageDto = (user, channel, content, order) => {
+  let createChannelMessageDto: CreateChannelMessageDto = {
+    user: user,
+    channel: channel,
+    content: content,
+    order: order
+  }
+  return createChannelMessageDto;
 }
 
 export const getAllChannelsMessages: () => Promise<ChannelMessageDto[]> = async () => {
@@ -78,12 +88,13 @@ export const addChannelUser: (createChannelUserDto: CreateChannelUserDto) => voi
   await axios.post("/channels/user", createChannelUserDto);
 }
 
-export const createNewChannelUser: (channel: CreateChannelDto, user: CreateUserDto, administrator: boolean, owner: boolean) => CreateChannelUserDto = (channel, user, owner, administrator) => {
+export const createNewChannelUser: (channel: ChannelDto, user: UserDto, administrator: boolean, owner: boolean) => CreateChannelUserDto = (channel, user, owner, administrator) => {
   let createChannelUserDto: CreateChannelUserDto = {
     channel: channel,
     user: user,
     owner: owner,
     administrator: administrator,
+    mute: false
   }
   return createChannelUserDto;
 }

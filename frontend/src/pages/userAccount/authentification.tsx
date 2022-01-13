@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
-import { getUserByName, getUserByLogin, createNewUser, addUser } from "../../api/user/user.api";
+import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 
 
@@ -25,6 +25,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			setAvatar('');
 		} else {
 			setNonExistingAccount(false);
+			if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
 			changeUser(userInDatabase)
 		}
 	}
@@ -36,6 +37,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			await addUser(createNewUser(name, login, avatar));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
+			if (userInDatabase!.online === false) { userInDatabase!.online = true; await updateUser(userInDatabase!.id, {online: true}); }
 			changeUser(userInDatabase);
 		} else {
 			setAccountAlreadyInUse(true);
@@ -105,7 +107,8 @@ const Authentification: React.FC = () => {
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
 					}
-					setUser(userInDatabase)
+					if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
+					setUser(userInDatabase);
 				}
 			}
 		}

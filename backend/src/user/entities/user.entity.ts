@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { MatchHistoryEntity } from "../../match-history/entities/match_history.entity";
 import { FriendsEntity } from "../../friends/entities/friends.entity";
 import { ChannelsEntity } from "../../channels/entities/channels.entity";
@@ -9,7 +9,6 @@ import { DmsMessagesEntity } from "../../dms/entities/dms_messages.entity";
 
 @Entity()
 export class UserEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -47,5 +46,6 @@ export class UserEntity {
     dms: DmsEntity[]
 
     @ManyToMany(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.users)
+    @JoinTable()
     channels: ChannelsEntity[]
 }

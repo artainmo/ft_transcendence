@@ -25,11 +25,11 @@ export class DmsService {
     return await this.DmsRepo.find();
   }
 
-  async findDmsOfUser(login: string): Promise<DmsEntity[]> {
-    return await this.DmsRepo.find({
-      relations: ['users']
-    });
-  }
+  // async findDmsOfUser(login: string): Promise<DmsEntity[]> {
+  //   return await this.DmsRepo.find({
+  //     relations: ['users']
+  //   });
+  // }
 
   async findOne(id: number): Promise<DmsEntity> {
     return await this.DmsRepo.findOne(id);

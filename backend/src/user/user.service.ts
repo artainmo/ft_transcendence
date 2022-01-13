@@ -24,6 +24,12 @@ export class UserService {
     return await this.UserRepo.findOne(id);
   }
 
+  async findCompleteOne(id: number): Promise<UserEntity> {
+    return await this.UserRepo.findOne(id, {
+      relations: ['matchHistory', 'friends', 'dms', 'channels']
+    });
+  }
+
   async findOneByName(name: string): Promise<UserEntity> {
     return await this.UserRepo.findOne({ where: { name: name }});
   }
@@ -34,13 +40,9 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<void> {
     await this.UserRepo.update(id, updateUserDto);
-  }
+  } //"TypeORM bug: Cannot query across many-to-many for property channels" | .update method often bugs and does not return, .save may be a better alternative
 
   async remove(id: number): Promise<void> {
     await this.UserRepo.delete(id);
   }
 }
-
-//Fill the above functions, use UserEntity as return !
-//Create frontend/src/api/user with a ResponseUserDto that is similar to UserEntity in properties, also copy the other dtos (create(without id) and update(partial of create)) !
-//Call the already existing functions that lie in the controller from the frontend/api/user !

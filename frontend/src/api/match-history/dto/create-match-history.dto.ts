@@ -1,8 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { MatchHistoryDto } from "./match-history.dto";
 
-export interface CreateMatchHistoryDto {
-  me: CreateUserDto;
-  my_score: string;
-  opponent_id: number;
-  opponent_score: string;
-}
+export type CreateMatchHistoryDto = Omit<MatchHistoryDto, "id">;

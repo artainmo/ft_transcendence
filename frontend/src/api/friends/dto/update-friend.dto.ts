@@ -1,6 +1,3 @@
-import { UpdateUserDto } from "../../user/dto/update-user.dto"
+import { FriendDto } from "./friend.dto";
 
-export interface UpdateFriendDto {
-  me?: UpdateUserDto;
-  friend_id?: number;
-}
+export type UpdateFriendDto = Partial<FriendDto>;

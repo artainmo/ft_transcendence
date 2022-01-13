@@ -1,8 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { MatchHistoryEntity } from "../entities/match_history.entity";
 
-export class CreateMatchHistoryDto {
-  me: CreateUserDto;
-  my_score: string;
-  opponent_id: number;
-  opponent_score: string;
-}
+export type CreateMatchHistoryDto = Omit<MatchHistoryEntity, "id">;

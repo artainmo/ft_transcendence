@@ -1,6 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { FriendsEntity } from "../entities/friends.entity";
 
-export class CreateFriendDto {
-  me: CreateUserDto;
-  friend_id: number;
-}
+export type CreateFriendDto = Omit<FriendsEntity, "id">;

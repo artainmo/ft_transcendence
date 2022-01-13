@@ -1,9 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { UserEntity } from "../../user/entities/user.entity"
+import { UserEntity } from "../../user/entities/user.entity";
 
 @Entity()
 export class FriendsEntity {
-
     @PrimaryGeneratedColumn()
     id: number
 

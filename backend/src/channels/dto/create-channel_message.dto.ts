@@ -1,9 +1,3 @@
-import { CreateChannelDto } from "./create-channel.dto"
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { ChannelsMessagesEntity } from "../entities/channels_messages.entity";
 
-export class CreateChannelMessageDto {
-  channel: CreateChannelDto
-  user: CreateUserDto
-  content: string
-  order: number
-}
+export type CreateChannelMessageDto = Omit<ChannelsMessagesEntity, "id">; 

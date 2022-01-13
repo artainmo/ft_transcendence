@@ -1,9 +1,3 @@
-import { CreateChannelDto } from "./create-channel.dto"
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { ChannelMessageDto } from "./channel_message.dto";
 
-export interface CreateChannelMessageDto {
-  channel: CreateChannelDto
-  user: CreateUserDto
-  content: string
-  order: number
-}
+export type CreateChannelMessageDto = Omit<ChannelMessageDto, "id">;

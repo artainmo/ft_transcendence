@@ -2,9 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "t
 import { ChannelsEntity } from "./channels.entity"
 import { UserEntity } from "../../user/entities/user.entity"
 
-@Entity()
+@Entity({ orderBy: { order: "DESC" } })
 export class ChannelsMessagesEntity {
-
   @PrimaryGeneratedColumn()
   id: number
 

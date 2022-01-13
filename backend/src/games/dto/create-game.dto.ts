@@ -1,8 +1,3 @@
-import { CreateUserDto } from "../../user/dto/create-user.dto"
+import { GamesEntity } from "./../entities/games.entity"
 
-export class CreateGameDto {
-  user1: CreateUserDto;
-  user2: CreateUserDto;
-  ballspeed: number;
-  map: string;
-}
+export type CreateGameDto = Omit<GamesEntity, "id">;

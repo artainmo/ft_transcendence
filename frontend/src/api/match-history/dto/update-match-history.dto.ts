@@ -1,8 +1,3 @@
-import { UpdateUserDto } from "../../user/dto/update-user.dto"
+import { MatchHistoryDto } from "./match-history.dto";
 
-export interface UpdateMatchHistoryDto {
-  me?: UpdateUserDto;
-  my_score?: string;
-  opponent_id?: number;
-  opponent_score?: string;
-}
+export type UpdateMatchHistoryDto = Partial<MatchHistoryDto>;

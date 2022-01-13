@@ -2,7 +2,7 @@ import { API_ENDPOINT } from "../api_endpoint"
 import { CreateFriendDto } from "./dto/create-friend.dto"
 import { UpdateFriendDto } from "./dto/update-friend.dto"
 import { FriendDto } from "./dto/friend.dto"
-import { CreateUserDto } from "../user/dto/create-user.dto"
+import { UserDto } from "../user/dto/user.dto"
 const axios = require('axios');
 axios.defaults.baseURL = API_ENDPOINT;
 
@@ -10,7 +10,7 @@ export const addFriend: (createFriendDto: CreateFriendDto) => void = async (crea
   await axios.post("/friends", createFriendDto);
 }
 
-export const createNewFriend: (me: CreateUserDto, friend_id: number) => CreateFriendDto = (me, friend_id) => {
+export const createNewFriend: (me: UserDto, friend_id: number) => CreateFriendDto = (me, friend_id) => {
   let createFriendDto: CreateFriendDto = {
     me: me,
     friend_id: friend_id,

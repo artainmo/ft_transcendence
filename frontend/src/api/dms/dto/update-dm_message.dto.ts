@@ -1,9 +1,3 @@
-import { UpdateDmDto } from "./update-dm.dto"
-import { UpdateUserDto } from "../../user/dto/update-user.dto"
+import { DmMessageDto } from "./dm_message.dto";
 
-export interface UpdateDmMessageDto {
-  user?: UpdateUserDto
-  dm?: UpdateDmDto
-  content?: string
-  order?: number
-}
+export type UpdateDmMessageDto = Partial<DmMessageDto>;

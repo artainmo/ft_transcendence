@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Chat from './chat';
-import { getDmsOfUser, createNewDm, addDm } from "../../api/dms/dms.api";
-import { getChannelsOfUser, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
-import { getAllUsers } from "../../api/user/user.api";
+import { createNewDm, addDm } from "../../api/dms/dms.api";
+import { getChannel, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
+import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
@@ -17,7 +17,6 @@ interface joinChannelProps {
 
 interface newChannelProps {
 	user: UserDto,
-	channels: ChannelDto[],
   changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
 }
 
@@ -27,7 +26,7 @@ interface newDmProps {
   changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
 }
 
-interface chatProps {
+interface chatsViewProps {
 	user: UserDto,
 	changeMenuPage: (newMenuPage: string) => void
 }
@@ -58,7 +57,10 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
 				setPassword('');
 				return ;
 			}
+			user.channels = [...channels, channel];
+			await addUser(user); //updateUser should be used but bugs... Thus addUser which calls save is used as it can update too if element already exists... And it works!!
 			await addChannelUser(createNewChannelUser(channel, user, false, false));
+			channel = await getChannel(channel.id);
 			changeCurrentChat(channel);
 	}
 
@@ -75,25 +77,27 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
           </div>);
 }
 
-const NewChannel: React.FC<newChannelProps> = ({ user, channels, changeCurrentChat }) => {
+const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
   const [name, setName] = useState<string>('');
   const [type, setType] = useState<"public" | "private" | "password" | "">('');
   const [password, setPassword] = useState<string>('');
 	const [nameAlreadyInUse, setNameAlreadyInUse] = useState<boolean>(false);
 
   const onSubmit: (newChannel: CreateChannelDto) => void = async (newChannel) => {
-      if (channels.some((channel)=> channel.name === newChannel.name)) {
+			const allChannels = await getAllChannels();
+
+      if (allChannels.some((channel)=> channel.name === newChannel.name)) {
         setName('');
         setNameAlreadyInUse(true);
       } else {
-				const NewChannel: ChannelDto = await addChannel(newChannel);
+				let NewChannel: ChannelDto = await addChannel(newChannel);
 				await addChannelUser(createNewChannelUser(NewChannel, user, true, true));
+				NewChannel = await getChannel(NewChannel.id);
 	      changeCurrentChat(NewChannel);
       }
   }
 
   return (<div>
-            <form>
               <br/>
               <label>Channel name: </label>
               <input type="text" value={name} name="channelname" onChange={(e)=>setName(e.target.value)} required/><br/><br/>
@@ -105,8 +109,7 @@ const NewChannel: React.FC<newChannelProps> = ({ user, channels, changeCurrentCh
               <input type="radio"name="channeltype" onChange={()=>setType("password")} required/><br/><br/>
               {type === "password" && <><input type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
               {nameAlreadyInUse && <p>Name already exists try another one</p>}
-              <input type="submit" onClick={()=>onSubmit(createNewChannel([user], name, type, password))}/>
-            </form>
+              <button type="submit" onClick={()=>onSubmit(createNewChannel([user], name, type, password))}>Submit</button>
           </div>)
 }
 
@@ -126,7 +129,7 @@ const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
     allUsers.forEach((item) => searchValue.length !== 0 && !isPartOfDms(item)
                             && item.login.includes(searchValue) && item.login !== user.login && search.push(item))
     setSearchText(searchValue);
-    setSearchResults(searchResults);
+    setSearchResults(search);
   }
 
   const onSubmit: (user2: UserDto) => void = async (user2) => {
@@ -146,7 +149,7 @@ const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
           </div>);
 }
 
-const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
+const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
@@ -154,15 +157,20 @@ const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
 		const [channels, setChannels] = useState<ChannelDto[]>([]);
     const [currentChat, setCurrentChat] = useState<DmDto | ChannelDto | null>(null);
 
-		useEffect(()=>{
-			const getChats: () => void = async () => {
-				const userDms = await getDmsOfUser(user.login);
-				const userChannels = await getChannelsOfUser(user.login);
-				setDms(userDms);
-				setChannels(userChannels);
-			}
-			getChats();
-		})
+		// eslint-disable-next-line
+		useEffect(() => getChats(), [currentChat]);
+
+		useEffect(() => {
+			const interval = setInterval(getChats, 2000);
+	    return () => clearInterval(interval);
+		// eslint-disable-next-line
+		}, [])
+
+		const getChats: () => void = async () => {
+			const completeUser = await getCompleteUser(user.id);
+			setDms(completeUser!.dms);
+			setChannels(completeUser!.channels);
+		}
 
     const changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void = (newChat) => {
       setNewchannel(false);
@@ -172,8 +180,7 @@ const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
     }
 
     if (currentChat !== null) {
-      // return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
-			return (<button onClick={()=> changeCurrentChat(null)}>Back</button>)
+      return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
     } else {
       return (<div>
                 <button onClick={()=>{changeMenuPage('home')}}>Back</button>
@@ -182,7 +189,7 @@ const ChatsView: React.FC<chatProps> = ({ user, changeMenuPage }) => {
                 <button onClick={()=>{setNewchannel(!newchannel); setNewdm(false); setJoinchannel(false);}}>New Channel</button><>&nbsp;&nbsp;&nbsp;</>
                 <button onClick={()=> {setJoinchannel(!joinchannel); setNewchannel(false); setNewdm(false);}}>Join Channel</button>
                 {newdm && <NewDm user={user} dms={dms} changeCurrentChat={changeCurrentChat}/>}
-                {newchannel && <NewChannel user={user} channels={channels} changeCurrentChat={changeCurrentChat}/>}
+                {newchannel && <NewChannel user={user} changeCurrentChat={changeCurrentChat}/>}
                 {joinchannel && <JoinChannel user={user} channels={channels} changeCurrentChat={changeCurrentChat}/>}
                 <br/><br/>
                 {channels.map((item)=><p onClick={()=>changeCurrentChat(item)}>{`${item.name} -- channel`}</p>)}

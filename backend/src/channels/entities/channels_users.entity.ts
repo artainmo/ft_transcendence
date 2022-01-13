@@ -4,7 +4,6 @@ import { UserEntity } from "../../user/entities/user.entity"
 
 @Entity()
 export class ChannelsUsersEntity {
-
   @PrimaryGeneratedColumn()
   id: number
 
@@ -21,4 +20,7 @@ export class ChannelsUsersEntity {
 
   @Column()
   administrator: boolean
+
+  @Column()
+  mute: boolean
 }

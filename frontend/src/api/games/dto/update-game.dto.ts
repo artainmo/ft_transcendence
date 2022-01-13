@@ -1,8 +1,3 @@
-import { UpdateUserDto } from "../../user/dto/update-user.dto"
+import { GameDto } from "./game.dto";
 
-export interface UpdateGameDto {
-  user1?: UpdateUserDto;
-  user2?: UpdateUserDto;
-  ballspeed?: number;
-  map?: string;
-}
+export type UpdateGameDto = Partial<GameDto>;
