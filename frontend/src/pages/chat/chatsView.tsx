@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Chat from './chat';
 import { createNewDm, addDm } from "../../api/dms/dms.api";
-import { addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
+import { getChannel, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
 import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
@@ -60,6 +60,7 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
 			user.channels = [...channels, channel];
 			await addUser(user); //updateUser should be used but bugs... Thus addUser which calls save is used as it can update too if element already exists... And it works!!
 			await addChannelUser(createNewChannelUser(channel, user, false, false));
+			channel = await getChannel(channel.id);
 			changeCurrentChat(channel);
 	}
 
@@ -89,8 +90,9 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
         setName('');
         setNameAlreadyInUse(true);
       } else {
-				const NewChannel: ChannelDto = await addChannel(newChannel);
+				let NewChannel: ChannelDto = await addChannel(newChannel);
 				await addChannelUser(createNewChannelUser(NewChannel, user, true, true));
+				NewChannel = await getChannel(NewChannel.id);
 	      changeCurrentChat(NewChannel);
       }
   }
@@ -155,15 +157,20 @@ const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
 		const [channels, setChannels] = useState<ChannelDto[]>([]);
     const [currentChat, setCurrentChat] = useState<DmDto | ChannelDto | null>(null);
 
-		useEffect(()=>{
-			const getChats: () => void = async () => {
-				const completeUser = await getCompleteUser(user.id);
-				setDms(completeUser!.dms);
-				setChannels(completeUser!.channels);
-			}
-			getChats();
 		// eslint-disable-next-line
-		}, [currentChat])
+		useEffect(() => getChats(), [currentChat]);
+
+		useEffect(() => {
+			const interval = setInterval(getChats, 2000);
+	    return () => clearInterval(interval);
+		// eslint-disable-next-line
+		}, [])
+
+		const getChats: () => void = async () => {
+			const completeUser = await getCompleteUser(user.id);
+			setDms(completeUser!.dms);
+			setChannels(completeUser!.channels);
+		}
 
     const changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void = (newChat) => {
       setNewchannel(false);

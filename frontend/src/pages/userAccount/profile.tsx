@@ -6,7 +6,8 @@ import { UserDto } from "../../api/user/dto/user.dto";
 import { FriendDto } from "../../api/friends/dto/friend.dto";
 import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
-import { disconnect } from "../../websocket/chat/chat.socket";
+import { disconnect as disconnectChat } from "../../websocket/chat/chat.socket";
+import { disconnect as disconnectGame } from "../../websocket/game/game.socket";
 
 let g_remember_account: UserDto;
 
@@ -126,7 +127,8 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) =
 
 	const logout: () => void = async () => {
 		if (user.online === true) await updateUser(user.id, {online: false});
-		disconnect();
+		disconnectChat();
+		disconnectGame();
 		changeUser(null);
 	}
 

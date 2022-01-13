@@ -20,4 +20,7 @@ export class ChannelsUsersEntity {
 
   @Column()
   administrator: boolean
+
+  @Column()
+  mute: boolean
 }

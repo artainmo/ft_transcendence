@@ -7,4 +7,5 @@ export interface ChannelUserDto {
   user: UserDto
   owner: boolean
   administrator: boolean
+  mute: boolean
 }

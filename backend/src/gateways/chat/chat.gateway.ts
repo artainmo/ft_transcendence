@@ -13,13 +13,13 @@ export class ChatGateway {
 
   @SubscribeMessage('joinRoom')
   joinRoom(client: Socket, room: string): void {
-    console.log(`room ${room} joined`);
+    // console.log(`room ${room} joined`);
     client.join(room);
   }
 
   @SubscribeMessage('leaveRoom')
   leaveRoom(client: Socket, room: string): void {
-    console.log(`room ${room} left`);
+    // console.log(`room ${room} left`);
     client.leave(room);
   }
 }

@@ -94,6 +94,7 @@ export const createNewChannelUser: (channel: ChannelDto, user: UserDto, administ
     user: user,
     owner: owner,
     administrator: administrator,
+    mute: false
   }
   return createChannelUserDto;
 }
