@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { GameDto } from "../../api/games/dto/game.dto";
 import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from "../../api/games/games.api";
 import { UserDto } from "../../api/user/dto/user.dto";
+import PongGame from "./gameFunc/PongGame";
+import StartGame from "./gameFunc/shapes";
 
 const dataBaseMaps = ['black', 'white', 'winter', 'summer', 'night'];
 
@@ -141,7 +143,7 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage }) => {
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
               <h1>GAME</h1>
-              {/* <GamePong user={user} game={game}/> */}
+              {<PongGame />/* <GamePong user={user} game={game}/> */}
             </div>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;
