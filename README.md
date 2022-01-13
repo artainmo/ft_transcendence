@@ -9,17 +9,17 @@ Make frontend launch !<br>
 /api -> create api calls from frontend to interact with database !<br>
 /gateway -> Create client-side web socket functions for chat and game !<br>
 Login option with OAuth system of 42 intranet !<br>
-Finish the chat <br>
+Finish the chat !<br>
+encrypt password<br>
+Double authentification<br>
 
 Jules:<br>
 Finish the game
 
 Alissio:<br>
 docker<br>
-encrypt password<br>
 protect against SQL injection
 
 Other:<br>
-Double authentification<br>
 css/material-ui<br>
 subject.pdf -> Review pdf and other functionalities that have to be added<br>
