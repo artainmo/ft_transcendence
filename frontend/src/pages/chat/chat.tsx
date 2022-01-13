@@ -39,8 +39,7 @@ interface channelInfoProps {
 }
 
 interface messageProps {
-	channelUser: ChannelUserDto,
-	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
+	userOrchannelUser: any,
 	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
 	currentChatLatestUpdates: () => void,
 	dm: boolean
@@ -77,6 +76,7 @@ const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdat
 			user.channels = [...user.channels, currentChat];
 			await addUser(user); //updateUser should be used but bugs... Thus addUser which calls save is used as it can update too if element already exists... And it works!!
 			await addChannelUser(createNewChannelUser(currentChat, user, false, false));
+			handleSearch('');
       currentChatLatestUpdates();
   }
 
@@ -210,7 +210,7 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentCha
           </div>);
 }
 
-const Message: React.FC<messageProps> = ({ channelUser, changeCurrentChat, currentChat, currentChatLatestUpdates, dm }) => {
+const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm }) => {
   const [message, setMessage] = useState<string>('');
 
 	 // eslint-disable-next-line
@@ -219,20 +219,20 @@ const Message: React.FC<messageProps> = ({ channelUser, changeCurrentChat, curre
   const submitMessage: () => void = async () => {
 		await currentChatLatestUpdates();
 		if (dm) {
-			await addDmMessage(createNewDmMessage(channelUser.user, currentChat, message, currentChat.messages.length + 1));
+			await addDmMessage(createNewDmMessage(userOrchannelUser, currentChat, message, currentChat.messages.length + 1));
 		} else {
-			await addChannelMessage(createNewChannelMessage(channelUser.user, currentChat, message, currentChat.messages.length + 1));
+			await addChannelMessage(createNewChannelMessage(userOrchannelUser.user, currentChat, message, currentChat.messages.length + 1));
 		}
+		setMessage('');
 		send({room: currentChat.id, content: "new message"});
-    setMessage('');
 		await currentChatLatestUpdates();
   }
 
   return (<div>
             {currentChat.messages.map((message: any)=><p>{`${message.user.login} --- ${message.content}`}</p>)}
             <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
-            {((dm && currentChat.block) || (!dm && channelUser.mute)) && <input type="submit" value="Message" disabled/>}
-						{((dm && !currentChat.block) || (!dm && !channelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
+            {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input type="submit" value="Message" disabled/>}
+						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
           </div>);
 }
 
@@ -241,8 +241,8 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 
 	useEffect(() => {
 		joinRoom(currentChat.id);
-		listen((response: string) => {
-			if (response === "new message") currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
+		listen(async (response: string) => {
+			if (response === "new message") await currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
 		});
 		return () => { leaveRoom(currentChat.id); }
 	// eslint-disable-next-line
@@ -257,6 +257,7 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 	}, []);
 
 	const currentChatLatestUpdates: () => void = async () => {
+		console.log(currentChat);
 		if (dm) {
 			currentChat = await getDm(currentChat.id);
 		} else {
@@ -272,6 +273,7 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
   const setBlock: () => void = async () => {
 		await currentChatLatestUpdates();
 		currentChat.block = !currentChat.block;
+		if (currentChat.block === true) currentChat.user_id_who_initiated_blocking = user.id;
 		await addDm(currentChat);
 		changeCurrentChat(currentChat);
   }
@@ -296,13 +298,14 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 
   return (<div>
             <button onClick={()=>changeCurrentChat(null)}>Back</button>
-            {dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
+            {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
+							&& <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
             {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
 						{dm && <h1>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
             {!dm && <h1>{currentChat.name}</h1>}
             {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates}/>}
 						<br/><br/>
-            <Message channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm}/>
+            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm}/>
           </div>);
 }
 

@@ -18,7 +18,8 @@ export const createNewDm: (user1: UserDto, user2: UserDto) => CreateDmDto = (use
   let createDmDto: CreateDmDto = {
     users: [user1, user2],
     messages: [],
-    block: false
+    block: false,
+    user_id_who_initiated_blocking: 0
   }
   return createDmDto;
 }
