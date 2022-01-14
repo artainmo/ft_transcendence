@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MatchHistoryModule } from "./match-history/match-history.module";
 import { GamesModule } from "./games/games.module";
@@ -8,10 +8,15 @@ import { ChannelsModule } from "./channels/channels.module";
 import { UserModule } from "./user/user.module";
 import { ChatGateway } from './gateways/chat/chat.gateway';
 import { GameGateway } from './gateways/game/game.gateway';
+import { channelPasswordEncryptionMiddleware } from './middleware/passwordEncryption.middleware';
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UserModule, ChannelsModule, DmsModule,
             FriendsModule, GamesModule, MatchHistoryModule],
   providers: [ChatGateway, GameGateway]
 })
-export class AppModule {}
+export class AppModule {
+  async configure(consumer: MiddlewareConsumer) {
+    await consumer.apply(channelPasswordEncryptionMiddleware).forRoutes('/channels');
+  }
+}

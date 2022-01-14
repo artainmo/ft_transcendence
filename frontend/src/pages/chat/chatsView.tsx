@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Chat from './chat';
 import { createNewDm, addDm } from "../../api/dms/dms.api";
-import { getChannel, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels } from "../../api/channels/channels.api";
+import { getChannel, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels, channelPasswordVerification } from "../../api/channels/channels.api";
 import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
@@ -53,7 +53,7 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
   }
 
   const onSubmit: (channel: ChannelDto) => void = async (channel) => {
-			if (channel.type === "password" && channel.password !== password) {
+			if (channel.type === "password" && !(await channelPasswordVerification(channel.id, password))) {
 				setPassword('');
 				return ;
 			}
@@ -84,6 +84,7 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
 	const [nameAlreadyInUse, setNameAlreadyInUse] = useState<boolean>(false);
 
   const onSubmit: (newChannel: CreateChannelDto) => void = async (newChannel) => {
+			if (newChannel.name === '' || newChannel.type === '' || (newChannel.type === 'password' && newChannel.password === "")) return ;
 			const allChannels = await getAllChannels();
 
       if (allChannels.some((channel)=> channel.name === newChannel.name)) {
@@ -107,7 +108,7 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
               <input type="radio" name="channeltype" onChange={()=>setType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
               <label>password</label>
               <input type="radio"name="channeltype" onChange={()=>setType("password")} required/><br/><br/>
-              {type === "password" && <><input type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
+              {type === "password" && <><input type="password" maxLength={20} value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
               {nameAlreadyInUse && <p>Name already exists try another one</p>}
               <button type="submit" onClick={()=>onSubmit(createNewChannel([user], name, type, password))}>Submit</button>
           </div>)

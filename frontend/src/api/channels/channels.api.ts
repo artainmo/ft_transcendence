@@ -46,7 +46,7 @@ export const getChannel: (id: number) => Promise<ChannelDto> = async (id) => {
 
 export const updateChannel: (id: number, updateChannelDto: UpdateChannelDto) => void = async (id, updateChannelDto) => {
   await axios.patch(`/channels/${id}`, updateChannelDto);
-} //TypeORM bug: Cannot query across many-to-many for property users
+}
 
 export const removeChannel: (id: number) => void = async (id) => {
   await axios.delete(`/channels/${id}`);
@@ -115,4 +115,9 @@ export const updateChannelUser: (id: number, updateChannelUserDto: UpdateChannel
 
 export const removeChannelUser: (id: number) => void = async (id) => {
   await axios.delete(`/channels/user/${id}`);
+}
+
+export const channelPasswordVerification: (id: number, password: string) => Promise<boolean> = async (id, password) => {
+  const response = await axios.get(`/channels/password_verification/${id}/${password}`);
+  return response.data;
 }

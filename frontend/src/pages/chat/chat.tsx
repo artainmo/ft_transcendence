@@ -154,7 +154,7 @@ const ChannelSettings: React.FC<channelSettingsprops> = ({ channelUser, changeCu
             <input type="radio" name="type" onChange={()=>changeType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
             <label>password</label>
             <input type="radio"name="type" onChange={()=>changeType("password")} required/><br/><br/>
-            {type === "password" && <><input type="password" value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
+            {type === "password" && <><input type="password" maxLength={20} value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
             <input type="submit" onClick={()=>onSubmitChannel()}/>
             <br/><br/>
          </>)
@@ -257,7 +257,6 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 	}, []);
 
 	const currentChatLatestUpdates: () => void = async () => {
-		console.log(currentChat);
 		if (dm) {
 			currentChat = await getDm(currentChat.id);
 		} else {
