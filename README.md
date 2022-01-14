@@ -10,7 +10,7 @@ Make frontend launch !<br>
 /gateway -> Create client-side web socket functions for chat and game !<br>
 Login option with OAuth system of 42 intranet !<br>
 Finish the chat !<br>
-encrypt password<br>
+encrypt password !<br>
 Double authentification<br>
 
 Jules:<br>
