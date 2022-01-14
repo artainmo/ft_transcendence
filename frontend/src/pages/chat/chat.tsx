@@ -6,7 +6,8 @@ import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
 import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
-import { listen, joinRoom, leaveRoom, send } from "../../websocket/chat/chat.socket";
+import { connect, listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/chat/chat.socket";
+import _ from 'underscore';
 
 interface addUsersProps {
 	currentChat: ChannelDto,
@@ -42,7 +43,8 @@ interface messageProps {
 	userOrchannelUser: any,
 	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
 	currentChatLatestUpdates: () => void,
-	dm: boolean
+	dm: boolean,
+	socket: any
 }
 
 interface chatProps {
@@ -210,7 +212,7 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentCha
           </div>);
 }
 
-const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm }) => {
+const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm, socket }) => {
   const [message, setMessage] = useState<string>('');
 
 	 // eslint-disable-next-line
@@ -224,7 +226,7 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 			await addChannelMessage(createNewChannelMessage(userOrchannelUser.user, currentChat, message, currentChat.messages.length + 1));
 		}
 		setMessage('');
-		send({room: currentChat.id, content: "new message"});
+		send(socket, {room: currentChat.id, content: "new message"});
 		await currentChatLatestUpdates();
   }
 
@@ -238,13 +240,17 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 
 const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => {
   let dm: boolean = ("block" in currentChat);
+	const [socket, setSocket] = useState<any>(null);
 
 	useEffect(() => {
-		joinRoom(currentChat.id);
-		listen(async (response: string) => {
+		const connectedSocket = connect()
+		setSocket(connectedSocket);
+		joinRoom(connectedSocket, currentChat.id);
+		listen(connectedSocket, async (response: string) => {
+			console.log("Messaged received");
 			if (response === "new message") await currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
 		});
-		return () => { leaveRoom(currentChat.id); }
+		return () => { leaveRoom(connectedSocket, currentChat.id); disconnect(connectedSocket); }
 	// eslint-disable-next-line
 	}, [])
 
@@ -257,16 +263,19 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 	}, []);
 
 	const currentChatLatestUpdates: () => void = async () => {
+		let latestChat: any;
+
 		if (dm) {
-			currentChat = await getDm(currentChat.id);
+			latestChat = await getDm(currentChat.id);
 		} else {
-			currentChat = await getChannel(currentChat.id);
+			latestChat = await getChannel(currentChat.id);
 		}
-		if (currentChat.users.find((item: UserDto) => item.id === user.id) === undefined) { //User has been banned
+		if (_.isEqual(latestChat, currentChat)) return ;
+		if (latestChat === null || latestChat.users.find((item: UserDto) => item.id === user.id) === undefined || (!dm && latestChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.owner === true) === undefined)) { //User has been banned or chat removed
 			changeCurrentChat(null);
 			return ;
 		}
-		changeCurrentChat(currentChat);
+		changeCurrentChat(latestChat);
 	}
 
   const setBlock: () => void = async () => {
@@ -304,7 +313,7 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
             {!dm && <h1>{currentChat.name}</h1>}
             {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates}/>}
 						<br/><br/>
-            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm}/>
+            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket}/>
           </div>);
 }
 

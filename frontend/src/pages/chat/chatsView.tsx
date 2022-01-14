@@ -8,6 +8,7 @@ import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
 import { CreateChannelDto } from "../../api/channels/dto/create-channel.dto";
 import { CreateDmDto } from "../../api/dms/dto/create-dm.dto";
+import _ from 'underscore';
 
 interface joinChannelProps {
 	user: UserDto,
@@ -60,8 +61,7 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
 			user.channels = [...channels, channel];
 			await addUser(user); //updateUser should be used but bugs... Thus addUser which calls save is used as it can update too if element already exists... And it works!!
 			await addChannelUser(createNewChannelUser(channel, user, false, false));
-			channel = await getChannel(channel.id);
-			changeCurrentChat(channel);
+			changeCurrentChat((await getChannel(channel.id)));
 	}
 
   return (<div>
@@ -93,8 +93,7 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
       } else {
 				let NewChannel: ChannelDto = await addChannel(newChannel);
 				await addChannelUser(createNewChannelUser(NewChannel, user, true, true));
-				NewChannel = await getChannel(NewChannel.id);
-	      changeCurrentChat(NewChannel);
+	      changeCurrentChat((await getChannel(NewChannel.id)));
       }
   }
 
@@ -169,6 +168,10 @@ const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
 
 		const getChats: () => void = async () => {
 			const completeUser = await getCompleteUser(user.id);
+			if (completeUser === null) return ;
+			if (_.isEqual(completeUser.dms, dms) && _.isEqual(completeUser.channels, channels)) return ;
+			if (currentChat !== null && !("block" in currentChat) && completeUser!.channels.find((channel: ChannelDto) => channel.id === currentChat.id) === undefined) changeCurrentChat(null);
+			if (currentChat !== null && ("block" in currentChat) && completeUser!.dms.find((dm: DmDto) => dm.id === currentChat.id) === undefined) changeCurrentChat(null);
 			setDms(completeUser!.dms);
 			setChannels(completeUser!.channels);
 		}
