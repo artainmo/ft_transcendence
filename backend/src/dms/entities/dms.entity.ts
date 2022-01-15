@@ -17,6 +17,6 @@ export class DmsEntity {
   @Column()
   block: boolean
 
-  @Column()
+  @Column({ nullable: false, type: "int", default: 0 })
   user_id_who_initiated_blocking: number
 }

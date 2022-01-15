@@ -1,11 +1,9 @@
-import { parseJsonSourceFileConfigFileContent } from "typescript";
 import Background from "./Background";
+import { WebsocketGameDto } from "../../../websocket/game/dto/websocket-game.dto";
 
-
-
-function sleep(ms: number) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-  }
+// function sleep(ms: number) {
+// 	return new Promise(resolve => setTimeout(resolve, ms));
+//   }
 
 function game(b: Background)
 {
@@ -14,11 +12,11 @@ function game(b: Background)
 	
 }
 
-function StartGame()
+function StartGame(wbsockinfos: WebsocketGameDto)
 {
-	var b = new Background();
-	//b.addListener();
-	setInterval( function() { game(b); }, 1000/50 );
+	// var b = new Background();
+	// //b.addListener();
+	// setInterval( function() { game(b); }, 1000/50 );
 }
 
 export default StartGame;

@@ -3,7 +3,9 @@ import { GameDto } from "../../api/games/dto/game.dto";
 import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from "../../api/games/games.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import PongGame from "./gameFunc/PongGame";
-import StartGame from "./gameFunc/shapes";
+// import StartGame from "./gameFunc/shapes";
+// import { listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/game/game.socket";
+
 
 const dataBaseMaps = ['black', 'white', 'winter', 'summer', 'night'];
 
@@ -140,10 +142,11 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage }) => {
   }
 
   if (game !== null && game.user2 !== null) {
+    //var gameinfos: GameDto = game;
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
               <h1>GAME</h1>
-              {<PongGame />/* <GamePong user={user} game={game}/> */}
+              {<PongGame gameInfos={game}/>/* <GamePong user={user} game={game}/> */}
             </div>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;

@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from "socket.io";
 import { WebsocketGameDto } from "./dto/websocket-game.dto";
 
-@WebSocketGateway(80, { namespace: 'game' , cors: true })
+@WebSocketGateway(80, { namespace: 'game' })
 export class GameGateway {
   @WebSocketServer()
   server: Server;
@@ -10,6 +10,11 @@ export class GameGateway {
   @SubscribeMessage('message')
   handleMessage(client: Socket, message: WebsocketGameDto): void {
     this.server.to(message.room).emit("message", message)
+  }
+
+  @SubscribeMessage('score1')
+  handleScore1(client: Socket, message: number): void {
+    this.server.to("room3"/*message.room*/).emit("score1", message)
   }
 
   @SubscribeMessage('joinRoom')
@@ -21,4 +26,6 @@ export class GameGateway {
   leaveRoom(client: Socket, room: string): void {
     client.leave(room);
   }
+
+  
 }
