@@ -247,7 +247,7 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 		setSocket(connectedSocket);
 		joinRoom(connectedSocket, currentChat.id);
 		listen(connectedSocket, async (response: string) => {
-			console.log("Messaged received");
+			// console.log("Messaged received");
 			if (response === "new message") await currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
 		});
 		return () => { leaveRoom(connectedSocket, currentChat.id); disconnect(connectedSocket); }
