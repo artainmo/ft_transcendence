@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { getUser, getAllUsers, updateUser } from "../../api/user/user.api";
+import { getUser, getAllUsers, updateUser, getUserByLogin } from "../../api/user/user.api";
 import { addFriend, createNewFriend, getFriendsOfUser, removeFriend } from "../../api/friends/friends.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { FriendDto } from "../../api/friends/dto/friend.dto";
@@ -13,6 +13,12 @@ interface profileProps {
 	user: UserDto,
 	changeUser: (newUser: UserDto | null) => void,
 	changeMenuPage: (newMenuPage: string) => void
+}
+
+interface settingsProps {
+	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
+	renderPage: () => void
 }
 
 interface FriendsProps {
@@ -102,10 +108,59 @@ const Friends: React.FC<FriendsProps> = ({ user, changeUser, ownAccount, changeA
           </div>);
 }
 
+const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => {
+	let [login, setLogin] = useState<string>('');
+	let [loginAlreadyInUse, setLoginAlreadyInUse] = useState<boolean>(false);
+
+	const newLogin: (name: string) => void = async (name) => {
+		if (name === '') return ;
+		let userInDatabaseByLogin = await getUserByLogin(login);
+		if (userInDatabaseByLogin === null) {
+			setLoginAlreadyInUse(false);
+			user.login = name;
+			changeUser(user);
+			await updateUser(user.id, {login: name});
+			setLogin('');
+			renderPage();
+		} else {
+			setLoginAlreadyInUse(true);
+			setLogin('');
+		}
+	}
+
+	const changeTwoFactorAuthentication: () => void = async () => {
+		await updateUser(user.id, {hasTwoFactorAuthentication: !user.hasTwoFactorAuthentication});
+		user.hasTwoFactorAuthentication = !user.hasTwoFactorAuthentication;
+		changeUser(user);
+		renderPage();
+	}
+
+	const changeAvatar: (avatar: string) => void = async (avatar) => {
+		if (avatar === '') return ;
+		await updateUser(user.id, {avatar: avatar});
+		user.avatar = avatar;
+		changeUser(user);
+		renderPage();
+	}
+
+	return (<div>
+						<br/><label>New Login: </label>
+						<input type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/><>&nbsp;&nbsp;&nbsp;</>
+						<button type="submit" onClick={()=>newLogin(login)}>Submit</button>
+						{loginAlreadyInUse && <><>&nbsp;&nbsp;&nbsp;</><span>This login is already in use, try another one</span></>}
+						<br/><br/><label>Two-factor-authentication: </label>
+						{user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()} checked/>}
+						{!user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()}/>}
+						<br/><br/><label>Download Avatar Image: </label>
+						<input type="file" id="fileInput" onChange={(e)=> e.target.files && changeAvatar(URL.createObjectURL(e.target.files[0]))}/>
+				  </div>)
+}
+
 const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) => {
   const [ownAccount, setOwnAccount] = useState<boolean>(true);
 	const [userMatchHistory, setUserMatchHistory] = useState<MatchHistoryDto[]>([]);
 	const [render, setRender] = useState<boolean>(true);
+	const [settings, setSettings] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getUserMatchHistory: () => void = async () => {
@@ -130,8 +185,10 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) =
 
   return (<div>
               {ownAccount && <><button onClick={()=>{changeMenuPage('home')}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
-              {ownAccount && <button onClick={()=>{logout()}}>Log out</button>}
-              {!ownAccount && <><button onClick={()=>{changeUser(g_remember_account); changeAccountOwner();}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
+              {ownAccount && <><button onClick={()=>{logout()}}>Log out</button><>&nbsp;&nbsp;&nbsp;</></>}
+							{ownAccount && <button onClick={()=>{setSettings(!settings)}}>Settings</button>}
+							{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
+              {!ownAccount && <button onClick={()=>{changeUser(g_remember_account); changeAccountOwner();}}>Back</button>}
               <h1>Profile</h1>
               {user.avatar ? <img src={user.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {user.name}</p>
