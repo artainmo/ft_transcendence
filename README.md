@@ -11,7 +11,7 @@ Make frontend launch !<br>
 Login option with OAuth system of 42 intranet !<br>
 Finish the chat !<br>
 encrypt password !<br>
-Double authentification<br>
+2FA !<br>
 
 Jules:<br>
 Finish the game
