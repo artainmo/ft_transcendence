@@ -67,3 +67,18 @@ export const updateUser: (id: number, updateUserDto: UpdateUserDto) => void = as
 export const removeUser: (id: number) => void = async (id) => {
   await axios.delete(`/user/${id}`);
 }
+
+export const getTwoFactorAuthenticationSecret: () => Promise<any> = async () => {
+  return (await axios.get('user/2fa/secret')).data;
+}
+
+// export const getTwoFactorAuthenticationQRcode: (secret: string) => Promise<string> = async (secret) => {
+//   return (await axios.get(`user/2fa/qrcode/${secret}`)).data;
+// }
+
+export const verifyTwoFactorAuthentication: (secret: any, token: string) => Promise<boolean> = async (secret, token) => {
+  return (await axios.post(`user/2fa/verify`, {
+    secret: secret,
+    token: token
+  })).data;
+} //Post is used because it allows to send a body while get does not

@@ -46,4 +46,19 @@ export class UserController {
   remove(@Param('id') id: string) {
     this.userService.remove(+id);
   }
+
+  @Get('2fa/secret')
+  getTwoFactorAuthenticationSecret() {
+    return this.userService.twoFactorAuthenticationSecret();
+  }
+
+  // @Get('2fa/qrcode/:secret')
+  // getTwoFactorAuthenticationQRcode(@Param('secret') secret: string) {
+  //   return this.userService.twoFactorAuthenticationQRCode(secret);
+  // }
+
+  @Post('2fa/verify')
+  verifyTwoFactorAuthentication(@Body() obj: { secret: string, token: string }) {
+    return this.userService.verifyTwoFactorAuthentication(obj.secret, obj.token);
+  }
 }

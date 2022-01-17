@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { getUser, getAllUsers, updateUser, getUserByLogin } from "../../api/user/user.api";
+import { FriendDto } from "../../api/friends/dto/friend.dto";
 import { addFriend, createNewFriend, getFriendsOfUser, removeFriend } from "../../api/friends/friends.api";
 import { UserDto } from "../../api/user/dto/user.dto";
-import { FriendDto } from "../../api/friends/dto/friend.dto";
+import { getUser, getAllUsers, updateUser, getUserByLogin, getTwoFactorAuthenticationSecret, verifyTwoFactorAuthentication } from "../../api/user/user.api";
 import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
+const QRCode = require('qrcode');
 
 let g_remember_account: UserDto;
 
@@ -111,6 +112,10 @@ const Friends: React.FC<FriendsProps> = ({ user, changeUser, ownAccount, changeA
 const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => {
 	let [login, setLogin] = useState<string>('');
 	let [loginAlreadyInUse, setLoginAlreadyInUse] = useState<boolean>(false);
+	let [qrcode, setQrcode] = useState<string>('');
+	let [activate2FA, setActivate2FA] = useState<boolean>(user.hasTwoFactorAuthentication);
+	let [token, setToken] = useState<string>('');
+	let [wrongToken, setWrongToken] = useState<boolean>(false);
 
 	const newLogin: (name: string) => void = async (name) => {
 		if (name === '') return ;
@@ -129,10 +134,39 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 	}
 
 	const changeTwoFactorAuthentication: () => void = async () => {
-		await updateUser(user.id, {hasTwoFactorAuthentication: !user.hasTwoFactorAuthentication});
-		user.hasTwoFactorAuthentication = !user.hasTwoFactorAuthentication;
+		activate2FA = !activate2FA;
+		setActivate2FA(activate2FA);
+		if (activate2FA) {
+				const secret = await getTwoFactorAuthenticationSecret();
+				QRCode.toDataURL(secret.otpauth_url, (err: any, url: any) => qrcode = url);
+				await updateUser(user.id, {twoFactorAuthenticationSecret: secret.ascii});
+				user.twoFactorAuthenticationSecret = secret.ascii;
+		} else {
+			await updateUser(user.id, {hasTwoFactorAuthentication: false});
+			user.hasTwoFactorAuthentication = false;
+			qrcode = '';
+			setToken('');
+			setWrongToken(false);
+		}
 		changeUser(user);
 		renderPage();
+		setQrcode(qrcode);
+	}
+
+	const verify2FA: () => void = async () => {
+		setToken('');
+		const correct = await verifyTwoFactorAuthentication(user.twoFactorAuthenticationSecret, token);
+		if (correct) {
+			setQrcode('');
+			setWrongToken(false);
+			await updateUser(user.id, {hasTwoFactorAuthentication: true});
+			user.hasTwoFactorAuthentication = true;
+			changeUser(user);
+			renderPage();
+
+		} else {
+			setWrongToken(true);
+		}
 	}
 
 	const changeAvatar: (avatar: string) => void = async (avatar) => {
@@ -151,6 +185,11 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 						<br/><br/><label>Two-factor-authentication: </label>
 						{user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()} checked/>}
 						{!user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()}/>}
+						{qrcode !== '' && <><br/><img src={qrcode} alt={"QR code"}/><br/></>}
+						{qrcode !== '' && <label>Token: </label>}
+						{qrcode !== '' && <input type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>}
+						{token.length === 6 && verify2FA()}
+						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
 						<br/><br/><label>Download Avatar Image: </label>
 						<input type="file" id="fileInput" onChange={(e)=> e.target.files && changeAvatar(URL.createObjectURL(e.target.files[0]))}/>
 				  </div>)
@@ -186,7 +225,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) =
   return (<div>
               {ownAccount && <><button onClick={()=>{changeMenuPage('home')}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               {ownAccount && <><button onClick={()=>{logout()}}>Log out</button><>&nbsp;&nbsp;&nbsp;</></>}
-							{ownAccount && <button onClick={()=>{setSettings(!settings)}}>Settings</button>}
+							{ownAccount && <button onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button>}
 							{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
               {!ownAccount && <button onClick={()=>{changeUser(g_remember_account); changeAccountOwner();}}>Back</button>}
               <h1>Profile</h1>
