@@ -12,6 +12,8 @@ Login option with OAuth system of 42 intranet !<br>
 Finish the chat !<br>
 encrypt password !<br>
 2FA !<br>
+Through the chat interface users should be able to ask other players to do a Pong match <br>
+Through the chat interface users must be able to see other players profiles <br>
 
 Jules:<br>
 Finish the game
