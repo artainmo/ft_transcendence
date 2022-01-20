@@ -14,6 +14,9 @@ encrypt password !<br>
 2FA !<br>
 Through the chat interface users should be able to ask other players to do a Pong match <br>
 Through the chat interface users must be able to see other players profiles <br>
+On profile next to disconnected/connected add "in game" <br>
+Add button next to "in game" to view the game live <br>
+Other users can watch the game live without interfering in it.
 
 Jules:<br>
 Finish the game
@@ -24,4 +27,4 @@ protect against SQL injection
 
 Other:<br>
 css/material-ui<br>
-subject.pdf -> Review pdf and other functionalities that have to be added<br>
+subject.pdf -> Review pdf<br>
