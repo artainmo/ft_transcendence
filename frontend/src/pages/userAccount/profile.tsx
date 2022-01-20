@@ -169,13 +169,18 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 		}
 	}
 
-	const changeAvatar: (avatar: string) => void = async (avatar) => {
-		if (avatar === '') return ;
-		await updateUser(user.id, {avatar: avatar});
-		user.avatar = avatar;
-		changeUser(user);
-		renderPage();
-	}
+	const changeAvatar: (event: any) => void = async (event) => {
+		if (!event.target.files) return ;
+		let reader = new FileReader();
+	 	reader.onload = async (e) => {
+			if (e === null || e!.target!.result === null) return ;
+			await updateUser(user.id, {avatar: e!.target!.result as string});
+			user.avatar = e!.target!.result as string;
+			changeUser(user);
+			renderPage();
+	 	};
+	 	reader.readAsDataURL(event.target.files[0]);
+ }
 
 	return (<div>
 						<br/><label>New Login: </label>
@@ -191,7 +196,7 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 						{token.length === 6 && verify2FA()}
 						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
 						<br/><br/><label>Download Avatar Image: </label>
-						<input type="file" id="fileInput" onChange={(e)=> e.target.files && changeAvatar(URL.createObjectURL(e.target.files[0]))}/>
+						<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
 				  </div>)
 }
 
