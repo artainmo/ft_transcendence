@@ -8,6 +8,7 @@ import { ChannelDto } from "../../api/channels/dto/channel.dto";
 import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
 import { connect, listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/chat/chat.socket";
 import _ from 'underscore';
+import Profile from '../userAccount/profile';
 
 interface addUsersProps {
 	currentChat: ChannelDto,
@@ -16,8 +17,10 @@ interface addUsersProps {
 
 interface channelViewUsersProps {
 	channelUser: ChannelUserDto,
+	changeUser: (newUser: UserDto | null) => void,
 	currentChat: ChannelDto,
-	currentChatLatestUpdates: () => void
+	currentChatLatestUpdates: () => void,
+	changeViewProfile: (profile: UserDto) => void
 }
 
 interface channelSettingsprops {
@@ -34,9 +37,11 @@ interface channelSettingsprops {
 
 interface channelInfoProps {
 	channelUser: ChannelUserDto,
+	changeUser: (newUser: UserDto | null) => void,
 	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
 	currentChat: ChannelDto,
-	currentChatLatestUpdates: () => void
+	currentChatLatestUpdates: () => void,
+	changeViewProfile: (profile: UserDto) => void
 }
 
 interface messageProps {
@@ -49,8 +54,9 @@ interface messageProps {
 
 interface chatProps {
 	user: UserDto,
-	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
-	currentChat: any //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
+	changeUser: (newUser: UserDto | null) => void,
+	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
+	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
 }
 
 const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdates }) => {
@@ -93,7 +99,7 @@ const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdat
           </div>);
 }
 
-const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, currentChat, currentChatLatestUpdates }) => {
+const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, changeUser, currentChat, currentChatLatestUpdates, changeViewProfile }) => {
 
   const changeStatus: (id: number, newValue: boolean) => void = async (id, newValue) => {
     await updateChannelUser(id, { administrator: newValue });
@@ -119,10 +125,10 @@ const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, curren
 							{currentChat.channel_users.length === 1 ? <p>No other users</p> :
 								currentChat.channel_users.map((item: ChannelUserDto) => {
 									if (item.user.id === channelUser.user.id) return "";
-									if (item.owner) return (<li>{item.user.login + " --- owner"}</li>);
+									if (item.owner) return (<li onClick={()=>changeViewProfile(item.user)}>{item.user.login + " --- owner"}</li>);
 									return (<div>
 														<li>
-															{item.user.login + " --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}
+															<span onClick={()=>changeViewProfile(item.user)}>{item.user.login}</span><>{" --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}</>
 															{channelUser.owner && <button onClick={(e)=>changeStatus(item.id, !item.administrator)}>Change Status</button>}
 															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>ban(item)}>Ban</button>}
 															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>mute(item.id, !item.mute)}>{item.mute ? "Unmute" : "mute"}</button>}
@@ -162,7 +168,7 @@ const ChannelSettings: React.FC<channelSettingsprops> = ({ channelUser, changeCu
          </>)
 }
 
-const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentChat, currentChat, currentChatLatestUpdates }) => {
+const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeUser, changeCurrentChat, currentChat, currentChatLatestUpdates, changeViewProfile }) => {
   const [info, setInfo] = useState<boolean>(false);
 	const [viewUsers, setViewUsers] = useState<boolean>(false);
   const [settings, setSettings] = useState<boolean>(false);
@@ -208,7 +214,7 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentCha
                       {!channelUser.owner && channelUser.administrator && <li>You have administrator rights in this channel</li>}
                     </ul>}
             {settings && <ChannelSettings channelUser={channelUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} password={password} type={type} changePassword={changePassword} changeType={changeType} resetSettings={resetSettings} changeSettings={changeSettings}/>}
-            {viewUsers && <ChannelViewUsers channelUser={channelUser} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} />}
+            {viewUsers && <ChannelViewUsers channelUser={channelUser} changeUser={changeUser} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
           </div>);
 }
 
@@ -238,9 +244,10 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
           </div>);
 }
 
-const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => {
+const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurrentChat }) => {
   let dm: boolean = ("block" in currentChat);
 	const [socket, setSocket] = useState<any>(null);
+	const [viewProfile, setViewProfile] = useState<UserDto | undefined>(undefined);
 
 	useEffect(() => {
 		const connectedSocket = connect()
@@ -304,14 +311,23 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
     changeCurrentChat(null);
   }
 
+	const changeViewProfile: (profile: UserDto) => void = (profile) => {
+		setViewProfile(profile);
+	}
+
+	const backFromViewProfile: () => void = () => {
+		setViewProfile(undefined);
+	}
+
+	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false}/>;
   return (<div>
             <button onClick={()=>changeCurrentChat(null)}>Back</button>
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
 							&& <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
             {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
-						{dm && <h1>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
+						{dm && <h1 onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
             {!dm && <h1>{currentChat.name}</h1>}
-            {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates}/>}
+            {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
 						<br/><br/>
             <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket}/>
           </div>);

@@ -20,14 +20,18 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 		setMenuPage(newMenuPage);
 	}
 
+	const back: () => void = () => {
+		changeMenuPage("home");
+	}
+
 	if (menuPage === "home") {
 		return (<HomeDisplay changeMenuPage={changeMenuPage}/>);
 	} else if (menuPage === "play") {
 		return <Play user={user} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "chat") {
-		return <ChatsView user={user} changeMenuPage={changeMenuPage}/>;
+		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
 	} else if (menuPage === "profile") {
-		return <Profile user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
+		return <Profile user={user} changeUser={changeUser} back={back} myAccount={true}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

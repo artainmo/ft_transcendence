@@ -29,6 +29,7 @@ interface newDmProps {
 
 interface chatsViewProps {
 	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
 	changeMenuPage: (newMenuPage: string) => void
 }
 
@@ -149,7 +150,7 @@ const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
           </div>);
 }
 
-const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
+const ChatsView: React.FC<chatsViewProps> = ({ user, changeUser, changeMenuPage }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
@@ -184,7 +185,7 @@ const ChatsView: React.FC<chatsViewProps> = ({ user, changeMenuPage }) => {
     }
 
     if (currentChat !== null) {
-      return (<Chat user={user} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
+      return (<Chat user={user} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
     } else {
       return (<div>
                 <button onClick={()=>{changeMenuPage('home')}}>Back</button>
