@@ -15,11 +15,11 @@ encrypt password !<br>
 Through the chat interface users should be able to ask other players to do a Pong match !<br>
 Through the chat interface users must be able to see other players profiles !<br>
 On profile next to disconnected/connected add "in game" !<br>
-Add button next to "in game" to view the game live <br>
-Other users can watch the game live without interfering in it.
+Add button next to "in game" to view the game live !<br>
 
 Jules:<br>
 Finish the game
+Other users can watch the game live without interfering in it.
 
 Alissio:<br>
 docker<br>

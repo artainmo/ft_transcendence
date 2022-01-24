@@ -54,9 +54,9 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	} else if (menuPage === "play" || game !== null) {
 		return <Play user={user} changeMenuPage={changeMenuPage} game={game} changeGame={changeGame}/>;
 	} else if (menuPage === "chat") {
-		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage}/>;
+		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage} changeGame={changeGame}/>;
 	} else if (menuPage === "profile") {
-		return <Profile user={user} changeUser={changeUser} back={back} myAccount={true}/>;
+		return <Profile user={user} changeUser={changeUser} back={back} myAccount={true} changeGame={changeGame}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

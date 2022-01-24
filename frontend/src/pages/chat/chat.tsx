@@ -10,6 +10,7 @@ import { ChannelMessageDto } from "../../api/channels/dto/channel_message.dto";
 import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
 import { connect, listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/chat/chat.socket";
 import { addGame } from "../../api/games/games.api";
+import { GameDto } from "../../api/games/dto/game.dto";
 import _ from 'underscore';
 import Profile from '../userAccount/profile';
 
@@ -59,7 +60,8 @@ interface chatProps {
 	user: UserDto,
 	changeUser: (newUser: UserDto | null) => void,
 	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
-	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void
+	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
+	changeGame: (newGame: GameDto | null) => void
 }
 
 const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdates }) => {
@@ -223,6 +225,7 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeUser, chan
 
 const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm, socket }) => {
   const [message, setMessage] = useState<string>('');
+	const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
 	 // eslint-disable-next-line
 	useEffect(() => currentChatLatestUpdates(), []); //This has to be called once to set the order of messages correctly
@@ -239,35 +242,51 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		await currentChatLatestUpdates();
   }
 
-	const createGame: (message: ChannelMessageDto | DmMessageDto) => void = async (message) => {
+	const createGame: (message: ChannelMessageDto | DmMessageDto, game: {speed: number, map: string, random: boolean}) => void = async (message, game) => {
 		let userMessage = await getUser(message.user.id);
 		if (userMessage !== null && userMessage.id === (dm ? userOrchannelUser.id : userOrchannelUser.user.id)) return ;
 		if (userMessage !== null && userMessage.status === "Online") {
-			await addGame({user1: userMessage, user2: (dm ? userOrchannelUser : userOrchannelUser.user), ballspeed: 1, map: "black"});
+			if (game.random) {
+				game.speed = Math.floor(Math.random() * 3) + 1;
+				game.map = Maps[Math.floor(Math.random() * 5)];
+			}
+			await addGame({user1: userMessage, user2: (dm ? userOrchannelUser : userOrchannelUser.user), ballspeed: game.speed, map: game.map});
 		}
 		dm ? await updateDmMessage(message.id, {content: "/*PLAY*"}) : await updateChannelMessage(message.id, {content: "/*PLAY*"});
 		await currentChatLatestUpdates();
 	}
 
 	const ChatCommands: React.FC<{message: ChannelMessageDto | DmMessageDto}> = ({message}) => {
-		if (message.content === "*PLAY*") {
-			return (<><br/><span>{`${message.user.login} --- `}</span><button onClick={()=>createGame(message)}>PLAY</button><br/><br/></>)
+		let game = {speed: 1, map: "black", random: false};
+
+		if (message.content.substring(0,6) === "*PLAY*") {
+			if (message.content.substring(7,13) === "random") {
+				game.random = true;
+				return (<><span>{`${message.user.login} --- random game --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+			} else if (message.content.length > 6) {
+				game.speed = Number(message.content.substring(7,8));
+				game.map = message.content.substring(9, message.content.length);
+				if (!(game.speed > 0 && game.speed < 4) || !(Maps.find((_map: string) => _map === game.map))) return <></>;
+				return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+			}
+			return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
 		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
 			return (<><br/><span>{`${message.user.login} --- `}</span><button disabled>PLAY</button><br/><br/></>)
 		} else {
-			return (<p>{`${message.user.login} --- ${message.content}`}</p>);
+			return (<><span>{`${message.user.login} --- ${message.content}`}</span><br/><br/></>);
 		}
 	}
 
   return (<div>
             {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
+						<br/>
             <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
             {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input type="submit" value="Message" disabled/>}
 						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
           </div>);
 }
 
-const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurrentChat }) => {
+const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurrentChat, changeGame }) => {
   let dm: boolean = ("block" in currentChat);
 	const [socket, setSocket] = useState<any>(null);
 	const [viewProfile, setViewProfile] = useState<UserDto | undefined>(undefined);
@@ -342,7 +361,7 @@ const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurren
 		setViewProfile(undefined);
 	}
 
-	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false}/>;
+	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false} changeGame={changeGame}/>;
   return (<div>
             <button onClick={()=>changeCurrentChat(null)}>Back</button>
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))

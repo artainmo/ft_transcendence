@@ -8,6 +8,7 @@ import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
 import { CreateChannelDto } from "../../api/channels/dto/create-channel.dto";
 import { CreateDmDto } from "../../api/dms/dto/create-dm.dto";
+import { GameDto } from "../../api/games/dto/game.dto";
 import _ from 'underscore';
 
 interface joinChannelProps {
@@ -30,7 +31,8 @@ interface newDmProps {
 interface chatsViewProps {
 	user: UserDto,
 	changeUser: (newUser: UserDto | null) => void,
-	changeMenuPage: (newMenuPage: string) => void
+	changeMenuPage: (newMenuPage: string) => void,
+	changeGame: (newGame: GameDto | null) => void
 }
 
 const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrentChat }) => {
@@ -150,10 +152,11 @@ const NewDm: React.FC<newDmProps> = ({ user, dms, changeCurrentChat }) => {
           </div>);
 }
 
-const ChatsView: React.FC<chatsViewProps> = ({ user, changeUser, changeMenuPage }) => {
+const ChatsView: React.FC<chatsViewProps> = ({ user, changeUser, changeMenuPage, changeGame }) => {
     const [newdm, setNewdm] = useState<boolean>(false);
     const [newchannel, setNewchannel] = useState<boolean>(false);
     const [joinchannel, setJoinchannel] = useState<boolean>(false);
+		const [viewChatCommands, setViewChatCommands] = useState<boolean>(false);
 		const [dms, setDms] = useState<DmDto[]>([]);
 		const [channels, setChannels] = useState<ChannelDto[]>([]);
     const [currentChat, setCurrentChat] = useState<DmDto | ChannelDto | null>(null);
@@ -185,17 +188,21 @@ const ChatsView: React.FC<chatsViewProps> = ({ user, changeUser, changeMenuPage 
     }
 
     if (currentChat !== null) {
-      return (<Chat user={user} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat}/>);
+      return (<Chat user={user} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} changeGame={changeGame}/>);
     } else {
       return (<div>
                 <button onClick={()=>{changeMenuPage('home')}}>Back</button>
                 <h1>Chat</h1>
-                <button onClick={()=> {setNewdm(!newdm); setNewchannel(false); setJoinchannel(false);}}>New DM</button><>&nbsp;&nbsp;&nbsp;</>
-                <button onClick={()=>{setNewchannel(!newchannel); setNewdm(false); setJoinchannel(false);}}>New Channel</button><>&nbsp;&nbsp;&nbsp;</>
-                <button onClick={()=> {setJoinchannel(!joinchannel); setNewchannel(false); setNewdm(false);}}>Join Channel</button>
+                <button onClick={()=> {setNewdm(!newdm); setNewchannel(false); setJoinchannel(false); setViewChatCommands(false);}}>New DM</button><>&nbsp;&nbsp;&nbsp;</>
+                <button onClick={()=>{setNewchannel(!newchannel); setNewdm(false); setJoinchannel(false); setViewChatCommands(false);}}>New Channel</button><>&nbsp;&nbsp;&nbsp;</>
+                <button onClick={()=> {setJoinchannel(!joinchannel); setNewchannel(false); setNewdm(false); setViewChatCommands(false);}}>Join Channel</button><>&nbsp;&nbsp;&nbsp;</>
+								<button onClick={()=> {setViewChatCommands(!viewChatCommands); setNewchannel(false); setNewdm(false); setJoinchannel(false);}}>View Chat Commands</button>
                 {newdm && <NewDm user={user} dms={dms} changeCurrentChat={changeCurrentChat}/>}
                 {newchannel && <NewChannel user={user} changeCurrentChat={changeCurrentChat}/>}
                 {joinchannel && <JoinChannel user={user} channels={channels} changeCurrentChat={changeCurrentChat}/>}
+								{viewChatCommands && <><p>Write *PLAY* in chat to propose to play a default game</p>
+																		 <p>Play a random game: *PLAY* random</p>
+																	 	 <p>Play a game with custom settings: *PLAY* 3 night</p></>}
                 <br/><br/>
                 {channels.map((item)=><p onClick={()=>changeCurrentChat(item)}>{`${item.name} -- channel`}</p>)}
 								{dms.map((item)=><p onClick={()=>changeCurrentChat(item)}>{`${item.users[0].id === user.id ? item.users[1].login : item.users[0].login} -- dm`}</p>)}

@@ -4,7 +4,7 @@ import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from
 import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser } from "../../api/user/user.api";
 
-const dataBaseMaps = ['black', 'white', 'winter', 'summer', 'night'];
+const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
 interface preGamePageProps {
   getGame: "create" | "join" | null,
@@ -120,7 +120,7 @@ const CreateGame: React.FC<createGameProps> = ({ user, changeGetGame, changeGame
             <br/><br/>
             <label>Map: </label><>&nbsp;&nbsp;&nbsp;</>
             <select onChange={(e)=>setMap(e.target.value)} required>
-              {dataBaseMaps.map((item)=> <option>{item}</option>)}
+              {Maps.map((item)=> <option>{item}</option>)}
             </select>
             <br/><br/>
             <button type="submit" onClick={()=>onSubmit()}>Create Game</button>
@@ -136,7 +136,11 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage, game, changeGame }) =
   }
 
   if (game !== null && game.user2 !== null) {
-    updateUser(user.id, {status: "In a game"});
+    if (game.user1.id === user.id || game.user2.id === user.id) {
+      updateUser(user.id, {status: "In a game"});
+    } else {
+       updateUser(user.id, {status: "Watching a game"});
+    }
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null); removeGame(game.id); updateUser(user.id, {status: "Online"});}}>Back</button>
               <h1>GAME</h1>

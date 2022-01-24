@@ -6,6 +6,8 @@ import { UserDto } from "../../api/user/dto/user.dto";
 import { getUser, getAllUsers, updateUser, getUserByLogin, getTwoFactorAuthenticationSecret, verifyTwoFactorAuthentication } from "../../api/user/user.api";
 import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
+import { GameDto } from "../../api/games/dto/game.dto";
+import { getAllGames } from "../../api/games/games.api";
 const QRCode = require('qrcode');
 
 let g_viewed_users_history: UserDto[] = [];
@@ -15,6 +17,7 @@ interface profileProps {
 	changeUser: (newUser: UserDto | null) => void,
 	back: () => void,
 	myAccount: boolean
+	changeGame: (newGame: GameDto | null) => void
 }
 
 interface settingsProps {
@@ -200,7 +203,7 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
           </div>);
 }
 
-const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount }) => {
+const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, changeGame }) => {
 	const [profile, setProfile] = useState<UserDto>(user);
   const [ownAccount, setOwnAccount] = useState<boolean>(myAccount);
 	const [userMatchHistory, setUserMatchHistory] = useState<MatchHistoryDto[]>([]);
@@ -238,6 +241,21 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount }) 
 		if (g_viewed_users_history.length === 0 && myAccount === true) changeAccountOwner(true);
 	}
 
+	const watchGame: () => void = async () => {
+		let latestUser = await getUser(profile.id);
+		if (latestUser === null || latestUser.status !== "In a game") {
+			if (latestUser === null) return ;
+			changeProfile(latestUser);
+			return ;
+		}
+		const games = await getAllGames();
+		let Game = games.find((findGame: GameDto) =>
+					(findGame.user1.id === profile.id || (findGame.user2 !== null && findGame.user2.id === profile.id)));
+		if (Game === undefined) return ;
+		g_viewed_users_history = [];
+		changeGame(Game);
+	}
+
   return (<div>
               {g_viewed_users_history.length === 0 && <><button onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
               {ownAccount && <><button onClick={()=>{logout()}}>Log out</button><>&nbsp;&nbsp;&nbsp;</></>}
@@ -248,7 +266,8 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount }) 
               {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {profile.name}</p>
 							<p>Login: {profile.login}</p>
-							<p>{profile.status}</p>
+							<span>{profile.status}</span><>&nbsp;&nbsp;&nbsp;</>
+							{profile.status === "In a game" && <button onClick={()=>watchGame()}>Watch Game</button>}<br/>
               <h3>Stats</h3>
               <p>Victories: {profile.nbrVicotry}</p>
               <p>Losses: {profile.nbrLoss}</p>
