@@ -17,7 +17,7 @@ export const createNewUser: (name: string, login: string, avatar: string) => Cre
     avatar: avatar,
     hasTwoFactorAuthentication: false,
     twoFactorAuthenticationSecret: '',
-    online: true,
+    status: "online",
     nbrVicotry: 0,
     nbrLoss: 0,
     matchHistory: [],

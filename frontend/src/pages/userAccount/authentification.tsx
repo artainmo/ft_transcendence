@@ -25,7 +25,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			setAvatar('');
 		} else {
 			setNonExistingAccount(false);
-			if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
+			if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
 			changeUser(userInDatabase)
 		}
 	}
@@ -37,7 +37,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			await addUser(createNewUser(name, login, avatar));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
-			if (userInDatabase!.online === false) { userInDatabase!.online = true; await updateUser(userInDatabase!.id, {online: true}); }
+			if (userInDatabase!.status === "Offline") { userInDatabase!.status = "Online"; await updateUser(userInDatabase!.id, {status: "Online"}); }
 			changeUser(userInDatabase);
 		} else {
 			setAccountAlreadyInUse(true);
@@ -132,7 +132,7 @@ const Authentification: React.FC = () => {
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
 					}
-					if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
+					if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
 					setTwoFA(userInDatabase.hasTwoFactorAuthentication);
 					setUser(userInDatabase);
 				}

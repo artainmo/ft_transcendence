@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { addDm, getDm, addDmMessage, createNewDmMessage } from "../../api/dms/dms.api";
-import { addChannel, removeChannel, updateChannel, updateChannelUser, getChannel, addChannelMessage, createNewChannelMessage, addChannelUser, createNewChannelUser } from "../../api/channels/channels.api";
-import { getAllUsers, addUser, getCompleteUser } from "../../api/user/user.api";
+import { addDm, getDm, addDmMessage, createNewDmMessage, updateDmMessage } from "../../api/dms/dms.api";
+import { addChannel, removeChannel, updateChannel, updateChannelUser, getChannel, addChannelMessage, createNewChannelMessage, addChannelUser, createNewChannelUser, updateChannelMessage } from "../../api/channels/channels.api";
+import { getAllUsers, addUser, getCompleteUser, getUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
+import { DmMessageDto } from "../../api/dms/dto/dm_message.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
+import { ChannelMessageDto } from "../../api/channels/dto/channel_message.dto";
 import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
 import { connect, listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/chat/chat.socket";
+import { addGame } from "../../api/games/games.api";
 import _ from 'underscore';
 import Profile from '../userAccount/profile';
 
@@ -236,8 +239,28 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		await currentChatLatestUpdates();
   }
 
+	const createGame: (message: ChannelMessageDto | DmMessageDto) => void = async (message) => {
+		let userMessage = await getUser(message.user.id);
+		if (userMessage !== null && userMessage.id === (dm ? userOrchannelUser.id : userOrchannelUser.user.id)) return ;
+		if (userMessage !== null && userMessage.status === "Online") {
+			await addGame({user1: userMessage, user2: (dm ? userOrchannelUser : userOrchannelUser.user), ballspeed: 1, map: "black"});
+		}
+		dm ? await updateDmMessage(message.id, {content: "/*PLAY*"}) : await updateChannelMessage(message.id, {content: "/*PLAY*"});
+		await currentChatLatestUpdates();
+	}
+
+	const ChatCommands: React.FC<{message: ChannelMessageDto | DmMessageDto}> = ({message}) => {
+		if (message.content === "*PLAY*") {
+			return (<><br/><span>{`${message.user.login} --- `}</span><button onClick={()=>createGame(message)}>PLAY</button><br/><br/></>)
+		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
+			return (<><br/><span>{`${message.user.login} --- `}</span><button disabled>PLAY</button><br/><br/></>)
+		} else {
+			return (<p>{`${message.user.login} --- ${message.content}`}</p>);
+		}
+	}
+
   return (<div>
-            {currentChat.messages.map((message: any)=><p>{`${message.user.login} --- ${message.content}`}</p>)}
+            {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
             <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
             {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input type="submit" value="Message" disabled/>}
 						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}

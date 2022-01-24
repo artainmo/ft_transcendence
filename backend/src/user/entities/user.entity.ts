@@ -28,7 +28,7 @@ export class UserEntity {
     twoFactorAuthenticationSecret: string;
 
     @Column()
-    online: boolean;
+    status: string;
 
     @Column()
     nbrVicotry: number;

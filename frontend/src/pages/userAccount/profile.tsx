@@ -228,7 +228,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount }) 
   }
 
 	const logout: () => void = async () => {
-		if (profile.online === true) await updateUser(profile.id, {online: false});
+		if (profile.status === "Online") await updateUser(profile.id, {status: "Offline"});
 		changeUser(null);
 	}
 
@@ -248,7 +248,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount }) 
               {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {profile.name}</p>
 							<p>Login: {profile.login}</p>
-							<p>{profile.online ? "Connected" : "Disconnected"}</p>
+							<p>{profile.status}</p>
               <h3>Stats</h3>
               <p>Victories: {profile.nbrVicotry}</p>
               <p>Losses: {profile.nbrLoss}</p>
