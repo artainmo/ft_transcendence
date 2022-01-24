@@ -18,8 +18,10 @@ On profile next to disconnected/connected add "in game" !<br>
 Add button next to "in game" to view the game live !<br>
 
 Jules:<br>
-Finish the game
-Other users can watch the game live without interfering in it.
+Finish the game <br>
+Other users can watch the game live without interfering in it. <br>
+Each user has a match history <br>
+Game accepts different options/speed/maps
 
 Alissio:<br>
 docker<br>
@@ -27,4 +29,3 @@ protect against SQL injection
 
 Other:<br>
 css/material-ui<br>
-subject.pdf -> Review pdf<br>
