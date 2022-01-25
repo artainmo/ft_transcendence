@@ -2,14 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { GameDto } from "../../api/games/dto/game.dto";
 import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from "../../api/games/games.api";
 import { UserDto } from "../../api/user/dto/user.dto";
-<<<<<<< HEAD
-import PongGame from "./gameFunc/PongGame";
-// import StartGame from "./gameFunc/shapes";
-// import { listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/game/game.socket";
-
-=======
 import { updateUser } from "../../api/user/user.api";
->>>>>>> main
+import PongGame from "./gameFunc/PongGame";
 
 const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
@@ -46,10 +40,6 @@ const PreGamePage: React.FC<preGamePageProps> = ({ getGame, changeGetGame, game,
     const verifySecondPlayer: () => void = async () => {
       const myGame = await GetGame(game.id);
       if (myGame!.user2 !== null) {
-<<<<<<< HEAD
-        removeGame(myGame!.id); //  !!!!!!!!!! peut être enlever le remove ici !!!!!!!!!!
-=======
->>>>>>> main
         changeGame(myGame);
       }
     }
@@ -147,15 +137,11 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage, game, changeGame }) =
   }
 
   if (game !== null && game.user2 !== null) {
-<<<<<<< HEAD
-    //var gameinfos: GameDto = game;
-=======
     if (game.user1.id === user.id || game.user2.id === user.id) {
       updateUser(user.id, {status: "In a game"});
     } else {
        updateUser(user.id, {status: "Watching a game"});
     }
->>>>>>> main
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null); removeGame(game.id); updateUser(user.id, {status: "Online"});}}>Back</button>
               <h1>GAME</h1>

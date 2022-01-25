@@ -8,6 +8,7 @@ import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
+
 const QRCode = require('qrcode');
 
 let g_viewed_users_history: UserDto[] = [];
@@ -231,13 +232,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
   }
 
 	const logout: () => void = async () => {
-<<<<<<< HEAD
-		if (user.online === true) await updateUser(user.id, {online: false});
-		disconnectChat();
-		//disconnectGame();
-=======
 		if (profile.status === "Online") await updateUser(profile.id, {status: "Offline"});
->>>>>>> main
 		changeUser(null);
 	}
 
