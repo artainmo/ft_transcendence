@@ -1,5 +1,6 @@
 import { BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH } from "./utils/gameConstants";
 import Player from "./Player";
+import { ballDto } from "./utils/ballDto";
 
 class Ball
 {
@@ -7,8 +8,17 @@ class Ball
 	** ---------------------------
 	** Public
 	*/
+	public x: number;
+	public y: number;
+	public r: number;
+	public speed: number;
+	public velocityX: number;
+	public velocityY: number;
+	public color: string;
+	
 	constructor(r = BALL_RADIUS, s = 5, vX = 5, vY = 5, color = "white")
 	{
+
 		this.x = GAME_WIDTH / 2;
 		this.y = GAME_HEIGHT / 2;
 		this.r = r;
@@ -16,6 +26,7 @@ class Ball
 		this.velocityX = vX;
 		this.velocityY = vY;
 		this.color = color;
+		
 	}
 
 	/*
@@ -28,10 +39,12 @@ class Ball
 	public getVX() {return this.velocityX;}
 	public getVY() {return this.velocityY;}
 	public getColor() {return this.color;}
-	
+
 	/*
 	** Setter
 	*/
+	public setX(nX: number) {this.x = nX;}
+	public setY(nY: number) {this.x = nY;}
 	public setRadius(r: number) {this.r = r;}
 	public setSpeed(s: number) {this.speed = s;}
 	public setVX(vX: number) {this.velocityX = vX;}
@@ -62,8 +75,8 @@ class Ball
 		this.y += this.velocityY;
 
 		//Vs ia
-		let computerLevel = 0.1;
-		p2.y += (this.y - (p2.y + PLAYER_HEIGHT / 2)) * computerLevel;
+		// let computerLevel = 0.1;
+		// p2.y += (this.y - (p2.y + PLAYER_HEIGHT / 2)) * computerLevel;
 
 		if (this.y + this.r > hMax || this.y - this.r < 0)
 			this.velocityY = -this.velocityY;
@@ -78,6 +91,15 @@ class Ball
 			var angleRad = (Math.PI/4) * collidepoint;
 
 			var direction = (this.x < GAME_WIDTH / 2 ? 1 : -1);
+
+			// sendBallPos({room: this.room, value : {
+			// 	x: this.x,
+			// 	y: this.y,
+			// 	velocityX: direction * (this.speed * Math.cos(angleRad)),
+			// 	velocityY: this.speed * Math.sin(angleRad),
+			// 	speed: this.speed += 0.5,
+			// }})
+
 			this.velocityX = direction * (this.speed * Math.cos(angleRad));
 			this.velocityY = this.speed * Math.sin(angleRad);
 
@@ -87,6 +109,14 @@ class Ball
 
 	public resetBall()
 	{
+		// sendBallPos({room: this.room, value : {
+		// 	x: GAME_WIDTH / 2,
+		// 	y: GAME_HEIGHT / 2,
+		// 	velocityX: -this.velocityX,
+		// 	velocityY: this.velocityY,
+		// 	speed: 5,
+		// }})
+
 		this.x = GAME_WIDTH / 2;
 		this.y = GAME_HEIGHT / 2;
 		this.speed = 5;
@@ -97,13 +127,7 @@ class Ball
 	** ---------------------------
 	** Private
 	*/
-	private x: number;
-	private y: number;
-	private r: number;
-	private speed: number;
-	private velocityX: number;
-	private velocityY: number;
-	private color: string;
+	
 }
 
 export default Ball;

@@ -18,6 +18,8 @@ class Player
 		this.width = w;
 		this.height = h;
 	}
+
+	public setY(nY: number) { this.y = nY; }
 }
 
 export default Player;

@@ -40,7 +40,7 @@ const PreGamePage: React.FC<preGamePageProps> = ({ getGame, changeGetGame, game,
     const verifySecondPlayer: () => void = async () => {
       const myGame = await GetGame(game.id);
       if (myGame!.user2 !== null) {
-        removeGame(myGame!.id);
+        removeGame(myGame!.id); //  !!!!!!!!!! peut être enlever le remove ici !!!!!!!!!!
         changeGame(myGame);
       }
     }
@@ -146,7 +146,7 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage }) => {
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
               <h1>GAME</h1>
-              {<PongGame gameInfos={game}/>/* <GamePong user={user} game={game}/> */}
+              {<PongGame gameInfos={game} user={user}/>/* <GamePong user={user} game={game}/> */}
             </div>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;

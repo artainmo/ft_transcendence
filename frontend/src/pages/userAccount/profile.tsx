@@ -128,7 +128,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, changeMenuPage }) =
 	const logout: () => void = async () => {
 		if (user.online === true) await updateUser(user.id, {online: false});
 		disconnectChat();
-		disconnectGame();
+		//disconnectGame();
 		changeUser(null);
 	}
 

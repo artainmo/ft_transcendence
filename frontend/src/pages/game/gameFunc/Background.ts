@@ -3,10 +3,13 @@ import {CENTER_WIDTH, GAME_HEIGHT, GAME_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, STAR
 import Ball from "./Ball";
 import Player from "./Player";
 import { GameDto } from "../../../api/games/dto/game.dto";
-import { send, sendScore1 } from "../../../websocket/game/game.socket";
+// import { sendScore1, sendScore2, sendPos1, sendBallPos, sendPos2 } from "../../../websocket/game/game.socket";
+import { ballDto } from "./utils/ballDto";
+import { getUserByName } from "../../../api/user/user.api";
 
 class Background 
 {
+		private room: string;
 		private w: number;
 		private h: number;
 		private can: HTMLCanvasElement;
@@ -19,8 +22,9 @@ class Background
 		private nameP1: string = "Player 1 : "; 
 		private nameP2: string = "Player 2 : ";
 		private bgColor: string = "black";
+		private me: string;
 
-		constructor(baseGame: GameDto, w: number = GAME_WIDTH, h: number = GAME_HEIGHT, canId: string = "PongCanvas")
+		constructor(baseGame: GameDto, name: string, w: number = GAME_WIDTH, h: number = GAME_HEIGHT, canId: string = "PongCanvas")
 		{
 			this.w = w;
 			this.h = h;
@@ -30,7 +34,10 @@ class Background
 				this.nameP2 = baseGame.user2.name;
 			this.b.setSpeed(baseGame.ballspeed*5);
 			
+			this.room = baseGame.id.toString();
+				
 			this.bgColor = baseGame.map;
+			this.me = name;
 
 			this.can = document.getElementById(canId)  as HTMLCanvasElement;
 			this.ctx = this.can.getContext('2d') as CanvasRenderingContext2D;
@@ -44,16 +51,27 @@ class Background
 		/*
 		** Setter
 		*/
-		public setP1Y(y: number) { this.p1.y = y; }
-		public setP2Y(y: number) { this.p2.y = y; }
+		public setP1Y(ny: number) { this.p1.y = ny; }
+		public setP2Y(ny: number) { this.p2.y = ny; }
 		public setP1Score(score: number) { this.scoreP1 = score; }
 		public setP2Score(score: number) { this.scoreP2 = score; }
-
+		public setBallData(data: ballDto) {
+			this.b.setX(data.x);
+			this.b.setY(data.y);
+			this.b.setVX(data.velocityX);
+			this.b.setVY(data.velocityY);
+			this.b.setSpeed(data.speed);
+		}
+		
 		public movePaddle(evt: MouseEvent)
 		{
 			// var rectTop = {top: 0};
 			var rect = this.can.getBoundingClientRect();// || rectTop;
-			this.p1.y = evt.clientY - rect.top - (PLAYER_HEIGHT / 2);
+			//this.p1.y = evt.clientY - rect.top - (PLAYER_HEIGHT / 2);
+			// if (this.me == this.nameP1)
+			// 	sendPos1({room: this.room, value: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
+			// else if (this.me == this.nameP2)
+			// 	sendPos2({room: this.room, value: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
 		}
 
 		public fillRect(color: string = this.bgColor, x: number = 0, y: number = 0, w: number = this.w, h:number = this.h)
@@ -91,8 +109,8 @@ class Background
 			this.fillRect();
 			this.fillRect("white", this.p1.x, this.p1.y, PLAYER_WIDTH, PLAYER_HEIGHT);
 			this.fillRect("white", this.p2.x, this.p2.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-			this.fillWrite(this.nameP1 + this.scoreP1, (GAME_WIDTH / 2) - 250 , 15);
-			this.fillWrite(this.nameP2 + this.scoreP2, (GAME_WIDTH / 2) + 150 , 15);
+			this.fillWrite(this.nameP1 + "   "  + this.scoreP1.toString(), (GAME_WIDTH / 2) - 250 , 15);
+			this.fillWrite(this.nameP2 + "   "  + this.scoreP2.toString(), (GAME_WIDTH / 2) + 150 , 15);
 			
 			while (height < GAME_HEIGHT)
 			{
@@ -104,18 +122,68 @@ class Background
 
 		public update()
 		{
-			this.b.update(this.h, this.p1, this.p2);
+			// this.b.update(this.h, this.p1, this.p2);
+
+			this.b.x += this.b.velocityX;
+			this.b.y += this.b.velocityY;
+
+			//Vs ia
+			// let computerLevel = 0.1;
+			// p2.y += (this.y - (p2.y + PLAYER_HEIGHT / 2)) * computerLevel;
+
+			if (this.b.y + this.b.r > this.h/*hMax*/ || this.b.y - this.b.r < 0)
+				this.b.velocityY = -this.b.velocityY;
+
+			let player = (this.b.x < GAME_WIDTH / 2 ? this.p1 : this.p2);
+
+			if (this.b.collision(player))
+			{
+				var collidepoint = this.b.y - (player.y + PLAYER_HEIGHT/2);
+				collidepoint = collidepoint / (PLAYER_HEIGHT / 2);
+
+				var angleRad = (Math.PI/4) * collidepoint;
+
+				var direction = (this.b.x < GAME_WIDTH / 2 ? 1 : -1);
+
+				// sendBallPos({room: this.room, value : {
+				// 	x: this.b.x,
+				// 	y: this.b.y,
+				// 	velocityX: direction * (this.b.speed * Math.cos(angleRad)),
+				// 	velocityY: this.b.speed * Math.sin(angleRad),
+				// 	speed: this.b.speed += 0.5,
+				// }})
+
+				// this.b.velocityX = direction * (this.b.speed * Math.cos(angleRad));
+				// this.b.velocityY = this.b.speed * Math.sin(angleRad);
+
+				// this.b.speed += 0.5;
+			}
 
 			if (this.b.getX() - this.b.getRadius() < 0)
 			{
 				// this.scoreP2 += 1;
-				sendScore1(this.scoreP2 + 1);
-				this.b.resetBall();
+				// sendScore2({room: this.room, value: this.scoreP2 + 1});
+				// // this.b.resetBall();
+				// sendBallPos({room: this.room, value : {
+				// 	x: GAME_WIDTH / 2,
+				// 	y: GAME_HEIGHT / 2,
+				// 	velocityX: -this.b.velocityX,
+				// 	velocityY: this.b.velocityY,
+				// 	speed: 5,
+				// }})
 			}
 			else if (this.b.getX() + this.b.getRadius() > GAME_WIDTH)
 			{
-				this.scoreP1 += 1;
-				this.b.resetBall();
+				//this.scoreP1 += 1;
+				// sendScore1({room: this.room, value: this.scoreP1 + 1});
+				// // this.b.resetBall();
+				// sendBallPos({room: this.room, value : {
+				// 	x: GAME_WIDTH / 2,
+				// 	y: GAME_HEIGHT / 2,
+				// 	velocityX: -this.b.velocityX,
+				// 	velocityY: this.b.velocityY,
+				// 	speed: 5,
+				// }})
 			}
 		}
 
