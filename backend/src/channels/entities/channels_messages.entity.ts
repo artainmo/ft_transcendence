@@ -11,7 +11,7 @@ export class ChannelsMessagesEntity {
   @JoinColumn()
   user: UserEntity
 
-  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.messages)
+  @ManyToOne(type => ChannelsEntity, ChannelsEntity => ChannelsEntity.messages, { onDelete: "CASCADE" })
   @JoinColumn()
   channel: ChannelsEntity
 

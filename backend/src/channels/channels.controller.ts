@@ -90,4 +90,9 @@ export class ChannelsController {
   removeUser(@Param('id') id: string) {
     return this.channelsService.removeUser(+id);
   }
+
+  @Get('/password_verification/:id/:password')
+  passwordVerification(@Param('id') id: string, @Param('password') password: string) {
+    return this.channelsService.passwordVerification(+id, password);
+  }
 }

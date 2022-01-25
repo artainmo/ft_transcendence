@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
-import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser } from "../../api/user/user.api";
+import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, verifyTwoFactorAuthentication } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 
 
@@ -25,7 +25,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			setAvatar('');
 		} else {
 			setNonExistingAccount(false);
-			if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
+			if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
 			changeUser(userInDatabase)
 		}
 	}
@@ -37,7 +37,7 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			await addUser(createNewUser(name, login, avatar));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
-			if (userInDatabase!.online === false) { userInDatabase!.online = true; await updateUser(userInDatabase!.id, {online: true}); }
+			if (userInDatabase!.status === "Offline") { userInDatabase!.status = "Online"; await updateUser(userInDatabase!.id, {status: "Online"}); }
 			changeUser(userInDatabase);
 		} else {
 			setAccountAlreadyInUse(true);
@@ -82,6 +82,30 @@ const Login: React.FC<{changePage: (newPage: string) => void, changeUser: (newUs
 					</div>);
 }
 
+const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}> = ({user, changeTwoFA}) => {
+	let [token, setToken] = useState<string>('');
+	let [wrongToken, setWrongToken] = useState<boolean>(false);
+
+	const verify2FA: () => void = async () => {
+		setToken('');
+		const correct = await verifyTwoFactorAuthentication(user.twoFactorAuthenticationSecret, token);
+		if (correct) {
+			setWrongToken(false);
+			changeTwoFA()
+		} else {
+			setWrongToken(true);
+		}
+	}
+
+	return (<div>
+						<h1>Two Factor Authentication</h1>
+						<label>Token: </label>
+						<input type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>
+						{token.length === 6 && verify2FA()}
+						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
+				  </div>)
+}
+
 const Start: React.FC<{changePage: (newPage: string) => void}> = ({ changePage }) => {
 	return (<div>
 						<h1>Pong Game</h1>
@@ -96,6 +120,7 @@ const Authentification: React.FC = () => {
 	const AUTH_CODE = searchParams.get('code'); //code queryparam extraction gives us an authorization code necessary for OAuth access token generation
 	const [user, setUser] = useState<UserDto | null>(null);
 	const [page, setPage] = useState<string>('start');
+	const [twoFA, setTwoFA] = useState<boolean>(false);
 
 	useEffect(() => {
 		const user42 = async () => {
@@ -107,7 +132,8 @@ const Authentification: React.FC = () => {
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
 					}
-					if (userInDatabase.online === false) { userInDatabase.online = true; await updateUser(userInDatabase.id, {online: true}); }
+					if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
+					setTwoFA(userInDatabase.hasTwoFactorAuthentication);
 					setUser(userInDatabase);
 				}
 			}
@@ -123,7 +149,14 @@ const Authentification: React.FC = () => {
 		setPage(newPage);
 	}
 
+	const changeTwoFA: () => void = () => {
+		setTwoFA(!twoFA);
+	}
+
 	if (user !== null) {
+		if (twoFA) {
+			return (<TwoFactorAuthentication user={user} changeTwoFA={changeTwoFA}/>)
+		}
 		if (page !== "start") changePage("start");
 		return (<Home user={user} changeUser={changeUser}/>);
 	} else if (page === "start") {

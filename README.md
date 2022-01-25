@@ -10,11 +10,18 @@ Make frontend launch !<br>
 /gateway -> Create client-side web socket functions for chat and game !<br>
 Login option with OAuth system of 42 intranet !<br>
 Finish the chat !<br>
-encrypt password<br>
-Double authentification<br>
+encrypt password !<br>
+2FA !<br>
+Through the chat interface users should be able to ask other players to do a Pong match !<br>
+Through the chat interface users must be able to see other players profiles !<br>
+On profile next to disconnected/connected add "in game" !<br>
+Add button next to "in game" to view the game live !<br>
 
 Jules:<br>
-Finish the game
+Finish the game <br>
+Other users can watch the game live without interfering in it. <br>
+Each user has a match history <br>
+Game accepts different options/speed/maps
 
 Alissio:<br>
 docker<br>
@@ -22,4 +29,3 @@ protect against SQL injection
 
 Other:<br>
 css/material-ui<br>
-subject.pdf -> Review pdf and other functionalities that have to be added<br>

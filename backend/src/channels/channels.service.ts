@@ -10,6 +10,7 @@ import { Repository, Equal } from 'typeorm';
 import { ChannelsMessagesEntity } from "./entities/channels_messages.entity";
 import { ChannelsUsersEntity } from "./entities/channels_users.entity";
 import { ChannelsEntity } from "./entities/channels.entity";
+const bcrypt = require('bcrypt');
 
 @Injectable()
 export class ChannelsService {
@@ -87,5 +88,10 @@ export class ChannelsService {
 
   async removeUser(id: number): Promise<void> {
     await this.ChannelsUsersRepo.delete(id);
+  }
+
+  async passwordVerification(id: number, password: string): Promise<boolean> {
+    const channel = await this.ChannelsRepo.findOne(id);
+    return await bcrypt.compare(password, channel.password); //compare non-encrypted-password with encrypted-password-in-database using bcrypt
   }
 }

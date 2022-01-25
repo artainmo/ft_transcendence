@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+const speakeasy = require('speakeasy');
+// import QRCode from 'qrcode'
 
 @Injectable()
 export class UserService {
@@ -44,5 +46,22 @@ export class UserService {
 
   async remove(id: number): Promise<void> {
     await this.UserRepo.delete(id);
+  }
+
+  twoFactorAuthenticationSecret(): any {
+    return speakeasy.generateSecret({ name: 'Pong Game' });
+  }
+
+  // async twoFactorAuthenticationQRCode(secret: string): Promise<string> {
+  //   return await QRCode.toDataURL(secret);
+  // }
+
+  verifyTwoFactorAuthentication(secret: string, token: string): boolean {
+    const res = speakeasy.totp.verify({
+      secret: secret,
+      encoding: 'ascii',
+      token: token
+    });
+    return res;
   }
 }

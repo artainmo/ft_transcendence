@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { addDm, getDm, addDmMessage, createNewDmMessage } from "../../api/dms/dms.api";
-import { addChannel, removeChannel, updateChannel, updateChannelUser, getChannel, addChannelMessage, createNewChannelMessage, addChannelUser, createNewChannelUser } from "../../api/channels/channels.api";
-import { getAllUsers, addUser, getCompleteUser } from "../../api/user/user.api";
+import { addDm, getDm, addDmMessage, createNewDmMessage, updateDmMessage } from "../../api/dms/dms.api";
+import { addChannel, removeChannel, updateChannel, updateChannelUser, getChannel, addChannelMessage, createNewChannelMessage, addChannelUser, createNewChannelUser, updateChannelMessage } from "../../api/channels/channels.api";
+import { getAllUsers, addUser, getCompleteUser, getUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
+import { DmMessageDto } from "../../api/dms/dto/dm_message.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
+import { ChannelMessageDto } from "../../api/channels/dto/channel_message.dto";
 import { ChannelUserDto } from "../../api/channels/dto/channel_user.dto";
-import { listen, joinRoom, leaveRoom, send } from "../../websocket/chat/chat.socket";
+import { connect, listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/chat/chat.socket";
+import { addGame } from "../../api/games/games.api";
+import { GameDto } from "../../api/games/dto/game.dto";
+import _ from 'underscore';
+import Profile from '../userAccount/profile';
 
 interface addUsersProps {
 	currentChat: ChannelDto,
@@ -15,8 +21,10 @@ interface addUsersProps {
 
 interface channelViewUsersProps {
 	channelUser: ChannelUserDto,
+	changeUser: (newUser: UserDto | null) => void,
 	currentChat: ChannelDto,
-	currentChatLatestUpdates: () => void
+	currentChatLatestUpdates: () => void,
+	changeViewProfile: (profile: UserDto) => void
 }
 
 interface channelSettingsprops {
@@ -33,22 +41,27 @@ interface channelSettingsprops {
 
 interface channelInfoProps {
 	channelUser: ChannelUserDto,
+	changeUser: (newUser: UserDto | null) => void,
 	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
 	currentChat: ChannelDto,
-	currentChatLatestUpdates: () => void
+	currentChatLatestUpdates: () => void,
+	changeViewProfile: (profile: UserDto) => void
 }
 
 interface messageProps {
 	userOrchannelUser: any,
 	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
 	currentChatLatestUpdates: () => void,
-	dm: boolean
+	dm: boolean,
+	socket: any
 }
 
 interface chatProps {
 	user: UserDto,
+	changeUser: (newUser: UserDto | null) => void,
+	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
 	changeCurrentChat: (newChat: DmDto | ChannelDto | null) => void,
-	currentChat: any //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
+	changeGame: (newGame: GameDto | null) => void
 }
 
 const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdates }) => {
@@ -91,7 +104,7 @@ const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdat
           </div>);
 }
 
-const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, currentChat, currentChatLatestUpdates }) => {
+const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, changeUser, currentChat, currentChatLatestUpdates, changeViewProfile }) => {
 
   const changeStatus: (id: number, newValue: boolean) => void = async (id, newValue) => {
     await updateChannelUser(id, { administrator: newValue });
@@ -117,10 +130,10 @@ const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, curren
 							{currentChat.channel_users.length === 1 ? <p>No other users</p> :
 								currentChat.channel_users.map((item: ChannelUserDto) => {
 									if (item.user.id === channelUser.user.id) return "";
-									if (item.owner) return (<li>{item.user.login + " --- owner"}</li>);
+									if (item.owner) return (<li onClick={()=>changeViewProfile(item.user)}>{item.user.login + " --- owner"}</li>);
 									return (<div>
 														<li>
-															{item.user.login + " --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}
+															<span onClick={()=>changeViewProfile(item.user)}>{item.user.login}</span><>{" --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}</>
 															{channelUser.owner && <button onClick={(e)=>changeStatus(item.id, !item.administrator)}>Change Status</button>}
 															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>ban(item)}>Ban</button>}
 															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>mute(item.id, !item.mute)}>{item.mute ? "Unmute" : "mute"}</button>}
@@ -154,13 +167,13 @@ const ChannelSettings: React.FC<channelSettingsprops> = ({ channelUser, changeCu
             <input type="radio" name="type" onChange={()=>changeType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
             <label>password</label>
             <input type="radio"name="type" onChange={()=>changeType("password")} required/><br/><br/>
-            {type === "password" && <><input type="password" value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
+            {type === "password" && <><input type="password" maxLength={20} value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
             <input type="submit" onClick={()=>onSubmitChannel()}/>
             <br/><br/>
          </>)
 }
 
-const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentChat, currentChat, currentChatLatestUpdates }) => {
+const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeUser, changeCurrentChat, currentChat, currentChatLatestUpdates, changeViewProfile }) => {
   const [info, setInfo] = useState<boolean>(false);
 	const [viewUsers, setViewUsers] = useState<boolean>(false);
   const [settings, setSettings] = useState<boolean>(false);
@@ -206,12 +219,13 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeCurrentCha
                       {!channelUser.owner && channelUser.administrator && <li>You have administrator rights in this channel</li>}
                     </ul>}
             {settings && <ChannelSettings channelUser={channelUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} password={password} type={type} changePassword={changePassword} changeType={changeType} resetSettings={resetSettings} changeSettings={changeSettings}/>}
-            {viewUsers && <ChannelViewUsers channelUser={channelUser} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} />}
+            {viewUsers && <ChannelViewUsers channelUser={channelUser} changeUser={changeUser} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
           </div>);
 }
 
-const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm }) => {
+const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm, socket }) => {
   const [message, setMessage] = useState<string>('');
+	const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
 	 // eslint-disable-next-line
 	useEffect(() => currentChatLatestUpdates(), []); //This has to be called once to set the order of messages correctly
@@ -224,27 +238,68 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 			await addChannelMessage(createNewChannelMessage(userOrchannelUser.user, currentChat, message, currentChat.messages.length + 1));
 		}
 		setMessage('');
-		send({room: currentChat.id, content: "new message"});
+		send(socket, {room: currentChat.id, content: "new message"});
 		await currentChatLatestUpdates();
   }
 
+	const createGame: (message: ChannelMessageDto | DmMessageDto, game: {speed: number, map: string, random: boolean}) => void = async (message, game) => {
+		let userMessage = await getUser(message.user.id);
+		if (userMessage !== null && userMessage.id === (dm ? userOrchannelUser.id : userOrchannelUser.user.id)) return ;
+		if (userMessage !== null && userMessage.status === "Online") {
+			if (game.random) {
+				game.speed = Math.floor(Math.random() * 3) + 1;
+				game.map = Maps[Math.floor(Math.random() * 5)];
+			}
+			await addGame({user1: userMessage, user2: (dm ? userOrchannelUser : userOrchannelUser.user), ballspeed: game.speed, map: game.map});
+		}
+		dm ? await updateDmMessage(message.id, {content: "/*PLAY*"}) : await updateChannelMessage(message.id, {content: "/*PLAY*"});
+		await currentChatLatestUpdates();
+	}
+
+	const ChatCommands: React.FC<{message: ChannelMessageDto | DmMessageDto}> = ({message}) => {
+		let game = {speed: 1, map: "black", random: false};
+
+		if (message.content.substring(0,6) === "*PLAY*") {
+			if (message.content.substring(7,13) === "random") {
+				game.random = true;
+				return (<><span>{`${message.user.login} --- random game --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+			} else if (message.content.length > 6) {
+				game.speed = Number(message.content.substring(7,8));
+				game.map = message.content.substring(9, message.content.length);
+				if (!(game.speed > 0 && game.speed < 4) || !(Maps.find((_map: string) => _map === game.map))) return <></>;
+				return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+			}
+			return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
+			return (<><br/><span>{`${message.user.login} --- `}</span><button disabled>PLAY</button><br/><br/></>)
+		} else {
+			return (<><span>{`${message.user.login} --- ${message.content}`}</span><br/><br/></>);
+		}
+	}
+
   return (<div>
-            {currentChat.messages.map((message: any)=><p>{`${message.user.login} --- ${message.content}`}</p>)}
+            {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
+						<br/>
             <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
             {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input type="submit" value="Message" disabled/>}
 						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
           </div>);
 }
 
-const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => {
+const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurrentChat, changeGame }) => {
   let dm: boolean = ("block" in currentChat);
+	const [socket, setSocket] = useState<any>(null);
+	const [viewProfile, setViewProfile] = useState<UserDto | undefined>(undefined);
 
 	useEffect(() => {
-		joinRoom(currentChat.id);
-		listen(async (response: string) => {
+		const connectedSocket = connect()
+		setSocket(connectedSocket);
+		joinRoom(connectedSocket, currentChat.id);
+		listen(connectedSocket, async (response: string) => {
+			// console.log("Messaged received");
 			if (response === "new message") await currentChatLatestUpdates(); //the chat should have the new message on its database, query it back and re-render
 		});
-		return () => { leaveRoom(currentChat.id); }
+		return () => { leaveRoom(connectedSocket, currentChat.id); disconnect(connectedSocket); }
 	// eslint-disable-next-line
 	}, [])
 
@@ -257,17 +312,19 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
 	}, []);
 
 	const currentChatLatestUpdates: () => void = async () => {
-		console.log(currentChat);
+		let latestChat: any;
+
 		if (dm) {
-			currentChat = await getDm(currentChat.id);
+			latestChat = await getDm(currentChat.id);
 		} else {
-			currentChat = await getChannel(currentChat.id);
+			latestChat = await getChannel(currentChat.id);
 		}
-		if (currentChat.users.find((item: UserDto) => item.id === user.id) === undefined) { //User has been banned
+		if (_.isEqual(latestChat, currentChat)) return ;
+		if (latestChat === null || latestChat.users.find((item: UserDto) => item.id === user.id) === undefined || (!dm && latestChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.owner === true) === undefined)) { //User has been banned or chat removed
 			changeCurrentChat(null);
 			return ;
 		}
-		changeCurrentChat(currentChat);
+		changeCurrentChat(latestChat);
 	}
 
   const setBlock: () => void = async () => {
@@ -296,16 +353,25 @@ const Chat: React.FC<chatProps> = ({ user, changeCurrentChat, currentChat }) => 
     changeCurrentChat(null);
   }
 
+	const changeViewProfile: (profile: UserDto) => void = (profile) => {
+		setViewProfile(profile);
+	}
+
+	const backFromViewProfile: () => void = () => {
+		setViewProfile(undefined);
+	}
+
+	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false} changeGame={changeGame}/>;
   return (<div>
             <button onClick={()=>changeCurrentChat(null)}>Back</button>
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
 							&& <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
             {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
-						{dm && <h1>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
+						{dm && <h1 onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
             {!dm && <h1>{currentChat.name}</h1>}
-            {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates}/>}
+            {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
 						<br/><br/>
-            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm}/>
+            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket}/>
           </div>);
 }
 

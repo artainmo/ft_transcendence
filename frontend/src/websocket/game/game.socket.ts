@@ -4,6 +4,7 @@ import { ballDto } from "../../pages/game/gameFunc/utils/ballDto";
 import { GameInfosDto } from "../../pages/game/gameFunc/utils/gameInfosDto";
 
 export const connect: () => any = () => {
+<<<<<<< HEAD
   return io("http://localhost:80/game");
 }
 
@@ -47,10 +48,29 @@ export const joinRoom: (socket: any, room: string) => void = (socket, room) => {
 /*
 ** Leave the room
 */
+=======
+  // console.log("connect");
+  return io("http://localhost:80/game");
+}
+
+export const listen: (socket: any, callbackFunc: (response: WebsocketGameDto) => void) => void = (socket, callbackFunc) => {
+  socket.on('message', callbackFunc);
+}
+
+export const disconnect: (socket: any) => void = (socket) => {
+  socket.disconnect();
+}
+
+export const joinRoom: (socket: any, room: string) => void = (socket, room) => {
+  socket.emit("joinRoom", room);
+}
+
+>>>>>>> main
 export const leaveRoom: (socket: any, room: string) => void = (socket, room) => {
   socket.emit("leaveRoom", room);
 }
 
+<<<<<<< HEAD
 /*
 ** Send player position
 */
@@ -60,4 +80,8 @@ export const sendPos1: (socket: any, pos: number) => void = (socket, pos) => {
 
 export const sendPos2: (socket: any, pos: number) => void = (socket, pos) => {
   socket.emit("pos2", pos);
+=======
+export const send: (socket: any, message: WebsocketGameDto) => void = (socket, message) => {
+  socket.emit("message", message);
+>>>>>>> main
 }

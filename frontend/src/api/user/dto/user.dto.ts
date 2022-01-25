@@ -13,7 +13,7 @@ export interface UserDto {
   avatar: string;
   hasTwoFactorAuthentication: boolean;
   twoFactorAuthenticationSecret: string;
-  online: boolean;
+  status: string;
   nbrVicotry: number;
   nbrLoss: number;
   matchHistory: MatchHistoryDto[]

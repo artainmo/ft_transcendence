@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { GameDto } from "../../api/games/dto/game.dto";
 import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from "../../api/games/games.api";
 import { UserDto } from "../../api/user/dto/user.dto";
+<<<<<<< HEAD
 import PongGame from "./gameFunc/PongGame";
 // import StartGame from "./gameFunc/shapes";
 // import { listen, joinRoom, leaveRoom, send, disconnect } from "../../websocket/game/game.socket";
 
+=======
+import { updateUser } from "../../api/user/user.api";
+>>>>>>> main
 
-const dataBaseMaps = ['black', 'white', 'winter', 'summer', 'night'];
+const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
 interface preGamePageProps {
   getGame: "create" | "join" | null,
@@ -31,6 +35,8 @@ interface createGameProps {
 interface playProps {
 	user: UserDto,
 	changeMenuPage: (newMenuPage: string) => void
+  game: GameDto | null
+  changeGame: (newGame: GameDto | null) => void
 }
 
 const PreGamePage: React.FC<preGamePageProps> = ({ getGame, changeGetGame, game, changeGame }) => {
@@ -40,7 +46,10 @@ const PreGamePage: React.FC<preGamePageProps> = ({ getGame, changeGetGame, game,
     const verifySecondPlayer: () => void = async () => {
       const myGame = await GetGame(game.id);
       if (myGame!.user2 !== null) {
+<<<<<<< HEAD
         removeGame(myGame!.id); //  !!!!!!!!!! peut être enlever le remove ici !!!!!!!!!!
+=======
+>>>>>>> main
         changeGame(myGame);
       }
     }
@@ -122,29 +131,33 @@ const CreateGame: React.FC<createGameProps> = ({ user, changeGetGame, changeGame
             <br/><br/>
             <label>Map: </label><>&nbsp;&nbsp;&nbsp;</>
             <select onChange={(e)=>setMap(e.target.value)} required>
-              {dataBaseMaps.map((item)=> <option>{item}</option>)}
+              {Maps.map((item)=> <option>{item}</option>)}
             </select>
             <br/><br/>
             <button type="submit" onClick={()=>onSubmit()}>Create Game</button>
           </div>)
 }
 
-const Play: React.FC<playProps> = ({ user, changeMenuPage }) => {
+const Play: React.FC<playProps> = ({ user, changeMenuPage, game, changeGame }) => {
   const [getGame, setGetGame] = useState<"create" | "join" | null>(null);
-  const [game, setGame] = useState<GameDto | null>(null);
+  updateUser(user.id, {status: "Searching a game"});
 
   const changeGetGame: (page: "create" | "join" | null) => void = (page) => {
     setGetGame(page)
   }
 
-  const changeGame: (newGame: GameDto | null) => void = (newGame) => {
-    setGame(newGame);
-  }
-
   if (game !== null && game.user2 !== null) {
+<<<<<<< HEAD
     //var gameinfos: GameDto = game;
+=======
+    if (game.user1.id === user.id || game.user2.id === user.id) {
+      updateUser(user.id, {status: "In a game"});
+    } else {
+       updateUser(user.id, {status: "Watching a game"});
+    }
+>>>>>>> main
     return (<div>
-              <button onClick={()=>{changeGame(null); changeGetGame(null);}}>Back</button>
+              <button onClick={()=>{changeGame(null); changeGetGame(null); removeGame(game.id); updateUser(user.id, {status: "Online"});}}>Back</button>
               <h1>GAME</h1>
               {<PongGame gameInfos={game} user={user}/>/* <GamePong user={user} game={game}/> */}
             </div>);

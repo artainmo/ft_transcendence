@@ -34,8 +34,9 @@ export const getAllDms: () => Promise<DmDto[]> = async () => {
 //   return response.data;
 // }
 
-export const getDm: (id: number) => Promise<DmDto> = async (id) => {
+export const getDm: (id: number) => Promise<DmDto | null> = async (id) => {
   const response = await axios.get(`/dms/${id}`);
+  if (response.data === "") { return null; }
   return response.data;
 }
 
