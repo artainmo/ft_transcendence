@@ -8,6 +8,7 @@ import { MatchHistoryDto, CompleteMatchHistoryDto } from "../../api/match-histor
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
+import _ from 'underscore';
 import styles from "./profile.module.css";
 
 const QRCode = require('qrcode');
@@ -228,6 +229,16 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 			opponent_score: match.opponent_score
 		};
 	}
+
+	useEffect(() => {
+		const getLatestProfile: () => void = async () => {
+			const latestProfile = await getUser(profile.id);
+			if (latestProfile === null || _.isEqual(latestProfile, profile)) return ;
+			changeProfile(latestProfile);
+		}
+		getLatestProfile();
+	// eslint-disable-next-line
+	}, [])
 
 	useEffect(() => {
 		const getUserMatchHistory: () => void = async () => {

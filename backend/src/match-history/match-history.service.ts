@@ -13,7 +13,6 @@ export class MatchHistoryService {
   ) {}
 
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
-    console.log(createMatchHistoryDto);
     await this.MatchHistoryRepo.save(createMatchHistoryDto);
   }
 
