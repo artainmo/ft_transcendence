@@ -8,6 +8,7 @@ import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
+import styles from "./profile.module.css";
 
 const QRCode = require('qrcode');
 
@@ -116,19 +117,21 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 
 	return (<div>
 						<br/><label>New Login: </label>
-						<input type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/><>&nbsp;&nbsp;&nbsp;</>
-						<button type="submit" onClick={()=>newLogin(login)}>Submit</button>
-						{loginAlreadyInUse && <><>&nbsp;&nbsp;&nbsp;</><span>This login is already in use, try another one</span></>}
+						<input className={styles.textInput} type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/><>&nbsp;&nbsp;</>
+						<button className={styles.submitButton} type="submit" onClick={()=>newLogin(login)}>Submit</button>
+						{loginAlreadyInUse && <><>&nbsp;&nbsp;</><span>This login is already in use</span></>}
 						<br/><br/><label>Two-factor-authentication: </label>
 						{user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()} checked/>}
 						{!user.hasTwoFactorAuthentication && <input type="checkbox" onClick={()=>changeTwoFactorAuthentication()}/>}
 						{qrcode !== '' && <><br/><img src={qrcode} alt={"QR code"}/><br/></>}
 						{qrcode !== '' && <label>Token: </label>}
-						{qrcode !== '' && <input type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>}
+						{qrcode !== '' && <input className={styles.textInput} type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>}
 						{token.length === 6 && verify2FA()}
 						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
-						<br/><br/><label>Download Avatar Image: </label>
+						<br/><br/>
+						<label className={styles.chooseFileButton}>Download Avatar Image
 						<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
+						</label>
 				  </div>)
 }
 
@@ -152,15 +155,16 @@ const FindFriends: React.FC<FindFriendsProps> = ({ profile, userFriends, renderP
   }
 
   return (<div>
-            <input type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
+            <input placeholder={"New friends..."} className={styles.textInput} type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
-                                            <span>{item.login}</span><>&nbsp;&nbsp;&nbsp;</>
+                                            <span>{item.login}</span><>&nbsp;&nbsp;</>
                                             <button onClick={(e)=> {
 																																		addFriend(createNewFriend(profile, item.id));
 																																		addFriend(createNewFriend(item, profile.id));
                                                                     handleSearch("");
-																																		renderPage();}}>Add Friend</button>
+																																		renderPage();}}
+																																		className={styles.addFriendButton}>Add Friend</button>
                                          </div>)}
           </div>);
 }
@@ -195,8 +199,10 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
   return (<div>
             <h3>Friends</h3>
             {userFriends.length ? userFriends.map((elem) => <div>
-																															<span onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;&nbsp;</>
-																															{ownAccount && <button onClick={(e)=> {removeFriend(profile.id, elem.id); removeFriend(elem.id, profile.id); renderPage();}}>Remove Friend</button>}
+																															<span className={styles.clickable} onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;&nbsp;</>
+																															{ownAccount && <><button className={styles.removeFriendButton}
+																																onClick={(e)=> {removeFriend(profile.id, elem.id); removeFriend(elem.id, profile.id); renderPage();}}>
+																																Remove Friend</button><br/><br/></>}
 																														</div>)
 																	: <p>No friends</p>}
 						<br/>
@@ -258,21 +264,21 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 	}
 
   return (<div>
-              {g_viewed_users_history.length === 0 && <><button onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;&nbsp;</></>}
-              {ownAccount && <><button onClick={()=>{logout()}}>Log out</button><>&nbsp;&nbsp;&nbsp;</></>}
-							{ownAccount && <button onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button>}
+              {g_viewed_users_history.length === 0 && <><button className={styles.backButton} onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;</></>}
+							{ownAccount && <><button className={styles.settingsButton} onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button><>&nbsp;&nbsp;</></>}
+              {ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Log out</button>}
 							{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
-              {g_viewed_users_history.length !== 0 && <button onClick={()=>{backFromViewedProfile()}}>Back</button>}
+              {g_viewed_users_history.length !== 0 && <button className={styles.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
               <h1>Profile</h1>
-              {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='50em' width='50em'/> : <MdOutlinePersonOutline size='3em'/>}
+              {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='100em' width='100em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {profile.name}</p>
 							<p>Login: {profile.login}</p>
 							<span>{profile.status}</span><>&nbsp;&nbsp;&nbsp;</>
 							{profile.status === "In a game" && <button onClick={()=>watchGame()}>Watch Game</button>}<br/>
               <h3>Stats</h3>
+							<p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>
               <p>Victories: {profile.nbrVicotry}</p>
               <p>Losses: {profile.nbrLoss}</p>
-              <p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>
               <h3>Match History</h3>
               {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{elem}</p>) : <p>No matches</p>}
               <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner} renderPage={renderPage}/>
