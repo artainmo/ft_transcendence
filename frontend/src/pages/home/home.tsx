@@ -6,15 +6,16 @@ import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser, getUser } from "../../api/user/user.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
+import styles from "./home.module.css";
 
 const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string) => void}> = ({user, changeMenuPage }) => {
 	updateUser(user.id, {status: "Online"});
 
 	return (<div>
-				<h1>Welcome to the Pong Game</h1>
-				<button onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
-				<button onClick={()=>{changeMenuPage('chat')}}>Chat</button><>&nbsp;&nbsp;&nbsp;</>
-				<button onClick={()=>{changeMenuPage('profile')}}>Profile</button>
+				{/* <h1>Welcome to the Pong Game</h1> */}
+				<button className={styles.homeButtonPlay} onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
+				<button className={styles.homeButtonChat} onClick={()=>{changeMenuPage('chat')}}>Chat</button><>&nbsp;&nbsp;&nbsp;</>
+				<button className={styles.homeButtonProfile} onClick={()=>{changeMenuPage('profile')}}>Profile</button>
 			</div>);
 }
 
