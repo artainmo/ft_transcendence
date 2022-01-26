@@ -8,26 +8,27 @@ import PongGame from "./gameFunc/PongGame";
 const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
 interface preGamePageProps {
-  getGame: "create" | "join" | null,
-  changeGetGame: (page: "create" | "join" | null) => void,
+  getGame: "create" | "join" | null
+  changeGetGame: (page: "create" | "join" | null) => void
   game: GameDto
   changeGame: (newGame: GameDto | null) => void
 }
 
 interface joinGameProps {
-  user: UserDto,
-  changeGetGame: (page: "create" | "join" | null) => void,
+  user: UserDto
+  changeGetGame: (page: "create" | "join" | null) => void
   changeGame: (newGame: GameDto | null) => void
 }
 
 interface createGameProps {
-  user: UserDto,
-  changeGetGame: (page: "create" | "join" | null) => void,
+  user: UserDto
+  changeGetGame: (page: "create" | "join" | null) => void
   changeGame: (newGame: GameDto | null) => void
 }
 
 interface playProps {
-	user: UserDto,
+	user: UserDto
+  changeUser: (newUser: UserDto | null) => void
 	changeMenuPage: (newMenuPage: string) => void
   game: GameDto | null
   changeGame: (newGame: GameDto | null) => void
@@ -128,7 +129,7 @@ const CreateGame: React.FC<createGameProps> = ({ user, changeGetGame, changeGame
           </div>)
 }
 
-const Play: React.FC<playProps> = ({ user, changeMenuPage, game, changeGame }) => {
+const Play: React.FC<playProps> = ({ user, changeUser, changeMenuPage, game, changeGame }) => {
   const [getGame, setGetGame] = useState<"create" | "join" | null>(null);
   updateUser(user.id, {status: "Searching a game"});
 
@@ -140,12 +141,12 @@ const Play: React.FC<playProps> = ({ user, changeMenuPage, game, changeGame }) =
     if (game.user1.id === user.id || game.user2.id === user.id) {
       updateUser(user.id, {status: "In a game"});
     } else {
-       updateUser(user.id, {status: "Watching a game"});
+      updateUser(user.id, {status: "Watching a game"});
     }
     return (<div>
               <button onClick={()=>{changeGame(null); changeGetGame(null); removeGame(game.id); updateUser(user.id, {status: "Online"});}}>Back</button>
               <h1>GAME</h1>
-              {<PongGame gameInfos={game} user={user}/>/* <GamePong user={user} game={game}/> */}
+              <PongGame gameInfos={game} user={user} changeUser={changeUser}/>
             </div>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;
