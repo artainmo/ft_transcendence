@@ -53,7 +53,7 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	if (menuPage === "home") {
 		return (<HomeDisplay user={user} changeMenuPage={changeMenuPage}/>);
 	} else if (menuPage === "play" || game !== null) {
-		return <Play user={user} changeMenuPage={changeMenuPage} game={game} changeGame={changeGame}/>;
+		return <Play user={user} changeUser={changeUser} changeMenuPage={changeMenuPage} game={game} changeGame={changeGame}/>;
 	} else if (menuPage === "chat") {
 		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage} changeGame={changeGame}/>;
 	} else if (menuPage === "profile") {

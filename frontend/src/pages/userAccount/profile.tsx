@@ -4,10 +4,11 @@ import { FriendDto } from "../../api/friends/dto/friend.dto";
 import { addFriend, createNewFriend, getFriendsOfUser, removeFriend } from "../../api/friends/friends.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { getUser, getAllUsers, updateUser, getUserByLogin, getTwoFactorAuthenticationSecret, verifyTwoFactorAuthentication } from "../../api/user/user.api";
-import { MatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
+import { MatchHistoryDto, CompleteMatchHistoryDto } from "../../api/match-history/dto/match-history.dto";
 import { getMatchHistoryOfUser } from "../../api/match-history/match-history.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
+import _ from 'underscore';
 import styles from "./profile.module.css";
 
 const QRCode = require('qrcode');
@@ -213,14 +214,39 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
 const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, changeGame }) => {
 	const [profile, setProfile] = useState<UserDto>(user);
   const [ownAccount, setOwnAccount] = useState<boolean>(myAccount);
-	const [userMatchHistory, setUserMatchHistory] = useState<MatchHistoryDto[]>([]);
+	const [userMatchHistory, setUserMatchHistory] = useState<CompleteMatchHistoryDto[]>([]);
 	const [render, setRender] = useState<boolean>(true);
 	const [settings, setSettings] = useState<boolean>(false);
 
+	const createCompleteMatchHistory: (match: MatchHistoryDto) => Promise<CompleteMatchHistoryDto | null> = async (match) => {
+		const opponent = await getUser(match.opponent_id);
+		if (opponent === null) return null;
+		return {
+			id: match.id,
+			me: match.me,
+			my_score: match.my_score,
+			opponent: opponent,
+			opponent_score: match.opponent_score
+		};
+	}
+
+	useEffect(() => {
+		const getLatestProfile: () => void = async () => {
+			const latestProfile = await getUser(profile.id);
+			if (latestProfile === null || _.isEqual(latestProfile, profile)) return ;
+			changeProfile(latestProfile);
+		}
+		getLatestProfile();
+	// eslint-disable-next-line
+	}, [])
+
 	useEffect(() => {
 		const getUserMatchHistory: () => void = async () => {
-			let matchHistory = await getMatchHistoryOfUser(profile.login);
-			setUserMatchHistory(matchHistory);
+			let matchHistory: MatchHistoryDto[]  = await getMatchHistoryOfUser(profile.login);
+			let matchHistory1: (CompleteMatchHistoryDto | null)[] = await Promise.all(matchHistory.map(async (item) => { return await createCompleteMatchHistory(item); }));
+			// @ts-ignore
+			let matchHistory2: CompleteMatchHistoryDto[] = matchHistory1.filter((match) => match !== null);
+			setUserMatchHistory(matchHistory2);
 		}
 		getUserMatchHistory();
 	}, [profile])
@@ -280,7 +306,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
               <p>Victories: {profile.nbrVicotry}</p>
               <p>Losses: {profile.nbrLoss}</p>
               <h3>Match History</h3>
-              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{elem}</p>) : <p>No matches</p>}
+              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{`${elem.me.login} VS ${elem.opponent.login} -> ${elem.my_score} : ${elem.opponent_score}`}</p>) : <p>No matches</p>}
               <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner} renderPage={renderPage}/>
           </div>);
 }

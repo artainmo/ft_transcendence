@@ -16,16 +16,18 @@ Through the chat interface users should be able to ask other players to do a Pon
 Through the chat interface users must be able to see other players profiles !<br>
 On profile next to disconnected/connected add "in game" !<br>
 Add button next to "in game" to view the game live !<br>
+Each user has a match history !<br>
 
 Jules:<br>
 Finish the game <br>
+Multiple games can be played right after one another <br>
 Other users can watch the game live without interfering in it. <br>
-Each user has a match history <br>
 Game accepts different options/speed/maps
 
 Alissio:<br>
 docker<br>
+API KEYS in .env <br>
 protect against SQL injection
 
 Other:<br>
-css/material-ui<br>
+css<br>
