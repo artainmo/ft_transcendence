@@ -1,6 +1,4 @@
-import { WebsocketGameDto } from "./dto/websocket-game.dto";
 import { io } from "socket.io-client";
-import { ballDto } from "../../pages/game/gameFunc/utils/ballDto";
 import { GameInfosDto } from "../../pages/game/gameFunc/utils/gameInfosDto";
 
 export const connect: () => any = () => {

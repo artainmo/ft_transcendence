@@ -34,6 +34,7 @@ export const CENTER_HEIGTH = 30;
 export const BALL_RADIUS = 8;
 export const PLAYER_WIDTH = 15;
 export const PLAYER_HEIGHT = 60;
+export const MAX_SCORE = 11;
 
 // export const START_POSITION_P1 = 0
 // export const START_POSITION_P2 = 0;
@@ -55,6 +56,7 @@ class gameRender {
   private velocityY: number;
   private speed: number;
   private radius: number;
+  private playing: boolean = true;
 
   constructor (basic_infos: GameInfosDto) {
     this.gameInfos = basic_infos;
@@ -91,7 +93,7 @@ class gameRender {
 
 			let player = (this.gameInfos.ballX < GAME_WIDTH / 2 ? {x: this.gameInfos.p1x, y: this.gameInfos.p1y} : {x: this.gameInfos.p2x, y: this.gameInfos.p2y}); //player
 
-			if (this.collision(player))
+			if (this.collision(player)) //opti mettre player et collision dans un else if
 			{
 				var collidepoint = this.gameInfos.ballY - (player.y + PLAYER_HEIGHT/2);
 				collidepoint = collidepoint / (PLAYER_HEIGHT / 2);
@@ -116,23 +118,52 @@ class gameRender {
         this.gameInfos.scoreP1 += 1;
         this.resetBall();
 			}
+
+      if (this.gameInfos.scoreP1 >= 11 || this.gameInfos.scoreP2 >= 11) {
+        this.playing = false;
+      }
+  
       var gameInfosReturn = this.gameInfos;
       return (gameInfosReturn);
 		}
 
+    /*
+    ** reset ball
+    */
     public resetBall() {
       this.gameInfos.ballX = GAME_WIDTH / 2;
       this.gameInfos.ballY = GAME_HEIGHT / 2;
-      this.velocityX = -this.velocityX;
+      this.velocityX = -this.velocityX; // reset velocity a 5 ou -5
       this.speed = 5;
     }
 
+    /*
+    ** Update the player position
+    */
     public updatePos1 (pos: number) {
       this.gameInfos.p1y = pos;
     }
 
     public updatePos2 (pos: number) {
       this.gameInfos.p2y = pos;
+    }
+
+
+    /*
+    ** To know if the game is finish
+    */
+    public isEnd () { //if playing = true the game is not finish :)
+      return (this.playing ? false : true);
+    }
+
+    /*
+    ** Return the score
+    */
+    public getScore() {
+    var tmp_win = this.gameInfos.scoreP1 > this.gameInfos.scoreP2 ? {p: 1, score: this.gameInfos.scoreP1} : {p: 2, score: this.gameInfos.scoreP2};
+    var tmp_loose = tmp_win.p == 1 ? {p: 2, score: this.gameInfos.scoreP2} : {p: 1, score: this.gameInfos.scoreP1};
+
+    return ( {win: tmp_win, loose: tmp_loose} );
     }
 }
 
@@ -146,6 +177,7 @@ export class GameGateway {
     p2: false,
   };
 
+  public games : gameRender[];
   public game = new gameRender(startGameInfos);
   public loop = null;
 
@@ -167,7 +199,14 @@ export class GameGateway {
   */
   sendGameData(room: string) {
     var data = this.game.update();
-    this.server.to(room).emit('gameData', data);
+    if (this.game.isEnd()) {
+      this.clearGame();
+      this.server.to(room).emit('finalScore', this.game.getScore());
+      //enregistrer scores
+    }
+    else {
+      this.server.to(room).emit('gameData', data);
+    }
   }
 
   /*
@@ -175,10 +214,15 @@ export class GameGateway {
   */
   @SubscribeMessage('stopGame')
   stopGame(client: Socket): void {
-    if (this.loop != null)
-      clearInterval(this.loop);
+    this.clearGame();
   }
 
+  public clearGame() {
+    if (this.loop != null) {
+      clearInterval(this.loop);
+      this.loop = null;
+    }
+  }
   /*
   ** receive P1
   */

@@ -1,6 +1,6 @@
 import { GameDto } from "../../../api/games/dto/game.dto";
-import { GameInfosDto } from "./utils/gameInfosDto";
-import {CENTER_WIDTH, GAME_HEIGHT, GAME_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, START_POSITION_P1, START_POSITION_P2, CENTER_HEIGTH} from "./utils/gameConstants";
+import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
+import {CENTER_WIDTH, GAME_HEIGHT, GAME_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, CENTER_HEIGTH} from "./utils/gameConstants";
 import { sendPos1, sendPos2 } from "../../../websocket/game/game.socket";
 
 export interface Ime {
@@ -17,7 +17,7 @@ export class Game {
 		private nameP1: string = "Player 1 : "; 
 		private nameP2: string = "Player 2 : ";
 		private bgColor: string = "black";
-		private me: Ime = {name: "unkown", num: 0};
+		private me: Ime = {name: "unkown", num: 0}; //name = mon nom et num = player 1 ou player 2
 		private bRadius: number = 8; //radius de la ball a changer pour responsive
 		private socket: any;
 
@@ -117,5 +117,40 @@ export class Game {
 			this.fillCircle("white", data.ballX, data.ballY, this.bRadius);
 		}
 
+		/*
+		** Draw final score
+		*/
+		public drawEnd(score: playerScoreDto) {
+			this.destroyGame();
+			this.fillRect();
+			this.ctx.font = "50px fantasy";
+			this.ctx.fillStyle = "white";
+			this.ctx.textAlign = "center";
+
+			var result = "";
+			if (score.win.p == this.me.num)
+				result = "You win !!!";
+			else
+				result = "You loose ...";
+			this.ctx.fillText(result, GAME_WIDTH / 2, (GAME_HEIGHT / 100) * 30);
+			
+			this.ctx.font = "35px fantasy";
+			this.ctx.textAlign = "left";
+			var output1 = this.nameP1;
+			var output2 = this.nameP2;
+
+			while (output1.length !=  output2.length) {
+				if (output1.length < output2.length)
+					output1 += " ";
+				else
+					output2 += " ";
+			}
+
+			output1 += " : " + (score.win.p == 1 ? score.win.score :  score.loose.score);
+			output2 += " : " + (score.win.p == 2 ? score.win.score :  score.loose.score);
+
+			this.ctx.fillText(output1, GAME_WIDTH / 3, (GAME_HEIGHT / 100) * 60);
+			this.ctx.fillText(output2, GAME_WIDTH / 3, ((GAME_HEIGHT / 100) * 60) + 50);
+		}
 
 }

@@ -8,3 +8,14 @@ export interface GameInfosDto {
 	scoreP1: number,
 	scoreP2: number,
 }
+ 
+export interface playerScoreDto {
+	win: {
+		p: number,
+		score: number,
+	}
+	loose: {
+		p: number,
+		score: number,
+	}
+}
