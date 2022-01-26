@@ -148,7 +148,6 @@ class gameRender {
       this.gameInfos.p2y = pos;
     }
 
-
     /*
     ** To know if the game is finish
     */
@@ -160,10 +159,10 @@ class gameRender {
     ** Return the score
     */
     public getScore() {
-    var tmp_win = this.gameInfos.scoreP1 > this.gameInfos.scoreP2 ? {p: 1, score: this.gameInfos.scoreP1} : {p: 2, score: this.gameInfos.scoreP2};
-    var tmp_loose = tmp_win.p == 1 ? {p: 2, score: this.gameInfos.scoreP2} : {p: 1, score: this.gameInfos.scoreP1};
+      var tmp_win = this.gameInfos.scoreP1 > this.gameInfos.scoreP2 ? {p: 1, score: this.gameInfos.scoreP1} : {p: 2, score: this.gameInfos.scoreP2};
+      var tmp_loose = tmp_win.p == 1 ? {p: 2, score: this.gameInfos.scoreP2} : {p: 1, score: this.gameInfos.scoreP1};
 
-    return ( {win: tmp_win, loose: tmp_loose} );
+      return ( {win: tmp_win, loose: tmp_loose} );
     }
 }
 
