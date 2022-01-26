@@ -10,6 +10,7 @@ import { GameDto } from "../../../api/games/dto/game.dto";
 import { UserDto } from "../../../api/user/dto/user.dto";
 import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
 import { Game } from "./Game";
+import { addMatchHistory, createNewMatchHistory } from "../../../api/match-history/match-history.api";
 
 const PongGame = (props : {gameInfos: GameDto, user: UserDto}) =>
 {
@@ -24,13 +25,17 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto}) =>
 		var game = new Game(props.gameInfos, props.user.name, socket); // classe avec les toutes les infos de la game
 
 		joinRoom(socket, props.gameInfos.id.toString()); //"room3"
-		if (p != 0)
+		if (p !== 0)
 			startGame(socket, {room: props.gameInfos.id.toString(), player: p});
 		socket.on('gameData', (data: GameInfosDto) => {
 			game.drawGame(data);
 		})
 		socket.on('finalScore', (scores: playerScoreDto) => {
 			game.drawEnd(scores);
+			addMatchHistory(createNewMatchHistory(props.user,
+				game.myNum === scores.win.p ? scores.win.score : scores.loose.score,
+				props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2!.id : props.gameInfos.user1.id,
+				game.myNum === scores.win.p ? scores.loose.score : scores.win.score));
 			//scores = valeurs des scores
 			//savoir qui on est = game.me
 						/*
@@ -45,7 +50,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto}) =>
 							}
 						}
 
-			if game.me.num == win.p 
+			if game.me.num == win.p
 						*/
 			//envoyer data match history
 		})
@@ -53,6 +58,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto}) =>
 			stopGame(socket);
 			disconnect(socket);
 		}
+	// eslint-disable-next-line
 	}, [])
 
 	console.log("Gameinfos : ");

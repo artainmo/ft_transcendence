@@ -14,7 +14,7 @@ export class Game {
 		private h: number;
 		private can: HTMLCanvasElement;
 		private ctx: CanvasRenderingContext2D;
-		private nameP1: string = "Player 1 : "; 
+		private nameP1: string = "Player 1 : ";
 		private nameP2: string = "Player 2 : ";
 		private bgColor: string = "black";
 		private me: Ime = {name: "unkown", num: 0}; //name = mon nom et num = player 1 ou player 2
@@ -26,26 +26,30 @@ export class Game {
 			this.socket = socket;
 			this.w = w;
 			this.h = h;
-	
+
 			this.nameP1 = baseGame.user1.name;
-			if (baseGame.user2 != null)
+			if (baseGame.user2 !== null)
 				this.nameP2 = baseGame.user2.name;
-			
+
 				//this.b.setSpeed(baseGame.ballspeed*5);
-			
+
 			this.room = baseGame.id.toString();
-				
+
 			this.bgColor = baseGame.map;
 
 			this.me.name = name;
-			if (this.me.name == this.nameP1)
+			if (this.me.name === this.nameP1)
 				this.me.num = 1;
-			else if (this.me.name == this.nameP2)
+			else if (this.me.name === this.nameP2)
 				this.me.num = 2;
 
 			this.can = document.getElementById(canId)  as HTMLCanvasElement;
 			this.ctx = this.can.getContext('2d') as CanvasRenderingContext2D;
 			this.can.addEventListener("mousemove", this.movePaddle.bind(this));
+		}
+
+		get myNum() {
+			return this.me.num;
 		}
 
 		/*
@@ -56,10 +60,10 @@ export class Game {
 			// var rectTop = {top: 0};
 			var rect = this.can.getBoundingClientRect();// || rectTop;
 			//this.p1.y = evt.clientY - rect.top - (PLAYER_HEIGHT / 2);
-			if (this.me.num == 1) {
+			if (this.me.num === 1) {
 				sendPos1(this.socket, evt.clientY - rect.top - (PLAYER_HEIGHT / 2));
-			}	
-			else if (this.me.num == 2) {
+			}
+			else if (this.me.num === 2) {
 				sendPos2(this.socket, evt.clientY - rect.top - (PLAYER_HEIGHT / 2));
 			}
 		}
@@ -88,7 +92,7 @@ export class Game {
 			this.ctx.font = font;
 			this.ctx.fillText(text, x, y);
 		}
-	
+
 		public destroyGame()
 		{
 			this.ctx.clearRect(0, 0, this.can.width, this.can.height);
@@ -101,14 +105,14 @@ export class Game {
 		public drawGame(data: GameInfosDto)
 		{
 			var height = 0;
-		
+
 			this.destroyGame();
 			this.fillRect();
 			this.fillRect("white", data.p1x, data.p1y, PLAYER_WIDTH, PLAYER_HEIGHT);
 			this.fillRect("white", data.p2x, data.p2y, PLAYER_WIDTH, PLAYER_HEIGHT);
 			this.fillWrite(this.nameP1 + "   "  + data.scoreP1.toString(), (GAME_WIDTH / 2) - 250 , 15);
 			this.fillWrite(this.nameP2 + "   "  + data.scoreP2.toString(), (GAME_WIDTH / 2) + 150 , 15);
-			
+
 			while (height < GAME_HEIGHT)
 			{
 				this.fillRect("white", (GAME_WIDTH / 2) - (CENTER_WIDTH / 2), height, CENTER_WIDTH, CENTER_HEIGTH);
@@ -128,29 +132,28 @@ export class Game {
 			this.ctx.textAlign = "center";
 
 			var result = "";
-			if (score.win.p == this.me.num)
+			if (score.win.p === this.me.num)
 				result = "You win !!!";
 			else
 				result = "You loose ...";
 			this.ctx.fillText(result, GAME_WIDTH / 2, (GAME_HEIGHT / 100) * 30);
-			
+
 			this.ctx.font = "35px fantasy";
 			this.ctx.textAlign = "left";
 			var output1 = this.nameP1;
 			var output2 = this.nameP2;
 
-			while (output1.length !=  output2.length) {
+			while (output1.length !==  output2.length) {
 				if (output1.length < output2.length)
 					output1 += " ";
 				else
 					output2 += " ";
 			}
 
-			output1 += " : " + (score.win.p == 1 ? score.win.score :  score.loose.score);
-			output2 += " : " + (score.win.p == 2 ? score.win.score :  score.loose.score);
+			output1 += " : " + (score.win.p === 1 ? score.win.score :  score.loose.score);
+			output2 += " : " + (score.win.p === 2 ? score.win.score :  score.loose.score);
 
 			this.ctx.fillText(output1, GAME_WIDTH / 3, (GAME_HEIGHT / 100) * 60);
 			this.ctx.fillText(output2, GAME_WIDTH / 3, ((GAME_HEIGHT / 100) * 60) + 50);
 		}
-
 }

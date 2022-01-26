@@ -280,7 +280,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
               <p>Victories: {profile.nbrVicotry}</p>
               <p>Losses: {profile.nbrLoss}</p>
               <h3>Match History</h3>
-              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{elem}</p>) : <p>No matches</p>}
+              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{`${elem.me.login} VS ${elem.opponent_id} -> ${elem.my_score} : ${elem.opponent_score}`}</p>) : <p>No matches</p>}
               <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner} renderPage={renderPage}/>
           </div>);
 }

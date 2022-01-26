@@ -6,17 +6,16 @@ export class MatchHistoryEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => UserEntity, UserEntity => UserEntity.matchHistory)
+    @ManyToOne(type => UserEntity, UserEntity => UserEntity.matchHistory, {eager: true})
     @JoinColumn()
     me: UserEntity;
 
     @Column()
-    my_score: string;
+    my_score: number;
 
     @Column()
-    opponent_id: number;
+    opponent_id: number; //This is not cleanest method but is used because else typeorm bugs on multiple saves
 
     @Column()
-    opponent_score: string;
+    opponent_score: number;
 }
-//Maybe change the users to a manytomany like in dms????
