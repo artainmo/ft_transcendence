@@ -18,13 +18,12 @@ On profile next to disconnected/connected add "in game" !<br>
 Add button next to "in game" to view the game live !<br>
 Each user has a match history !<br>
 base css <br>
-profile extra css? <br>
-clean message chat css <br>
+You must implement some kind of server-side validation for forms and any user input ? <br>
 
 Jules:<br>
 Finish the game <br>
-Multiple games can be played right after one another <br>
-Other users can watch the game live without interfering in it. <br>
+Multiple games can be played right after one another !<br>
+Other users can watch the game live without interfering in it. !<br>
 Game accepts different options(ballspeed/maps)
 
 Alissio:<br>
@@ -34,4 +33,9 @@ protect against SQL injection
 
 Other:<br>
 css positioning? <br>
-test & reread pdf <br>
+profile extra css? <br>
+clean message chat css ?<br>
+test (change state "in game" vs "search game") & reread pdf <br>
+Change state after refresh?<br>
+User logs in multiple times on different pages?<br>
+Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately
