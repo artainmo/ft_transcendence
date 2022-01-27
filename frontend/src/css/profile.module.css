@@ -15,18 +15,6 @@
   composes: buttonOn from "./convention.module.css";
 }
 
-input[type="file"] {
-    display: none;
-}
-
-.chooseFileButton {
-  border-width: 0px;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-  background-color: #D7C0D0
-}
-
 .addFriendButton {
   composes: smallButton from "./convention.module.css";
   width: 130px;
@@ -37,4 +25,10 @@ input[type="file"] {
   composes: smallButton from "./convention.module.css";
   width: 150px;
   background-color: #FF6663
+}
+
+.watchGameButton {
+  composes: smallButton from "./convention.module.css";
+  width: 115px;
+  background-color: #4ECDC4;
 }

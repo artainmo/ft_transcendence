@@ -1,0 +1,15 @@
+.loginButton {
+  composes: bigButton from "./convention.module.css";
+  background-color: #CEB3AB;
+}
+
+.signupButton {
+  composes: bigButton from "./convention.module.css";
+  background-color: #C4C6E7;
+}
+
+.intraLoginButton {
+  composes: bigButton from "./convention.module.css";
+  background-color: #689689;
+  color: #2B2D42;
+}

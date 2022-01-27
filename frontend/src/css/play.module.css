@@ -1,0 +1,17 @@
+.createGameButton {
+  composes: bigButton from "./convention.module.css";
+  width: 149px;
+  background-color: #7FD1B9;
+}
+
+.joinGameButton {
+  composes: bigButton from "./convention.module.css";
+  width: 149px;
+  background-color: #B33F62;
+}
+
+.createGameButton2 {
+  composes: smallButton from "./convention.module.css";
+  width: 130px;
+  background-color: #7FD1B9;
+}

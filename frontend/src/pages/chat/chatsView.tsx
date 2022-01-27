@@ -105,12 +105,18 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
               <br/>
               <label>Channel name: </label>
               <input className={cs.textInput} type="text" value={name} name="channelname" onChange={(e)=>setName(e.target.value)} required/><br/><br/>
-              <label>public</label>
-              <input type="radio" name="channeltype" onChange={()=>setType("public")} required/><>&nbsp;&nbsp;&nbsp;</>
-              <label>private</label>
-              <input type="radio" name="channeltype" onChange={()=>setType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
-              <label>password</label>
-              <input type="radio"name="channeltype" onChange={()=>setType("password")} required/><br/><br/>
+              <label className={type === "public" ? cs.radioButtonOn : cs.radioButton}>public
+              	<input type="radio" name="channeltype" onChange={()=>setType("public")} required/>
+							</label>
+							<>&nbsp;&nbsp;&nbsp;</>
+              <label className={type === "private" ? cs.radioButtonOn : cs.radioButton}>private
+              	<input type="radio" name="channeltype" onChange={()=>setType("private")} required/>
+							</label>
+							<>&nbsp;&nbsp;&nbsp;</>
+              <label className={type === "password" ? cs.radioButtonOn : cs.radioButton}>password
+              	<input type="radio"name="channeltype" onChange={()=>setType("password")} required/>
+							</label>
+							<br/><br/>
               {type === "password" && <><input className={cs.textInput} placeholder={"Password..."} type="password" maxLength={20} value={password} onChange={(e)=>setPassword(e.target.value)}/><br/><br/></>}
               {nameAlreadyInUse && <p>Name already exists try another one</p>}
               <button className={cs.submitButton} type="submit" onClick={()=>onSubmit(createNewChannel([user], name, type, password))}>Submit</button>

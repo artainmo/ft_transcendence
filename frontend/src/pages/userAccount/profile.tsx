@@ -129,9 +129,9 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 						{qrcode !== '' && <label>Token: </label>}
 						{qrcode !== '' && <input className={cs.textInput} type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>}
 						{token.length === 6 && verify2FA()}
-						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
+						{wrongToken && <><>&nbsp;&nbsp;</><span>Wrong Token</span></>}
 						<br/><br/>
-						<label className={styles.chooseFileButton}>Download Avatar Image
+						<label className={cs.chooseFileButton}>Download Avatar Image
 						<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
 						</label>
 				  </div>)
@@ -269,8 +269,10 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 		changeUser(null);
 	}
 
-	const backFromViewedProfile: () => void = () => {
-		changeProfile(g_viewed_users_history[g_viewed_users_history.length - 1]);
+	const backFromViewedProfile: () => void = async () => {
+		let latestProfile = await getUser(g_viewed_users_history[g_viewed_users_history.length - 1].id);
+		if (latestProfile === null) return ;
+		changeProfile(latestProfile);
 		g_viewed_users_history.pop();
 		if (g_viewed_users_history.length === 0 && myAccount === true) changeAccountOwner(true);
 	}
@@ -296,12 +298,12 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
               {ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Log out</button>}
 							{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
               {g_viewed_users_history.length !== 0 && <button className={cs.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
-              <h1>Profile</h1>
+              <h1>{profile.login}</h1>
               {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='100em' width='100em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {profile.name}</p>
-							<p>Login: {profile.login}</p>
-							<span>{profile.status}</span><>&nbsp;&nbsp;&nbsp;</>
-							{profile.status === "In a game" && <button onClick={()=>watchGame()}>Watch Game</button>}<br/>
+							<span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>
+							{profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
+							<br/>
               <h3>Stats</h3>
 							<p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>
               <p>Victories: {profile.nbrVicotry}</p>

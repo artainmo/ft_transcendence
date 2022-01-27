@@ -158,13 +158,19 @@ const ChannelSettings: React.FC<channelSettingsprops> = ({ channelUser, changeCu
   }
 
   return (<>
-            <br/><br/>
-            <label>public</label>
-            <input type="radio" name="type" value="on" onChange={()=>changeType("public")} required/><>&nbsp;&nbsp;&nbsp;</>
-            <label>private</label>
-            <input type="radio" name="type" onChange={()=>changeType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
-            <label>password</label>
-            <input type="radio"name="type" onChange={()=>changeType("password")} required/><br/><br/>
+						<br/><br/>
+						<label className={type === "public" ? cs.radioButtonOn : cs.radioButton}>public
+							<input type="radio" name="channeltype" onChange={()=>changeType("public")} required/>
+						</label>
+						<>&nbsp;&nbsp;&nbsp;</>
+						<label className={type === "private" ? cs.radioButtonOn : cs.radioButton}>private
+							<input type="radio" name="channeltype" onChange={()=>changeType("private")} required/>
+						</label>
+						<>&nbsp;&nbsp;&nbsp;</>
+						<label className={type === "password" ? cs.radioButtonOn : cs.radioButton}>password
+							<input type="radio"name="channeltype" onChange={()=>changeType("password")} required/>
+						</label>
+						<br/><br/>
             {type === "password" && <><input className={cs.textInput} placeholder={"Password..."} type="password" maxLength={20} value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
             <input className={cs.submitButton} type="submit" onClick={()=>onSubmitChannel()}/>
             <br/><br/>
