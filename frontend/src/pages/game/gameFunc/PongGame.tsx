@@ -17,7 +17,7 @@ import { getUser } from "../../../api/user/user.api";
 const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void }) =>
 {
  	useEffect ( () => {
-		var p = 0
+		var p: number = 0;
 		if (props.user.name === props.gameInfos.user1.name)
 			p = 1;
 		else if (props.user.name === props.gameInfos.user2!.name)
@@ -26,9 +26,11 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		var socket = connect();
 		var game = new Game(props.gameInfos, props.user.name, socket); // classe avec les toutes les infos de la game
 
-		joinRoom(socket, props.gameInfos.id.toString()); //"room3"
-		if (p !== 0)
+		joinRoom(socket, props.gameInfos.id.toString());
+		if (p !== 0) {
+			console.log("On start la game pour player : " + p.toString())
 			startGame(socket, {room: props.gameInfos.id.toString(), player: p});
+		}
 		socket.on('gameData', (data: GameInfosDto) => {
 			game.drawGame(data);
 		})
@@ -53,7 +55,9 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			scoreToDatabase();
 		})
 		return () => {
-			stopGame(socket);
+			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
+				stopGame(socket, game.myRoom);
+			}
 			disconnect(socket);
 		}
 	// eslint-disable-next-line

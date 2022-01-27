@@ -30,21 +30,16 @@ export class Game {
 			this.nameP1 = baseGame.user1.name;
 			if (baseGame.user2 !== null)
 				this.nameP2 = baseGame.user2.name;
-
-				//this.b.setSpeed(baseGame.ballspeed*5);
-
 			this.room = baseGame.id.toString();
-
 			this.bgColor = baseGame.map;
-
 			this.me.name = name;
 			if (this.me.name === this.nameP1)
 				this.me.num = 1;
 			else if (this.me.name === this.nameP2)
 				this.me.num = 2;
-
 			this.can = document.getElementById(canId)  as HTMLCanvasElement;
 			this.ctx = this.can.getContext('2d') as CanvasRenderingContext2D;
+			//mettre contion si me == 1 ou 2 suelement pour alleger peut etre
 			this.can.addEventListener("mousemove", this.movePaddle.bind(this));
 		}
 
@@ -52,6 +47,9 @@ export class Game {
 			return this.me.num;
 		}
 
+		get myRoom() {
+			return (this.room);
+		}
 		/*
 		** Player move function
 		*/
@@ -61,10 +59,10 @@ export class Game {
 			var rect = this.can.getBoundingClientRect();// || rectTop;
 			//this.p1.y = evt.clientY - rect.top - (PLAYER_HEIGHT / 2);
 			if (this.me.num === 1) {
-				sendPos1(this.socket, evt.clientY - rect.top - (PLAYER_HEIGHT / 2));
+				sendPos1(this.socket, {room: this.myRoom, pos: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
 			}
 			else if (this.me.num === 2) {
-				sendPos2(this.socket, evt.clientY - rect.top - (PLAYER_HEIGHT / 2));
+				sendPos2(this.socket, {room: this.myRoom, pos: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
 			}
 		}
 

@@ -1,6 +1,10 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { clear } from 'console';
 import { Server, Socket } from "socket.io";
+import { clearInterval } from 'timers';
 import { WebsocketGameDto } from "./dto/websocket-game.dto";
+
+const lodash = require('lodash');
 
 export interface ballDto {
 	x: number,
@@ -36,8 +40,6 @@ export const PLAYER_WIDTH = 15;
 export const PLAYER_HEIGHT = 60;
 export const MAX_SCORE = 11;
 
-// export const START_POSITION_P1 = 0
-// export const START_POSITION_P2 = 0;
 
 var startGameInfos: GameInfosDto = {
   ballX: 350,
@@ -57,6 +59,8 @@ class gameRender {
   private speed: number;
   private radius: number;
   private playing: boolean = true;
+  private loop = null;
+  public status: string;
 
   constructor (basic_infos: GameInfosDto) {
     this.gameInfos = basic_infos;
@@ -64,7 +68,14 @@ class gameRender {
     this.velocityY = 5;
     this.speed = 5;
     this.radius = 8; //modifier la provenance
+    this.status = 'w';
   }
+
+  get getLoop() { return this.loop; }
+  set setLoop(content: any) { this.loop = content; }
+
+  get getStatus() { return this.status; }
+  set setStatut(status: string) { this.status = status; }
 
   /*
   ** Collision with the pos x and y of the player
@@ -148,7 +159,6 @@ class gameRender {
       this.gameInfos.p2y = pos;
     }
 
-
     /*
     ** To know if the game is finish
     */
@@ -160,10 +170,10 @@ class gameRender {
     ** Return the score
     */
     public getScore() {
-    var tmp_win = this.gameInfos.scoreP1 > this.gameInfos.scoreP2 ? {p: 1, score: this.gameInfos.scoreP1} : {p: 2, score: this.gameInfos.scoreP2};
-    var tmp_loose = tmp_win.p == 1 ? {p: 2, score: this.gameInfos.scoreP2} : {p: 1, score: this.gameInfos.scoreP1};
+      var tmp_win = this.gameInfos.scoreP1 > this.gameInfos.scoreP2 ? {p: 1, score: this.gameInfos.scoreP1} : {p: 2, score: this.gameInfos.scoreP2};
+      var tmp_loose = tmp_win.p == 1 ? {p: 2, score: this.gameInfos.scoreP2} : {p: 1, score: this.gameInfos.scoreP1};
 
-    return ( {win: tmp_win, loose: tmp_loose} );
+      return ( {win: tmp_win, loose: tmp_loose} );
     }
 }
 
@@ -172,37 +182,45 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  users: players = {
-    p1: false,
-    p2: false,
-  };
-
-  public games : gameRender[];
-  public game = new gameRender(startGameInfos);
-  public loop = null;
+  public games = {} ;
 
   @SubscribeMessage('startgame')
-  connectPlayer(client: Socket, message: any): void {
+  connectPlayer(client: Socket, message: any): Promise<void> {
     console.log("le player : " + message.player);
-    if (message.player == 1)
-      this.users.p1 = true;
-    else if (message.player == 2)
-      this.users.p2 = true;
-    
-    console.log("liste de la room : ");
-    if (this.users.p1 == true && this.users.p2 == true)
-      this.loop = setInterval(() => this.sendGameData(message.room), 1000/60);
+    console.log("la room : " + message.room);
+
+    if (this.games[message.room] == undefined) { //status :  w = waiting | p = playing | e = end
+      this.games[message.room] = {players: {p1: false, p2: false}, game: new gameRender(lodash.cloneDeep(startGameInfos)), loop: null, room: message.room};
+    }
+
+    if (message.player == 1) { //check if p1 and p2 are connected
+      this.games[message.room].players.p1 = true;
+    }
+    else if (message.player == 2) {
+      this.games[message.room].players.p2 = true;
+    }
+
+    if (this.games[message.room].players.p1 == true && this.games[message.room].players.p2 == true && (message.player == 1 || message.player == 2) && this.games[message.room].game.status == 'w') {
+      this.games[message.room].game.status = 'p';
+      this.games[message.room].loop = setInterval((room: string) => this.sendGameData(room), 1000/60, message.room);
+    }
+    else if (this.games[message.room] != undefined && this.games[message.room].status == 'e') { //if someone refresh the page this condition avoid to duplicate game with a same room id and just send the final score of the current game
+        this.server.to(message.room).emit('finalScore', this.games[message.room].game.getScore());
+    }
+    return ;
   }
 
   /*
   ** func to put in setinterval loop who update the game
   */
   sendGameData(room: string) {
-    var data = this.game.update();
-    if (this.game.isEnd()) {
-      this.clearGame();
-      this.server.to(room).emit('finalScore', this.game.getScore());
-      //enregistrer scores
+    var data = this.games[room].game.update();
+
+    console.log("we are in sendgamedata ! room : " + room);
+    if (this.games[room].game.isEnd()) {
+      this.games[room].game.setStatus = 'e';
+      this.clearGame(room);
+      this.server.to(room).emit('finalScore', this.games[room].game.getScore());
     }
     else {
       this.server.to(room).emit('gameData', data);
@@ -213,30 +231,41 @@ export class GameGateway {
   ** Stop game
   */
   @SubscribeMessage('stopGame')
-  stopGame(client: Socket): void {
-    this.clearGame();
+  stopGame(client: Socket, room: string): void {
+
+    if (this.games[room] != undefined) {
+      this.clearGame(room);
+    }
+
+    if (this.games[room] != undefined) {
+      delete this.games[room];
+    }
   }
 
-  public clearGame() {
-    if (this.loop != null) {
-      clearInterval(this.loop);
-      this.loop = null;
+  public clearGame(room: string) {
+    if (this.games[room].loop != null) {
+      console.log("On clear l'interval de la room : " + room);
+
+      clearInterval(this.games[room].loop);
+      this.games[room].loop = null;
     }
   }
   /*
   ** receive P1
   */
   @SubscribeMessage('pos1')
-  handlePosP1(client: Socket, pos: number): void {
-    this.game.updatePos1(pos);
+  handlePosP1(client: Socket, message: {room: string, pos: number}): void {
+    if ( this.games[message.room] != undefined)
+      this.games[message.room].game.updatePos1(message.pos);
   }
 
   /*
   ** receive P2
   */
   @SubscribeMessage('pos2')
-  handlePosP2(client: Socket, pos: number): void {
-    this.game.updatePos2(pos);
+  handlePosP2(client: Socket, message: {room: string, pos: number}): void {
+    if ( this.games[message.room] != undefined)
+      this.games[message.room].game.updatePos2(message.pos);
   }
 
 
