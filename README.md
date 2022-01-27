@@ -18,6 +18,7 @@ On profile next to disconnected/connected add "in game" !<br>
 Add button next to "in game" to view the game live !<br>
 Each user has a match history !<br>
 base css !<br>
+protect against SQL injection (https://github.com/typeorm/typeorm/issues/3696) -> ORM is used without raw query string !<br>
 You must implement some kind of server-side validation for forms and any user input ? <br>
 
 Jules:<br>
@@ -30,13 +31,13 @@ Responsive game: setInterval (check window dimensions) -> if they change -> chan
 Alissio:<br>
 docker<br>
 API KEYS in .env <br>
-protect against SQL injection
 
 Other:<br>
 css positioning? <br>
 profile extra css? <br>
 clean message chat css ?<br>
-test (change state "in game" vs "search game") & reread pdf <br>
+test & reread pdf <br>
+change state "in game" vs "search game" (bugg) <br>
 Change state after refresh?<br>
 User logs in multiple times on different pages?<br>
-BackButton while playing game
+BackButton while playing game (potential cause of bug)?
