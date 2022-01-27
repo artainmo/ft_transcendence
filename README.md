@@ -17,12 +17,15 @@ Through the chat interface users must be able to see other players profiles !<br
 On profile next to disconnected/connected add "in game" !<br>
 Add button next to "in game" to view the game live !<br>
 Each user has a match history !<br>
+base css <br>
+profile extra css? <br>
+clean message chat css <br>
 
 Jules:<br>
 Finish the game <br>
 Multiple games can be played right after one another <br>
 Other users can watch the game live without interfering in it. <br>
-Game accepts different options/speed/maps
+Game accepts different options(ballspeed/maps)
 
 Alissio:<br>
 docker<br>
@@ -30,4 +33,5 @@ API KEYS in .env <br>
 protect against SQL injection
 
 Other:<br>
-css<br>
+css positioning? <br>
+test & reread pdf <br>
