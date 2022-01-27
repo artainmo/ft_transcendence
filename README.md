@@ -36,3 +36,6 @@ css positioning? <br>
 profile extra css? <br>
 clean message chat css ?<br>
 test (change state "in game" vs "search game") & reread pdf <br>
+Change state after refresh?<br>
+User logs in multiple times on different pages?<br>
+Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately
