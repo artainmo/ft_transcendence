@@ -1,0 +1,109 @@
+.blockButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #912F40;
+}
+
+.leaveChannelButton {
+  composes: blockButton;
+}
+
+.messageButton {
+  cursor: pointer;
+  color: black;
+  width: 75px;
+  font-size: 15px;
+  font-family: Courier New;
+  border-width: 0px;
+  border-radius: 5px;
+  height: 24px;
+  background-color: #F2F6D0;
+}
+
+.messageDisabledButton {
+  composes: messageButton;
+  background-color: #7B7263;
+  color: #555358;
+}
+
+.playDefaultButton {
+  composes: blockButton;
+  background-color: #6EA4BF;
+}
+
+.playRandomButton {
+  composes: blockButton;
+  background-color: #BCED09;
+}
+
+.playCustomButton {
+  composes: blockButton;
+  background-color: #F9CB40;
+}
+
+.playDisabledButton {
+  composes: blockButton;
+  width: 60px;
+  background-color: #7B7263;
+  color: #555358;
+}
+
+.channelInfoButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #FFDDD2;
+}
+
+.channelInfoButtonOn {
+  composes: channelInfoButton;
+  composes: buttonOn from "./convention.module.css"
+}
+
+.usersButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #7DCD85;
+}
+
+.usersButtonOn {
+  composes: usersButton;
+  composes: buttonOn from "./convention.module.css"
+}
+
+.settingsButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #DC965A;
+  width: 90px;
+}
+
+.settingsButtonOn {
+  composes: settingsButton;
+  composes: buttonOn from "./convention.module.css"
+}
+
+.changeStatusButton {
+  composes: smallButton from "./convention.module.css";
+  width: 140px;
+  border-radius: 5px;
+  margin-right: 3px;
+  margin-bottom: 3px;
+  background-color: #656839;
+}
+
+.muteButton {
+  composes: smallButton from "./convention.module.css";
+  width: 70px;
+  border-radius: 5px;
+  background-color: #C17767;
+}
+
+.banButton {
+  composes: smallButton from "./convention.module.css";
+  width: 50px;
+  border-radius: 5px;
+  margin-right: 3px;
+  background-color: #FF785A;
+}
+
+.addUserButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #FFE66D;
+  width: 95px;
+}

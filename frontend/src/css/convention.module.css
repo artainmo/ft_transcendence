@@ -1,0 +1,54 @@
+body {
+  background-color: #F9EA9A;
+  font-family: Courier New;
+}
+
+.bigButton {
+  cursor: pointer;
+  color: black;
+  height: 150px;
+  width: 150px;
+  font-size: 25px;
+  font-family: Courier New;
+  border: 1px solid black;
+  border-radius: 30px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.smallButton {
+  cursor: pointer;
+  color: black;
+  height: 30px;
+  width: 75px;
+  font-size: 15px;
+  font-family: Courier New;
+  border: 1px solid black;
+  border-radius: 30px;
+}
+
+.textInput {
+  background-color: #F2F6D0;
+  border-width: 0px;
+  border-radius: 5px;
+  font-family: Courier New;
+  font-size: 15px;
+  height: 23px;
+}
+
+.backButton {
+  composes: smallButton;
+  background-color: #A8C7BB
+}
+
+.submitButton {
+  composes: smallButton;
+  background-color: #D9D2B6
+}
+
+.buttonOn {
+  border-color: white;
+  color: white;
+}

@@ -1,0 +1,14 @@
+.homeButtonPlay {
+  composes: bigButton from "./convention.module.css";
+  background-color: #A9D2D5;
+}
+
+.homeButtonChat {
+  composes: bigButton from "./convention.module.css";
+  background-color: #6BBF59;
+}
+
+.homeButtonProfile {
+  composes: bigButton from "./convention.module.css";
+  background-color: #EDCBB1;
+}

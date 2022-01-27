@@ -13,6 +13,8 @@ import { addGame } from "../../api/games/games.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import _ from 'underscore';
 import Profile from '../userAccount/profile';
+import styles from "../../css/chat.module.css";
+import cs from "../../css/convention.module.css";
 
 interface addUsersProps {
 	currentChat: ChannelDto,
@@ -95,11 +97,11 @@ const AddUsers: React.FC<addUsersProps> = ({ currentChat, currentChatLatestUpdat
 
   return (<div>
             <br/>
-            <input type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
+            <input className={cs.textInput} placeholder={"Add users..."} type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
-                                            <span>{item.login}</span><>&nbsp;&nbsp;&nbsp;</>
-                                            <button onClick={(e)=> {onSubmit(item.id)}}>Add User</button>
+                                            <span>{item.login}</span><>&nbsp;&nbsp;</>
+                                            <button className={styles.addUserButton} onClick={(e)=> {onSubmit(item.id)}}>Add User</button>
                                          </div>)}
           </div>);
 }
@@ -126,22 +128,18 @@ const ChannelViewUsers: React.FC<channelViewUsersProps> = ({ channelUser, change
   return (<>
 						<AddUsers currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates}/>
 						<h3>Users</h3>
-						<ul>
 							{currentChat.channel_users.length === 1 ? <p>No other users</p> :
 								currentChat.channel_users.map((item: ChannelUserDto) => {
 									if (item.user.id === channelUser.user.id) return "";
-									if (item.owner) return (<li onClick={()=>changeViewProfile(item.user)}>{item.user.login + " --- owner"}</li>);
+									if (item.owner) return (<span onClick={()=>changeViewProfile(item.user)}><span className={cs.clickable}>{item.user.login}</span><span>{" --- owner"}</span><br/><br/></span>);
 									return (<div>
-														<li>
-															<span onClick={()=>changeViewProfile(item.user)}>{item.user.login}</span><>{" --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}</>
-															{channelUser.owner && <button onClick={(e)=>changeStatus(item.id, !item.administrator)}>Change Status</button>}
-															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>ban(item)}>Ban</button>}
-															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button onClick={(e)=>mute(item.id, !item.mute)}>{item.mute ? "Unmute" : "mute"}</button>}
-														</li>
-													</div>);
+															<span className={cs.clickable} onClick={()=>changeViewProfile(item.user)}>{item.user.login}</span><span>{" --- " + (item.administrator ? "administrator" : "user") + (item.mute ? " --- mute   " : "   ")}</span>
+															{channelUser.owner && <button className={styles.changeStatusButton} onClick={(e)=>changeStatus(item.id, !item.administrator)}>Change Status</button>}
+															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button className={styles.banButton} onClick={(e)=>ban(item)}>Ban</button>}
+															{(channelUser.owner || (channelUser.administrator && !item.administrator)) && <button className={styles.muteButton} onClick={(e)=>mute(item.id, !item.mute)}>{item.mute ? "Unmute" : "mute"}</button>}
+													<br/><br/></div>);
 								})
 							}
-            </ul>
 				  </>);
 }
 
@@ -167,8 +165,8 @@ const ChannelSettings: React.FC<channelSettingsprops> = ({ channelUser, changeCu
             <input type="radio" name="type" onChange={()=>changeType("private")} required/><>&nbsp;&nbsp;&nbsp;</>
             <label>password</label>
             <input type="radio"name="type" onChange={()=>changeType("password")} required/><br/><br/>
-            {type === "password" && <><input type="password" maxLength={20} value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
-            <input type="submit" onClick={()=>onSubmitChannel()}/>
+            {type === "password" && <><input className={cs.textInput} placeholder={"Password..."} type="password" maxLength={20} value={password} onChange={(e)=>changePassword(e.target.value)} required/><br/><br/></>}
+            <input className={cs.submitButton} type="submit" onClick={()=>onSubmitChannel()}/>
             <br/><br/>
          </>)
 }
@@ -209,14 +207,14 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeUser, chan
   }
 
   return (<div>
-            <button onClick={()=>{changeInfo(!info); changeSettings(false); changeViewUsers(false); resetSettings();}}>Channel Info</button><>&nbsp;&nbsp;&nbsp;</>
-						<button onClick={()=>{changeViewUsers(!viewUsers); changeSettings(false); changeInfo(false); resetSettings();}}>Users</button><>&nbsp;&nbsp;&nbsp;</>
-            {channelUser.owner === true && <button onClick={()=>{changeSettings(!settings); changeInfo(false); changeViewUsers(false); resetSettings();}}>Settings</button>}
+            <button className={!info ? styles.channelInfoButton : styles.channelInfoButtonOn} onClick={()=>{changeInfo(!info); changeSettings(false); changeViewUsers(false); resetSettings();}}>Info</button><>&nbsp;&nbsp;</>
+						<button className={!viewUsers ? styles.usersButton : styles.usersButtonOn} onClick={()=>{changeViewUsers(!viewUsers); changeSettings(false); changeInfo(false); resetSettings();}}>Users</button><>&nbsp;&nbsp;</>
+            {channelUser.owner === true && <button className={!settings ? styles.settingsButton : styles.settingsButtonOn} onClick={()=>{changeSettings(!settings); changeInfo(false); changeViewUsers(false); resetSettings();}}>Settings</button>}
             {info && <ul>
-                      <li>{`Type: ${currentChat.type}`}</li>
-                      <li>{`Owner: ${currentChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.owner === true)!.user.login}`}</li>
-                      {currentChat.type === "password" && <li>{`Password: ${currentChat.password}`}</li>}
-                      {!channelUser.owner && channelUser.administrator && <li>You have administrator rights in this channel</li>}
+                      <li><span style={{color:"#507255"}}>{`Type: `}</span><span style={{color:"#4AAD52"}}>{currentChat.type}</span></li>
+                      <li><span style={{color:"#507255"}}>{`Owner: `}</span><span style={{color:"#4AAD52"}}>{currentChat.channel_users.find((channel_user: ChannelUserDto) => channel_user.owner === true)!.user.login}</span></li>
+                      {/* {currentChat.type === "password" && <li>{`Password: ${currentChat.password}`}</li>} */}
+                      {!channelUser.owner && channelUser.administrator && <li><span style={{color:"#507255"}}>You are an </span><span style={{color:"#4AAD52"}}>administrator</span></li>}
                     </ul>}
             {settings && <ChannelSettings channelUser={channelUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} password={password} type={type} changePassword={changePassword} changeType={changeType} resetSettings={resetSettings} changeSettings={changeSettings}/>}
             {viewUsers && <ChannelViewUsers channelUser={channelUser} changeUser={changeUser} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
@@ -262,27 +260,28 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		if (message.content.substring(0,6) === "*PLAY*") {
 			if (message.content.substring(7,13) === "random") {
 				game.random = true;
-				return (<><span>{`${message.user.login} --- random game --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+				return (<><span>{`${message.user.login} --- random game --- `}</span><button className={styles.playRandomButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
 			} else if (message.content.length > 6) {
 				game.speed = Number(message.content.substring(7,8));
 				game.map = message.content.substring(9, message.content.length);
 				if (!(game.speed > 0 && game.speed < 4) || !(Maps.find((_map: string) => _map === game.map))) return <></>;
-				return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+				return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playCustomButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
 			}
-			return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+			return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playDefaultButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
 		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
-			return (<><br/><span>{`${message.user.login} --- `}</span><button disabled>PLAY</button><br/><br/></>)
+			return (<><br/><span>{`${message.user.login} --- `}</span><button className={styles.playDisabledButton} disabled>PLAY</button><br/><br/></>)
 		} else {
 			return (<><span>{`${message.user.login} --- ${message.content}`}</span><br/><br/></>);
 		}
 	}
 
   return (<div>
+						<h2>Messages</h2><br/>
             {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
 						<br/>
-            <input type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
-            {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input type="submit" value="Message" disabled/>}
-						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
+            <input className={cs.textInput} type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
+            {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input className={styles.messageDisabledButton} type="submit" value="Message" disabled/>}
+						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input className={styles.messageButton} type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
           </div>);
 }
 
@@ -363,14 +362,14 @@ const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurren
 
 	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false} changeGame={changeGame}/>;
   return (<div>
-            <button onClick={()=>changeCurrentChat(null)}>Back</button>
+            <button className={cs.backButton} onClick={()=>changeCurrentChat(null)}>Back</button>
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
-							&& <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
-            {!dm && <><>&nbsp;&nbsp;&nbsp;</><button onClick={()=>leaveChannel()}>Leave Channel</button></>}
-						{dm && <h1 onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
+							&& <><>&nbsp;&nbsp;</><button className={styles.blockButton} onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
+            {!dm && <><>&nbsp;&nbsp;</><button className={styles.leaveChannelButton} onClick={()=>leaveChannel()}>Leave</button></>}
+						{dm && <h1 className={cs.clickable} onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
             {!dm && <h1>{currentChat.name}</h1>}
             {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
-						<br/><br/>
+						<br/>
             <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket}/>
           </div>);
 }

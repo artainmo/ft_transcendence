@@ -1,0 +1,40 @@
+.logoutButton {
+  composes: smallButton from "./convention.module.css";
+  width: 100px;
+  background-color: #56667A;
+}
+
+.settingsButton {
+  composes: smallButton from "./convention.module.css";
+  width: 100px;
+  background-color: #65B891;
+}
+
+.settingsButtonOn {
+  composes: settingsButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.chooseFileButton {
+  border-width: 0px;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #D7C0D0
+}
+
+.addFriendButton {
+  composes: smallButton from "./convention.module.css";
+  width: 130px;
+  background-color: #E0FF4F
+}
+
+.removeFriendButton {
+  composes: smallButton from "./convention.module.css";
+  width: 150px;
+  background-color: #FF6663
+}
