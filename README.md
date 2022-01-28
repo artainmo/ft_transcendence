@@ -19,7 +19,7 @@ Add button next to "in game" to view the game live !<br>
 Each user has a match history !<br>
 base css !<br>
 protect against SQL injection (https://github.com/typeorm/typeorm/issues/3696) -> ORM is used without raw query string !<br>
-You must implement some kind of server-side validation for forms and any user input -> ParseIntPipe & ValidationPipe with class-validator <br>
+You must implement some kind of server-side validation for forms and any user input -> ParseIntPipe & ValidationPipe with class-validator !<br>
 
 Jules:<br>
 Finish the game <br>
