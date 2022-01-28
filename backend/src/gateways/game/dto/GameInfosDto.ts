@@ -8,3 +8,16 @@ export interface GameInfosDto {
 	scoreP1: number,
 	scoreP2: number,
 }
+
+export interface ballDto {
+	x: number,
+	y: number,
+	velocityX: number,
+	velocityY: number,
+	speed: number,
+}
+
+export interface players {
+  p1: boolean;
+  p2: boolean;
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { GAME_HEIGHT, GAME_WIDTH } from './utils/gameConstants';
+//import { GAME_HEIGHT, GAME_WIDTH, MAX_HEIGHT, MAX_WIDTH } from './utils/gameConstants';
 import {
 	connect,
 	startGame,
@@ -29,7 +29,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		joinRoom(socket, props.gameInfos.id.toString());
 		if (p !== 0) {
 			console.log("On start la game pour player : " + p.toString())
-			startGame(socket, {room: props.gameInfos.id.toString(), player: p});
+			startGame(socket, {room: props.gameInfos.id.toString(), player: p, speed: props.gameInfos.ballspeed});
 		}
 		socket.on('gameData', (data: GameInfosDto) => {
 			game.drawGame(data);
@@ -70,7 +70,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 
 	return (
 		<div>
-			<canvas id="PongCanvas" width={GAME_WIDTH} height={GAME_HEIGHT}></canvas>
+			<canvas id="PongCanvas"></canvas>
 		</div>
 	)
 }

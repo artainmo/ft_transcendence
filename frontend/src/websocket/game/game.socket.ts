@@ -15,7 +15,7 @@ export const listenStartGame: (socket: any, callbackFunc: (response: GameInfosDt
 /*
 ** Receive the start game informations
 */
-export const startGame: (socket: any, message : {room: string, player: number}) => void  = (socket, message) => {
+export const startGame: (socket: any, message : {room: string, player: number, speed: number}) => void  = (socket, message) => {
   socket.emit('startgame', message);
 }
 
