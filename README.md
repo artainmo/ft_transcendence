@@ -22,14 +22,14 @@ protect against SQL injection (https://github.com/typeorm/typeorm/issues/3696) -
 You must implement some kind of server-side validation for forms and any user input -> ParseIntPipe & ValidationPipe with class-validator !<br>
 
 Jules:<br>
-Finish the game <br>
+Finish the game !<br>
 Multiple games can be played right after one another !<br>
 Other users can watch the game live without interfering in it. !<br>
-Game accepts different options(ballspeed/maps) <br>
-Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately
+Game accepts different options(ballspeed/maps) !<br>
+Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately !
 
 Alissio:<br>
-docker<br>
+docker-compose<br>
 API KEYS in .env <br>
 
 Other:<br>
