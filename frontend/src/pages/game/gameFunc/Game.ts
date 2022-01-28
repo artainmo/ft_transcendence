@@ -61,7 +61,7 @@ export class Game {
 			this.getCurrSize();
 			window.onresize = () => {
 				this.getCurrSize();
-				if (this.end == true && this.scores != null) {
+				if (this.end === true && this.scores !== null) {
 					this.drawEnd(this.scores);
 				}
 			}
@@ -79,7 +79,7 @@ export class Game {
 		** get the current coefficient for responsive
 		*/
 		public getCurrSize() {
-			
+
 			if (window.innerHeight < 300 || window.innerWidth < 420) {
 				this.can.height = 200;
 				this.can.width = 280;
@@ -189,7 +189,7 @@ export class Game {
 		public drawEnd(score: playerScoreDto) {
 			this.scores = score;
 			this.end = true;
-		
+
 			this.destroyGame();
 			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
 			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px fantasy";

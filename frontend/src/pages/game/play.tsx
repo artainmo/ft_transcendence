@@ -155,11 +155,7 @@ const Play: React.FC<playProps> = ({ user, changeUser, changeMenuPage, game, cha
     } else {
       updateUser(user.id, {status: "Watching a game"});
     }
-    return (<div>
-              <button className={cs.backButton} onClick={()=>quitGame()}>Back</button>
-              <h1>GAME</h1>
-              <PongGame gameInfos={game} user={user} changeUser={changeUser}/>
-            </div>);
+    return (<PongGame gameInfos={game} user={user} changeUser={changeUser} back={quitGame}/>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;
   } else if (getGame === null) {

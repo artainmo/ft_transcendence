@@ -5,7 +5,7 @@ import Play from '../game/play';
 import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser, getUser } from "../../api/user/user.api";
 import { GameDto } from "../../api/games/dto/game.dto";
-import { getAllGames } from "../../api/games/games.api";
+import { getAllGames, removeGame } from "../../api/games/games.api";
 import styles from "../../css/home.module.css";
 
 const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string) => void}> = ({user, changeMenuPage }) => {
@@ -23,15 +23,46 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	const [menuPage, setMenuPage] = useState<string>("home");
 	const [game, setGame] = useState<GameDto | null>(null);
 
+	const findMyGame: () => Promise<GameDto | null> = async () => {
+		const games = await getAllGames();
+		let myGame = games.find((findGame: GameDto) =>
+					(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
+		if (myGame === undefined) return null;
+		return myGame;
+	}
+
+	useEffect(() => {
+		const alertUser = (e: any) => {
+	    e.preventDefault();
+	    e.returnValue = "";
+			alert("jjjj");
+	  };
+	  window.addEventListener("beforeunload", alertUser);
+	  return () => { window.removeEventListener("beforeunload", alertUser); };
+	}, []);
+
+	// useEffect(() => {
+    // window.onbeforeunload = async () => {
+		// 	//Set user offline
+		// 	alert("hhh");
+		// 	await updateUser(user.id, {status: "Offline"});
+		// 	//Remove all games associated with the user that have not been finished yet
+		// 	let myGame = await findMyGame();
+		// 	if (myGame !== null) await removeGame(myGame.id);
+		// 	console.log(myGame);
+		// 	alert("hhh");
+		// 	await new Promise(resolve => setTimeout(resolve, 4000));
+    // };
+    // return () => { window.onbeforeunload = null };
+	// eslint-disable-next-line
+//	}, [])
+
 	useEffect(()=>{
-    const findGame: () => void = async () => {
+    const findGame: () => Promise<void> = async () => {
 			let latestUser = await getUser(user.id);
 			if (latestUser === null || latestUser.status !== "Online") return ;
-      const games = await getAllGames();
-      let myGame = games.find((findGame: GameDto) =>
-						(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
-      if (myGame === undefined) return ;
-      changeGame(myGame);
+			let myGame = await findMyGame();
+			if (myGame !== null) changeGame(myGame);
     }
     const interval = setInterval(findGame, 2000);
     return () => clearInterval(interval);

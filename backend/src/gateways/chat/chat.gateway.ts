@@ -7,7 +7,6 @@ class Message {
   @IsString()
   room: string
 
-  @IsNotEmpty()
   @IsString()
   content: string
 }

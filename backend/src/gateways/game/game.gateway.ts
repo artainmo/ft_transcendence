@@ -1,7 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
 import { clearInterval } from 'timers';
-import { WebsocketGameDto } from "./dto/websocket-game.dto";
 import * as CONSTS from './utils/game.constants';
 import { GameInfosDto} from './dto/GameInfosDto';
 
@@ -171,7 +170,7 @@ export class GameGateway {
   public games = {} ;
 
   @SubscribeMessage('startgame')
-  connectPlayer(client: Socket, message: any): Promise<void> {
+  connectPlayer(client: Socket, message: any): void {
     console.log("le player : " + message.player);
     console.log("la room : " + message.room);
 
@@ -252,12 +251,6 @@ export class GameGateway {
   handlePosP2(client: Socket, message: {room: string, pos: number}): void {
     if ( this.games[message.room] != undefined)
       this.games[message.room].game.updatePos2(message.pos);
-  }
-
-
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, message: WebsocketGameDto): void {
-    this.server.to(message.room).emit("message", message)
   }
 
   @SubscribeMessage('joinRoom')

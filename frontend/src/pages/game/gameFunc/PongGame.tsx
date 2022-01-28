@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //import { GAME_HEIGHT, GAME_WIDTH, MAX_HEIGHT, MAX_WIDTH } from './utils/gameConstants';
 import {
 	connect,
@@ -13,9 +13,11 @@ import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
 import { Game } from "./Game";
 import { addMatchHistory, createNewMatchHistory } from "../../../api/match-history/match-history.api";
 import { getUser } from "../../../api/user/user.api";
+import cs from "../../../css/convention.module.css";
 
-const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void }) =>
-{
+const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void }) => {
+	const [quitPermited, setQuitPermited] = useState<boolean>(false);
+
  	useEffect ( () => {
 		var p: number = 0;
 		if (props.user.name === props.gameInfos.user1.name)
@@ -51,6 +53,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 				}
 				let latestUser = await getUser(props.user.id);
 				props.changeUser(latestUser);
+				setQuitPermited(true);
 			}
 			scoreToDatabase();
 		})
@@ -70,6 +73,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 
 	return (
 		<div>
+			{quitPermited && <><button className={cs.backButton} onClick={()=>props.back()}>Back</button><br/><br/></>}
 			<canvas id="PongCanvas"></canvas>
 		</div>
 	)
