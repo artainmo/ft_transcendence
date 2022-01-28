@@ -1,11 +1,23 @@
 import { GameDto } from "../../../api/games/dto/game.dto";
 import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
-import {CENTER_WIDTH, GAME_HEIGHT, GAME_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, CENTER_HEIGTH} from "./utils/gameConstants";
+import * as CONSTS from "./utils/gameConstants";
 import { sendPos1, sendPos2 } from "../../../websocket/game/game.socket";
 
 export interface Ime {
 	name: string,
 	num: number,
+}
+
+/*
+** "key": ["bg color", "ball/player/scripture color"]
+*/
+const maps: any= {
+	"black": ["#000000", "#FFFFFF"],
+	"white": ["#FFFFFF", "#000000"],
+	"winter": ["#b3ffff", "#1d4161"],
+	"summer": ["#ff9400", "#001826"],
+	"night": ["#001841", "#ffc900"],
+
 }
 
 export class Game {
@@ -17,11 +29,16 @@ export class Game {
 		private nameP1: string = "Player 1 : ";
 		private nameP2: string = "Player 2 : ";
 		private bgColor: string = "black";
+		private scriptureColor: string = "white";
 		private me: Ime = {name: "unkown", num: 0}; //name = mon nom et num = player 1 ou player 2
 		private bRadius: number = 8; //radius de la ball a changer pour responsive
 		private socket: any;
+		private coeff: number = 1.0;
 
-		constructor(baseGame: GameDto, name: string, socket: any, w: number = GAME_WIDTH, h: number = GAME_HEIGHT, canId: string = "PongCanvas")
+		private scores: any = null;
+		private end: boolean = false;
+
+		constructor(baseGame: GameDto, name: string, socket: any, w: number = CONSTS.GAME_WIDTH, h: number = CONSTS.GAME_HEIGHT, canId: string = "PongCanvas")
 		{
 			this.socket = socket;
 			this.w = w;
@@ -31,7 +48,8 @@ export class Game {
 			if (baseGame.user2 !== null)
 				this.nameP2 = baseGame.user2.name;
 			this.room = baseGame.id.toString();
-			this.bgColor = baseGame.map;
+			this.bgColor = maps[baseGame.map][0];
+			this.scriptureColor = maps[baseGame.map][1];
 			this.me.name = name;
 			if (this.me.name === this.nameP1)
 				this.me.num = 1;
@@ -39,8 +57,14 @@ export class Game {
 				this.me.num = 2;
 			this.can = document.getElementById(canId)  as HTMLCanvasElement;
 			this.ctx = this.can.getContext('2d') as CanvasRenderingContext2D;
-			//mettre contion si me == 1 ou 2 suelement pour alleger peut etre
 			this.can.addEventListener("mousemove", this.movePaddle.bind(this));
+			this.getCurrSize();
+			window.onresize = () => {
+				this.getCurrSize();
+				if (this.end == true && this.scores != null) {
+					this.drawEnd(this.scores);
+				}
+			}
 		}
 
 		get myNum() {
@@ -50,19 +74,55 @@ export class Game {
 		get myRoom() {
 			return (this.room);
 		}
+
+		/*
+		** get the current coefficient for responsive
+		*/
+		public getCurrSize() {
+			
+			if (window.innerHeight < 300 || window.innerWidth < 420) {
+				this.can.height = 200;
+				this.can.width = 280;
+				this.coeff = 0.4;
+			}
+			else if (window.innerHeight < 400 || window.innerWidth < 560) {
+				this.can.height = 300;
+				this.can.width = 420;
+				this.coeff = 0.6;
+			}
+			else if (window.innerHeight < 500 || window.innerWidth < 700) {
+				this.can.height = 400;
+				this.can.width = 560;
+				this.coeff = 0.8;
+			}
+			else if (window.innerHeight < 600 || window.innerWidth < 840) {
+				this.can.height = 500;
+				this.can.width = 700;
+				this.coeff = 1;
+			}
+			else if (window.innerHeight < 700 || window.innerWidth < 980) {
+				this.can.height = 600;
+				this.can.width = 840;
+				this.coeff = 1.2;
+			}
+			else {
+				this.can.height = 700;
+				this.can.width = 980;
+				this.coeff = 1.4;
+			}
+		}
 		/*
 		** Player move function
 		*/
 		public movePaddle(evt: MouseEvent)
 		{
-			// var rectTop = {top: 0};
 			var rect = this.can.getBoundingClientRect();// || rectTop;
-			//this.p1.y = evt.clientY - rect.top - (PLAYER_HEIGHT / 2);
+
 			if (this.me.num === 1) {
-				sendPos1(this.socket, {room: this.myRoom, pos: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
+				sendPos1(this.socket, {room: this.myRoom, pos: (evt.clientY - rect.top - (CONSTS.PLAYER_HEIGHT / 2)) / this.coeff});
 			}
 			else if (this.me.num === 2) {
-				sendPos2(this.socket, {room: this.myRoom, pos: evt.clientY - rect.top - (PLAYER_HEIGHT / 2)});
+				sendPos2(this.socket, {room: this.myRoom, pos: (((evt.clientY  - rect.top ) / this.coeff) - (((CONSTS.PLAYER_HEIGHT) / 2) * this.coeff ))});
 			}
 		}
 
@@ -75,7 +135,7 @@ export class Game {
 			this.ctx.fillRect(x, y, w, h);
 		}
 
-		public fillCircle (color: string = "white", x: number = GAME_WIDTH / 2, y: number = GAME_HEIGHT / 2, r: number = this.bRadius)
+		public fillCircle (color: string = "white", x: number = CONSTS.GAME_WIDTH / 2, y: number = CONSTS.GAME_HEIGHT / 2, r: number = this.bRadius)
 		{
 			this.ctx.fillStyle = color;
 			this.ctx.beginPath();
@@ -84,10 +144,11 @@ export class Game {
 			this.ctx.fill();
 		}
 
-		public fillWrite (text: string, x: number, y: number, color: string = "white", font: string = "15px fantasy")
+		public fillWrite (text: string, x: number, y: number, color: string = "white", fontSize: number)
 		{
+			this.ctx.textAlign = "center";
 			this.ctx.fillStyle = color;
-			this.ctx.font = font;
+			this.ctx.font = fontSize.toString() + "px fantasy";
 			this.ctx.fillText(text, x, y);
 		}
 
@@ -105,28 +166,34 @@ export class Game {
 			var height = 0;
 
 			this.destroyGame();
-			this.fillRect();
-			this.fillRect("white", data.p1x, data.p1y, PLAYER_WIDTH, PLAYER_HEIGHT);
-			this.fillRect("white", data.p2x, data.p2y, PLAYER_WIDTH, PLAYER_HEIGHT);
-			this.fillWrite(this.nameP1 + "   "  + data.scoreP1.toString(), (GAME_WIDTH / 2) - 250 , 15);
-			this.fillWrite(this.nameP2 + "   "  + data.scoreP2.toString(), (GAME_WIDTH / 2) + 150 , 15);
+			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
 
-			while (height < GAME_HEIGHT)
+			this.fillRect(this.scriptureColor, data.p1x * this.coeff, data.p1y * this.coeff, CONSTS.PLAYER_WIDTH * this.coeff, CONSTS.PLAYER_HEIGHT * this.coeff);
+			this.fillRect(this.scriptureColor, data.p2x * this.coeff, data.p2y * this.coeff, CONSTS.PLAYER_WIDTH * this.coeff, CONSTS.PLAYER_HEIGHT * this.coeff);
+
+			this.fillWrite(this.nameP1 + "   "  + data.scoreP1.toString(), (CONSTS.GAME_WIDTH / 4) * this.coeff , 35 * this.coeff, this.scriptureColor, Math.floor(30 * this.coeff));
+			this.fillWrite(this.nameP2 + "   "  + data.scoreP2.toString(), ((CONSTS.GAME_WIDTH / 4) * 3) * this.coeff , 35 * this.coeff, this.scriptureColor, Math.floor(30 * this.coeff));
+
+
+			while (height < CONSTS.GAME_HEIGHT * this.coeff) // mid lane
 			{
-				this.fillRect("white", (GAME_WIDTH / 2) - (CENTER_WIDTH / 2), height, CENTER_WIDTH, CENTER_HEIGTH);
-				height += CENTER_HEIGTH * 2;
+				this.fillRect(this.scriptureColor, ((CONSTS.GAME_WIDTH / 2) - (CONSTS.CENTER_WIDTH / 2)) * this.coeff, height, CONSTS.CENTER_WIDTH * this.coeff, CONSTS.CENTER_HEIGTH * this.coeff);
+				height += (CONSTS.CENTER_HEIGTH * 2) * this.coeff;
 			}
-			this.fillCircle("white", data.ballX, data.ballY, this.bRadius);
+			this.fillCircle(this.scriptureColor, data.ballX * this.coeff, data.ballY * this.coeff, this.bRadius * this.coeff);
 		}
 
 		/*
 		** Draw final score
 		*/
 		public drawEnd(score: playerScoreDto) {
+			this.scores = score;
+			this.end = true;
+		
 			this.destroyGame();
-			this.fillRect();
-			this.ctx.font = "50px fantasy";
-			this.ctx.fillStyle = "white";
+			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
+			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px fantasy";
+			this.ctx.fillStyle = this.scriptureColor;
 			this.ctx.textAlign = "center";
 
 			var result = "";
@@ -134,24 +201,15 @@ export class Game {
 				result = "You win !!!";
 			else
 				result = "You loose ...";
-			this.ctx.fillText(result, GAME_WIDTH / 2, (GAME_HEIGHT / 100) * 30);
+			this.ctx.fillText(result, 350 * this.coeff, 150 * this.coeff);
 
-			this.ctx.font = "35px fantasy";
-			this.ctx.textAlign = "left";
+			this.ctx.font = Math.floor(35 * this.coeff).toString() +  "px fantasy";
 			var output1 = this.nameP1;
 			var output2 = this.nameP2;
 
-			while (output1.length !==  output2.length) {
-				if (output1.length < output2.length)
-					output1 += " ";
-				else
-					output2 += " ";
-			}
-
-			output1 += " : " + (score.win.p === 1 ? score.win.score :  score.loose.score);
-			output2 += " : " + (score.win.p === 2 ? score.win.score :  score.loose.score);
-
-			this.ctx.fillText(output1, GAME_WIDTH / 3, (GAME_HEIGHT / 100) * 60);
-			this.ctx.fillText(output2, GAME_WIDTH / 3, ((GAME_HEIGHT / 100) * 60) + 50);
+			output1 += "    :    " + (score.win.p === 1 ? score.win.score :  score.loose.score);
+			output2 += "    :    " + (score.win.p === 2 ? score.win.score :  score.loose.score);
+			this.ctx.fillText(output1, 350 * this.coeff, 300 * this.coeff);
+			this.ctx.fillText(output2, 350 * this.coeff, 350 * this.coeff);
 		}
 }

@@ -10,9 +10,9 @@ const lodash = require('lodash');
 var startGameInfos: GameInfosDto = {
   ballX: CONSTS.GAME_WIDTH / 2,
 	ballY: CONSTS.GAME_HEIGHT / 2,
-	p1y: CONSTS.GAME_HEIGHT / 2,
+	p1y: (CONSTS.GAME_HEIGHT / 2) - (CONSTS.PLAYER_HEIGHT / 2),
 	p1x: 0,
-	p2y: CONSTS.GAME_HEIGHT / 2,
+	p2y: (CONSTS.GAME_HEIGHT / 2) - (CONSTS.PLAYER_HEIGHT / 2),
 	p2x: CONSTS.GAME_WIDTH - 15,
 	scoreP1: 0,
 	scoreP2: 0,
@@ -35,7 +35,7 @@ class gameRender {
     this.velocityX = this.basicSpeed * (Math.random() < 0.5 ? 1 : -1);
     this.velocityY = 0;
     this.speed = this.basicSpeed;
-    this.radius = 8; //modifier la provenance
+    this.radius = CONSTS.BALL_RADIUS;
     this.status = 'w';
   }
 
@@ -121,11 +121,28 @@ class gameRender {
     ** Update the player position
     */
     public updatePos1 (pos: number) {
-      this.gameInfos.p1y = pos;
+      if (pos < 0) {
+        this.gameInfos.p1y = 0;
+      }
+      else if (pos > CONSTS.GAME_HEIGHT - (CONSTS.PLAYER_HEIGHT)) {
+        this.gameInfos.p1y = CONSTS.GAME_HEIGHT - CONSTS.PLAYER_HEIGHT;
+      }
+      else {
+        this.gameInfos.p1y = pos;
+      }
     }
 
     public updatePos2 (pos: number) {
-      this.gameInfos.p2y = pos;
+      if (pos < 0) {
+        this.gameInfos.p2y = 0;
+      }
+      else if (pos > CONSTS.GAME_HEIGHT - (CONSTS.PLAYER_HEIGHT)) {
+        this.gameInfos.p2y = CONSTS.GAME_HEIGHT - CONSTS.PLAYER_HEIGHT;
+      }
+      else {
+        this.gameInfos.p2y = pos;
+      }
+
     }
 
     /*
