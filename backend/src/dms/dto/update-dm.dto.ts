@@ -1,3 +1,4 @@
 import { CreateDmDto } from './create-dm.dto';
+import { PartialType } from "@nestjs/mapped-types";
 
-export type UpdateDmDto = Partial<CreateDmDto>;
+export class UpdateDmDto extends PartialType(CreateDmDto) {}

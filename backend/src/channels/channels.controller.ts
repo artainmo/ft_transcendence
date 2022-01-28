@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -21,23 +21,18 @@ export class ChannelsController {
     return this.channelsService.findAll();
   }
 
-  // @Get('/user/:login')
-  // findChannelsOfUser(@Param('login') login: string) {
-  //   return this.channelsService.findChannelsOfUser(login);
-  // }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateChannelDto: UpdateChannelDto) {
     return this.channelsService.update(+id, updateChannelDto);
-  }//TypeORM bugs, thus using a way around
+  }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.remove(+id);
   }
 
@@ -52,17 +47,17 @@ export class ChannelsController {
   }
 
   @Get('/message/:id')
-  findOneMessage(@Param('id') id: string) {
+  findOneMessage(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.findOneMessage(+id);
   }
 
   @Patch('/message/:id')
-  updateMessage(@Param('id') id: string, @Body() updateChannelMessageDto: UpdateChannelMessageDto) {
+  updateMessage(@Param('id', ParseIntPipe) id: number, @Body() updateChannelMessageDto: UpdateChannelMessageDto) {
     return this.channelsService.updateMessage(+id, updateChannelMessageDto);
   }
 
   @Delete('/message/:id')
-  removeMessage(@Param('id') id: string) {
+  removeMessage(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.removeMessage(+id);
   }
 
@@ -77,22 +72,22 @@ export class ChannelsController {
   }
 
   @Get('/user/:id')
-  findOneUser(@Param('id') id: string) {
+  findOneUser(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.findOneUser(+id);
   }
 
   @Patch('/user/:id')
-  updateUser(@Param('id') id: string, @Body() updateChannelUserDto: UpdateChannelUserDto) {
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateChannelUserDto: UpdateChannelUserDto) {
     return this.channelsService.updateUser(+id, updateChannelUserDto);
   }
 
   @Delete('/user/:id')
-  removeUser(@Param('id') id: string) {
+  removeUser(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.removeUser(+id);
   }
 
   @Get('/password_verification/:id/:password')
-  passwordVerification(@Param('id') id: string, @Param('password') password: string) {
+  passwordVerification(@Param('id', ParseIntPipe) id: number, @Param('password') password: string) {
     return this.channelsService.passwordVerification(+id, password);
   }
 }

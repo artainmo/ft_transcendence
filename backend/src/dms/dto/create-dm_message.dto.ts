@@ -1,3 +1,4 @@
 import { DmsMessagesEntity } from "../entities/dms_messages.entity";
+import { OmitType } from "@nestjs/mapped-types";
 
-export type CreateDmMessageDto = Omit<DmsMessagesEntity, "id">;
+export class CreateDmMessageDto extends OmitType(DmsMessagesEntity, ["id"]) {}

@@ -6,7 +6,7 @@ import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser, getUser } from "../../api/user/user.api";
 import { GameDto } from "../../api/games/dto/game.dto";
 import { getAllGames } from "../../api/games/games.api";
-import styles from "./home.module.css";
+import styles from "../../css/home.module.css";
 
 const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string) => void}> = ({user, changeMenuPage }) => {
 	updateUser(user.id, {status: "Online"});

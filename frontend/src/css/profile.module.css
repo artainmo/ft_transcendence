@@ -1,0 +1,34 @@
+.logoutButton {
+  composes: smallButton from "./convention.module.css";
+  width: 100px;
+  background-color: #56667A;
+}
+
+.settingsButton {
+  composes: smallButton from "./convention.module.css";
+  width: 100px;
+  background-color: #65B891;
+}
+
+.settingsButtonOn {
+  composes: settingsButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+.addFriendButton {
+  composes: smallButton from "./convention.module.css";
+  width: 130px;
+  background-color: #E0FF4F
+}
+
+.removeFriendButton {
+  composes: smallButton from "./convention.module.css";
+  width: 150px;
+  background-color: #FF6663
+}
+
+.watchGameButton {
+  composes: smallButton from "./convention.module.css";
+  width: 115px;
+  background-color: #4ECDC4;
+}

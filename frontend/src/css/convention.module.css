@@ -1,3 +1,19 @@
+body {
+  background-color: #F9EA9A;
+  font-family: Courier New;
+}
+
+.bigButton {
+  cursor: pointer;
+  color: black;
+  height: 150px;
+  width: 150px;
+  font-size: 25px;
+  font-family: Courier New;
+  border: 1px solid black;
+  border-radius: 30px;
+}
+
 .clickable {
   cursor: pointer;
 }
@@ -32,16 +48,13 @@
   background-color: #D9D2B6
 }
 
-.logoutButton {
-  composes: smallButton;
-  width: 100px;
-  background-color: #56667A;
+.buttonOn {
+  border-color: white;
+  color: white;
 }
 
-.settingsButton {
-  composes: smallButton;
-  width: 100px;
-  background-color: #65B891;
+.customSelect {
+  composes: textInput;
 }
 
 input[type="file"] {
@@ -56,14 +69,17 @@ input[type="file"] {
   background-color: #D7C0D0
 }
 
-.addFriendButton {
-  composes: smallButton;
-  width: 130px;
-  background-color: #E0FF4F
+input[type="radio"] {
+    display: none;
 }
 
-.removeFriendButton {
-  composes: smallButton;
-  width: 150px;
-  background-color: #FF6663
+.radioButton {
+  cursor: pointer;
+}
+
+.radioButtonOn {
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5em;
 }

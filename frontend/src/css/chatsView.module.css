@@ -1,0 +1,55 @@
+.newDmButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #ECD444;
+  width: 133px;
+}
+
+.newDmButtonOn {
+  composes: newDmButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+.newChannelButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #D17A22;
+  width: 133px;
+}
+
+.newChannelButtonOn {
+  composes: newChannelButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+.joinChannelButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #645E9D;
+  width: 133px;
+}
+
+.joinChannelButtonOn {
+  composes: joinChannelButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+.viewChatCommandsButton {
+  composes: smallButton from "./convention.module.css";
+  background-color: #B4C292;
+  width: 133px;
+}
+
+.viewChatCommandsButtonOn {
+  composes: viewChatCommandsButton;
+  composes: buttonOn from "./convention.module.css";
+}
+
+.startChannelButton {
+  composes: smallButton from "./convention.module.css";
+  width: 70px;
+  background-color: transparent;
+}
+
+.startDmButton {
+  composes: smallButton from "./convention.module.css";
+  width: 50px;
+  background-color: transparent;
+}

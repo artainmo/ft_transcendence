@@ -4,7 +4,8 @@ import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
 import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, verifyTwoFactorAuthentication } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
-
+import styles from "../../css/authentification.module.css";
+import cs from "../../css/convention.module.css";
 
 const CLIENT_ID = '433eb612bd72cf577b98ad16b16bc482ddf45b46c37f326595b7600495b11807';
 const REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A3000';
@@ -47,28 +48,39 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 		}
 	}
 
+	const changeAvatar: (event: any) => void = async (event) => {
+		if (!event.target.files) return ;
+		let reader = new FileReader();
+	 	reader.onload = async (e) => {
+			if (e === null || e!.target!.result === null) return ;
+			setAvatar(e!.target!.result as string);
+	 	};
+	 	reader.readAsDataURL(event.target.files[0]);
+ }
+
 	return (<div>
 						<label>Name:</label><br/>
-						<input required type="text" value={name} onChange={(e)=>setName(e.target.value)}/>
+						<input className={cs.textInput} type="text" value={name} onChange={(e)=>setName(e.target.value)} required/>
 						{signup && <br/>}
 						{signup && <br/>}
 						{signup && <label>Login:</label>}
 						{signup && <br/>}
-						{signup && <input required type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/>}
+						{signup && <input className={cs.textInput} type="text" value={login} onChange={(e)=>setLogin(e.target.value)} required/>}
 						{signup && <br/>}
 						{signup && <br/>}
-						{signup && <label>Download Avatar Image: </label>}
-						{signup && <input type="file" id="fileInput" onChange={(e)=> e.target.files && setAvatar(URL.createObjectURL(e.target.files[0]))}/>}
+						{signup && <label className={cs.chooseFileButton}>Download Avatar Image
+												<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
+											 </label>}
 						<br/><br/>
 						{accountAlreadyInUse && <p>This account already exists, try another one</p>}
 						{nonExistingAccount && <p>This account does not exist, try another one</p>}
-						<button type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}>Submit</button>
+						<button className={cs.submitButton} type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}>Submit</button>
 				</div>);
 }
 
 const Signup: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
 	return (<div>
-						<button onClick={()=>{changePage("start")}}>Back</button>
+						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
 						<h1>Sign up</h1>
 						<LogForm changeUser={changeUser} signup={true}/>
 					</div>);
@@ -76,7 +88,7 @@ const Signup: React.FC<{changePage: (newPage: string) => void, changeUser: (newU
 
 const Login: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
 	return (<div>
-						<button onClick={()=>{changePage("start")}}>Back</button>
+						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
 						<h1>Log in</h1>
 						<LogForm changeUser={changeUser} signup={false}/>
 					</div>);
@@ -100,18 +112,18 @@ const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}
 	return (<div>
 						<h1>Two Factor Authentication</h1>
 						<label>Token: </label>
-						<input type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>
+						<input className={cs.textInput} type="text" value={token} onChange={(e)=>setToken(e.target.value)}/>
 						{token.length === 6 && verify2FA()}
-						{wrongToken && <><>&nbsp;&nbsp;&nbsp;</><span>Wrong Token</span></>}
+						{wrongToken && <><>&nbsp;&nbsp;</><span>Wrong Token</span></>}
 				  </div>)
 }
 
 const Start: React.FC<{changePage: (newPage: string) => void}> = ({ changePage }) => {
 	return (<div>
 						<h1>Pong Game</h1>
-						<button onClick={()=>{changePage('login')}}>Log in</button><>&nbsp;&nbsp;&nbsp;</>
-						<button onClick={()=>{changePage('signup')}}>Sign up</button><>&nbsp;&nbsp;&nbsp;</>
-						<button onClick={()=>{window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;}}>Intra 42 login</button>
+						<button className={styles.loginButton} onClick={()=>{changePage('login')}}>Log in</button><>&nbsp;&nbsp;</>
+						<button className={styles.signupButton} onClick={()=>{changePage('signup')}}>Sign up</button><>&nbsp;&nbsp;</>
+						<button className={styles.intraLoginButton} onClick={()=>{window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;}}>Intra 42</button>
 					</div>);
 }
 
