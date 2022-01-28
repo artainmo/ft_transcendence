@@ -1,53 +1,19 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { clear } from 'console';
 import { Server, Socket } from "socket.io";
 import { clearInterval } from 'timers';
 import { WebsocketGameDto } from "./dto/websocket-game.dto";
+import * as CONSTS from './utils/game.constants';
+import { GameInfosDto} from './dto/GameInfosDto';
 
 const lodash = require('lodash');
 
-export interface ballDto {
-	x: number,
-	y: number,
-	velocityX: number,
-	velocityY: number,
-	speed: number,
-}
-
-export interface players {
-  p1: boolean;
-  p2: boolean;
-}
-
-export interface GameInfosDto {
-	ballX: number,
-	ballY: number,
-	p1y: number,
-	p1x: number,
-	p2y: number,
-	p2x: number,
-	scoreP1: number,
-	scoreP2: number,
-}
-
-export const GAME_WIDTH = 700;
-export const GAME_HEIGHT = 500;
-export const CENTER_WIDTH = 12;
-export const CENTER_HEIGTH = 30;
-
-export const BALL_RADIUS = 8;
-export const PLAYER_WIDTH = 15;
-export const PLAYER_HEIGHT = 60;
-export const MAX_SCORE = 11;
-
-
 var startGameInfos: GameInfosDto = {
-  ballX: 350,
-	ballY: 250,
-	p1y: 500/2,
+  ballX: CONSTS.GAME_WIDTH / 2,
+	ballY: CONSTS.GAME_HEIGHT / 2,
+	p1y: CONSTS.GAME_HEIGHT / 2,
 	p1x: 0,
-	p2y: 500/2,
-	p2x: 700-15,
+	p2y: CONSTS.GAME_HEIGHT / 2,
+	p2x: CONSTS.GAME_WIDTH - 15,
 	scoreP1: 0,
 	scoreP2: 0,
 }
@@ -56,17 +22,19 @@ class gameRender {
   private gameInfos: GameInfosDto;
   private velocityX: number;
   private velocityY: number;
+  private basicSpeed: number;
   private speed: number;
   private radius: number;
   private playing: boolean = true;
   private loop = null;
   public status: string;
 
-  constructor (basic_infos: GameInfosDto) {
+  constructor (basic_infos: GameInfosDto, ballspeed: number) {
     this.gameInfos = basic_infos;
-    this.velocityX = 5;
-    this.velocityY = 5;
-    this.speed = 5;
+    this.basicSpeed = ballspeed * 3;
+    this.velocityX = this.basicSpeed * (Math.random() < 0.5 ? 1 : -1);
+    this.velocityY = 0;
+    this.speed = this.basicSpeed;
     this.radius = 8; //modifier la provenance
     this.status = 'w';
   }
@@ -83,9 +51,9 @@ class gameRender {
   public collision(pos: {x: number, y: number})
 	{
 		var ptop = pos.y;
-		var pbottom = pos.y + PLAYER_HEIGHT;
+		var pbottom = pos.y + CONSTS.PLAYER_HEIGHT;
 		var pleft = pos.x;
-		var pright = pos.x + PLAYER_WIDTH;
+		var pright = pos.x + CONSTS.PLAYER_WIDTH;
 
 		var btop = this.gameInfos.ballY - this.radius;
 		var bbottom = this.gameInfos.ballY + this.radius;
@@ -99,19 +67,19 @@ class gameRender {
 			this.gameInfos.ballX += this.velocityX;
 			this.gameInfos.ballY += this.velocityY;
 
-      if (this.gameInfos.ballY + this.radius > GAME_HEIGHT || this.gameInfos.ballY - this.radius < 0)
+      if (this.gameInfos.ballY + this.radius > CONSTS.GAME_HEIGHT || this.gameInfos.ballY - this.radius < 0)
 				this.velocityY = -this.velocityY;
 
-			let player = (this.gameInfos.ballX < GAME_WIDTH / 2 ? {x: this.gameInfos.p1x, y: this.gameInfos.p1y} : {x: this.gameInfos.p2x, y: this.gameInfos.p2y}); //player
+			let player = (this.gameInfos.ballX < CONSTS.GAME_WIDTH / 2 ? {x: this.gameInfos.p1x, y: this.gameInfos.p1y} : {x: this.gameInfos.p2x, y: this.gameInfos.p2y}); //player
 
 			if (this.collision(player)) //opti mettre player et collision dans un else if
 			{
-				var collidepoint = this.gameInfos.ballY - (player.y + PLAYER_HEIGHT/2);
-				collidepoint = collidepoint / (PLAYER_HEIGHT / 2);
+				var collidepoint = this.gameInfos.ballY - (player.y + CONSTS.PLAYER_HEIGHT/2);
+				collidepoint = collidepoint / (CONSTS.PLAYER_HEIGHT / 2);
 
 				var angleRad = (Math.PI/4) * collidepoint;
 
-				var direction = (this.gameInfos.ballX < GAME_WIDTH / 2 ? 1 : -1);
+				var direction = (this.gameInfos.ballX < CONSTS.GAME_WIDTH / 2 ? 1 : -1);
 
 				this.velocityX = direction * (this.speed * Math.cos(angleRad));
 				this.velocityY = this.speed * Math.sin(angleRad);
@@ -124,7 +92,7 @@ class gameRender {
         this.gameInfos.scoreP2 += 1;
         this.resetBall();
 			}
-			else if (this.gameInfos.ballX + this.radius > GAME_WIDTH)
+			else if (this.gameInfos.ballX + this.radius > CONSTS.GAME_WIDTH)
 			{
         this.gameInfos.scoreP1 += 1;
         this.resetBall();
@@ -133,7 +101,7 @@ class gameRender {
       if (this.gameInfos.scoreP1 >= 11 || this.gameInfos.scoreP2 >= 11) {
         this.playing = false;
       }
-  
+
       var gameInfosReturn = this.gameInfos;
       return (gameInfosReturn);
 		}
@@ -142,10 +110,11 @@ class gameRender {
     ** reset ball
     */
     public resetBall() {
-      this.gameInfos.ballX = GAME_WIDTH / 2;
-      this.gameInfos.ballY = GAME_HEIGHT / 2;
-      this.velocityX = -this.velocityX; // reset velocity a 5 ou -5
-      this.speed = 5;
+      this.gameInfos.ballX = CONSTS.GAME_WIDTH / 2;
+      this.gameInfos.ballY = CONSTS.GAME_HEIGHT / 2;
+      this.velocityX = (this.velocityX > 0) ? -this.basicSpeed : this.basicSpeed;
+      this.velocityY = 0;
+      this.speed = this.basicSpeed;
     }
 
     /*
@@ -190,7 +159,7 @@ export class GameGateway {
     console.log("la room : " + message.room);
 
     if (this.games[message.room] == undefined) { //status :  w = waiting | p = playing | e = end
-      this.games[message.room] = {players: {p1: false, p2: false}, game: new gameRender(lodash.cloneDeep(startGameInfos)), loop: null, room: message.room};
+      this.games[message.room] = {players: {p1: false, p2: false}, game: new gameRender(lodash.cloneDeep(startGameInfos), message.speed), loop: null, room: message.room};
     }
 
     if (message.player == 1) { //check if p1 and p2 are connected
@@ -216,7 +185,7 @@ export class GameGateway {
   sendGameData(room: string) {
     var data = this.games[room].game.update();
 
-    console.log("we are in sendgamedata ! room : " + room);
+    // console.log("we are in sendgamedata ! room : " + room);
     if (this.games[room].game.isEnd()) {
       this.games[room].game.setStatus = 'e';
       this.clearGame(room);
