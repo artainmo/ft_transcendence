@@ -35,13 +35,12 @@ interface FriendsProps {
 	changeProfile: (newProfile: UserDto) => void,
 	ownAccount: boolean,
 	changeAccountOwner: (newValue: boolean) => void,
-	renderPage: () => void
 }
 
 interface FindFriendsProps {
 	profile: UserDto,
 	userFriends: UserDto[],
-	renderPage: () => void
+	renderFriends: () => void
 }
 
 const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => {
@@ -137,7 +136,7 @@ const Settings: React.FC<settingsProps> = ({ user, changeUser, renderPage }) => 
 				  </div>)
 }
 
-const FindFriends: React.FC<FindFriendsProps> = ({ profile, userFriends, renderPage }) => {
+const FindFriends: React.FC<FindFriendsProps> = ({ profile, userFriends, renderFriends }) => {
 	const [searchResults, setSearchResults] = useState<UserDto[]>([]);
   const [searchText, setSearchText] = useState<string>('');
 
@@ -156,23 +155,26 @@ const FindFriends: React.FC<FindFriendsProps> = ({ profile, userFriends, renderP
     setSearchResults(search);
   }
 
+	const _addFriend: (item: UserDto) => void = async (item) => {
+		await addFriend(createNewFriend(profile, item.id));
+		await addFriend(createNewFriend(item, profile.id));
+		handleSearch("");
+		renderFriends();
+	}
+
   return (<div>
             <input placeholder={"New friends..."} className={cs.textInput} type="text" value={searchText} onChange={(e) => handleSearch(e.target.value)}/><br/>
             {searchResults.map((item) => <div>
                                             <br/>
                                             <span>{item.login}</span><>&nbsp;&nbsp;</>
-                                            <button onClick={(e)=> {
-																																		addFriend(createNewFriend(profile, item.id));
-																																		addFriend(createNewFriend(item, profile.id));
-                                                                    handleSearch("");
-																																		renderPage();}}
-																																		className={styles.addFriendButton}>Add Friend</button>
+                                            <button onClick={()=> _addFriend(item)} className={styles.addFriendButton}>Add Friend</button>
                                          </div>)}
           </div>);
 }
 
-const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, changeAccountOwner, renderPage }) => {
+const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, changeAccountOwner }) => {
 	const [userFriends, setUserFriends] = useState<UserDto[]>([]);
+	const [render, setRender] = useState<boolean>(true);
 
 	const getFriendFromId: (friend_id: number) => Promise<UserDto | null> = async (friend_id) => {
 		const friend = await getUser(friend_id);
@@ -186,10 +188,15 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
 			let friends1: (UserDto | null)[] = await Promise.all(friends.map(async (item): Promise<UserDto | null> => { return await getFriendFromId(item.friend_id); }));
 			// @ts-ignore
 			let friends2: UserDto[] = friends1.filter((friend) => friend !== null);
+			if (_.isEqual(userFriends, friends2)) return ;
 			setUserFriends(friends2);
 		}
 		getUserFriends();
-	})
+	}, [profile, render, userFriends])
+
+	const renderFriends: () => void = () => {
+    setRender(!render);
+  }
 
   const seeFriendProfile: (friend: UserDto) => void = (friend) => {
     g_viewed_users_history.push(profile);
@@ -198,17 +205,23 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
     if (ownAccount === true) changeAccountOwner(false);
   }
 
+	const _removeFriend: (id: number) => void = async (id) => {
+		await removeFriend(profile.id, id);
+		await removeFriend(id, profile.id);
+		renderFriends();
+	}
+
   return (<div>
             <h3>Friends</h3>
             {userFriends.length ? userFriends.map((elem) => <div>
 																															<span className={cs.clickable} onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;&nbsp;</>
 																															{ownAccount && <><button className={styles.removeFriendButton}
-																																onClick={(e)=> {removeFriend(profile.id, elem.id); removeFriend(elem.id, profile.id); renderPage();}}>
+																																onClick={(e)=> _removeFriend(elem.id)}>
 																																Remove Friend</button><br/><br/></>}
 																														</div>)
 																	: <p>No friends</p>}
 						<br/>
-            {ownAccount && <FindFriends profile={profile} userFriends={userFriends} renderPage={renderPage}/>}
+            {ownAccount && <FindFriends profile={profile} userFriends={userFriends} renderFriends={renderFriends}/>}
           </div>);
 }
 
@@ -239,7 +252,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 		}
 		getLatestProfile();
 	// eslint-disable-next-line
-	}, [])
+}, [render])
 
 	useEffect(() => {
 		const getUserMatchHistory: () => void = async () => {
@@ -254,6 +267,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 
 	const changeAccountOwner: (newValue: boolean) => void = (newValue) => {
     setOwnAccount(newValue);
+		setSettings(false);
   }
 
 	const changeProfile: (newProfile: UserDto) => void = (newProfile) => {
@@ -310,7 +324,7 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
               <p>Losses: {profile.nbrLoss}</p>
               <h3>Match History</h3>
               {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{`${elem.me.login} VS ${elem.opponent.login} -> ${elem.my_score} : ${elem.opponent_score}`}</p>) : <p>No matches</p>}
-              <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner} renderPage={renderPage}/>
+              <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner}/>
           </div>);
 }
 

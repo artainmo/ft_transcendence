@@ -34,11 +34,6 @@ export const getAllChannels: () => Promise<ChannelDto[]> = async () => {
   return response.data;
 }
 
-// export const getChannelsOfUser: (userLogin: string) => Promise<ChannelDto[]> = async (userLogin) => {
-//   const response = await axios.get(`/channels/user/${userLogin}`);
-//   return response.data;
-// }
-
 export const getChannel: (id: number) => Promise<ChannelDto | null> = async (id) => {
   const response = await axios.get(`/channels/${id}`);
   if (response.data === "") { return null; }

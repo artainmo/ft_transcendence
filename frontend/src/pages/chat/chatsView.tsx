@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Chat from './chat';
 import { createNewDm, addDm } from "../../api/dms/dms.api";
 import { getChannel, addChannel, createNewChannel, addChannelUser, createNewChannelUser, getAllChannels, channelPasswordVerification } from "../../api/channels/channels.api";
-import { getAllUsers, getCompleteUser, addUser } from "../../api/user/user.api";
+import { getAllUsers, getCompleteUser } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import { DmDto } from "../../api/dms/dto/dm.dto";
 import { ChannelDto } from "../../api/channels/dto/channel.dto";
@@ -63,8 +63,8 @@ const JoinChannel: React.FC<joinChannelProps> = ({ user, channels, changeCurrent
 				setPassword('');
 				return ;
 			}
-			user.channels = [...channels, channel];
-			await addUser(user); //updateUser should be used but bugs... Thus addUser which calls save is used as it can update too if element already exists... And it works!!
+			channel.users = [...channel.users, user]
+			await addChannel(channel)
 			await addChannelUser(createNewChannelUser(channel, user, false, false));
 			changeCurrentChat((await getChannel(channel.id)));
 	}

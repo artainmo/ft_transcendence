@@ -1,3 +1,4 @@
 import { FriendsEntity } from "../entities/friends.entity";
+import { OmitType } from "@nestjs/mapped-types";
 
-export type CreateFriendDto = Omit<FriendsEntity, "id">;
+export class CreateFriendDto extends OmitType(FriendsEntity, ["id"]) {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,12 +18,12 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(+id);
   }
 
   @Get('/complete/:id')
-  findCompleteOne(@Param('id') id: string) {
+  findCompleteOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findCompleteOne(+id);
   }
 
@@ -38,12 +38,12 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     this.userService.remove(+id);
   }
 
@@ -51,11 +51,6 @@ export class UserController {
   getTwoFactorAuthenticationSecret() {
     return this.userService.twoFactorAuthenticationSecret();
   }
-
-  // @Get('2fa/qrcode/:secret')
-  // getTwoFactorAuthenticationQRcode(@Param('secret') secret: string) {
-  //   return this.userService.twoFactorAuthenticationQRCode(secret);
-  // }
 
   @Post('2fa/verify')
   verifyTwoFactorAuthentication(@Body() obj: { secret: string, token: string }) {

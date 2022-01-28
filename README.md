@@ -43,4 +43,5 @@ User logs in multiple times on different pages?<br>
 BackButton while playing game (potential cause of bug)? -> Only set backbutton after games finishes and pushes datas to database <br>
 Synchronize ballspeeds and maps (entity, chat, play) <br>
 clean game.gateway -> external dtos not used <br>
-Validate incoming data in websockets
+Validate incoming data in websockets <br>
+ban a user and directly after the user tries to access the channel 

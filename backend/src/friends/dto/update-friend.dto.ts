@@ -1,3 +1,4 @@
 import { CreateFriendDto } from './create-friend.dto';
+import { PartialType } from "@nestjs/mapped-types";
 
-export type UpdateFriendDto = Partial<CreateFriendDto>
+export class UpdateFriendDto extends PartialType(CreateFriendDto) {}

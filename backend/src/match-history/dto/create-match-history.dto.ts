@@ -1,3 +1,4 @@
 import { MatchHistoryEntity } from "../entities/match_history.entity";
+import { OmitType } from "@nestjs/mapped-types";
 
-export type CreateMatchHistoryDto = Omit<MatchHistoryEntity, "id">;
+export class CreateMatchHistoryDto extends OmitType(MatchHistoryEntity, ["id"]) {}

@@ -1,3 +1,4 @@
 import { ChannelsEntity } from "../entities/channels.entity";
+import { OmitType } from "@nestjs/mapped-types";
 
-export type CreateChannelDto = Omit<ChannelsEntity, "id">;
+export class CreateChannelDto extends OmitType(ChannelsEntity, ["id"]) {}

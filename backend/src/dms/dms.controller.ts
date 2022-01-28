@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import { CreateDmDto } from './dto/create-dm.dto';
 import { UpdateDmDto } from './dto/update-dm.dto';
@@ -19,23 +19,18 @@ export class DmsController {
     return this.dmsService.findAll();
   }
 
-  // @Get('/user/:login')
-  // findDmsOfUser(@Param('login') login: string) {
-  //   return this.dmsService.findDmsOfUser(login);
-  // }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.dmsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDmDto: UpdateDmDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateDmDto: UpdateDmDto) {
     this.dmsService.update(+id, updateDmDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     this.dmsService.remove(+id);
   }
 
@@ -50,17 +45,17 @@ export class DmsController {
   }
 
   @Get('/message/:id')
-  findOneMessage(@Param('id') id: string) {
+  findOneMessage(@Param('id', ParseIntPipe) id: number) {
     return this.dmsService.findOneMessage(+id);
   }
 
   @Patch('/message/:id')
-  updateMessage(@Param('id') id: string, @Body() updateDmMessageDto: UpdateDmMessageDto) {
+  updateMessage(@Param('id', ParseIntPipe) id: number, @Body() updateDmMessageDto: UpdateDmMessageDto) {
     this.dmsService.updateMessage(+id, updateDmMessageDto);
   }
 
   @Delete('/message/:id')
-  removeMessage(@Param('id') id: string) {
+  removeMessage(@Param('id', ParseIntPipe) id: number) {
     this.dmsService.removeMessage(+id);
   }
 }
