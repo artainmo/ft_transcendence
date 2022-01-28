@@ -33,15 +33,17 @@ docker<br>
 API KEYS in .env <br>
 
 Other:<br>
-css positioning? <br>
-profile extra css? <br>
-clean message chat css ?<br>
-test & reread pdf <br>
-change state "in game" vs "search game" (bugg) <br>
-Change state after refresh?<br>
-User logs in multiple times on different pages?<br>
-BackButton while playing game (potential cause of bug)? -> Only set backbutton after games finishes and pushes datas to database <br>
-Synchronize ballspeeds and maps (entity, chat, play) <br>
-clean game.gateway -> external dtos not used <br>
-Validate incoming data in websockets <br>
-ban a user and directly after the user tries to access the channel 
+* CSS
+- css positioning? <br>
+- profile extra css? <br>
+- clean message chat css/material-ui?<br>
+* Potential bugs
+- change state "in game" vs "search game" <br>
+- Change state after refresh? not deleting a game after refresh?<br>
+- User logs in multiple times on different pages?<br>
+- BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database <br>
+- ban a user and directly after the user tries to access the channel 
+* clean
+- clean game.gateway <br>
+- Validate incoming data in websockets <br>
+* test & reread pdf <br>
