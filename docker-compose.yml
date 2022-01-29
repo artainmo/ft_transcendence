@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: frontend
+    restart: always
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    hostname: frontend
+    ports:
+      - '3000:3000'
+    command: npm start
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: backend
+    restart: always
+    hostname: backend
+    command: npm run dev
