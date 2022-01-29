@@ -33,7 +33,7 @@
 
 * Alissio:
   - [ ] docker-compose
-  - [ ] API KEYS in .env
+  - [ ] API KEYS in .env (frontend 42api authentification & backend typeorm)
 <br>
 
 * Other:
