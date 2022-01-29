@@ -10,7 +10,15 @@ import cs from "../../css/convention.module.css";
 const CLIENT_ID = '433eb612bd72cf577b98ad16b16bc482ddf45b46c37f326595b7600495b11807';
 const REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A3000';
 
-const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: boolean}> = ({ changeUser, signup }) => {
+interface logFormProps {
+	changePage: (newPage: string) => void
+	changeUser: (newUser: UserDto | null) => void
+	signup: boolean
+	alreadyConnected: boolean
+	changeAlreadyConnected: (newValue: boolean) => void
+}
+
+const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alreadyConnected, changeAlreadyConnected }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
 	let [name, setName] = useState<string>('');
@@ -26,7 +34,12 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 			setAvatar('');
 		} else {
 			setNonExistingAccount(false);
-			if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
+			if (userInDatabase.status === "Online") {
+				changeAlreadyConnected(true);
+				return ;
+			}
+			userInDatabase.status = "Online";
+			await updateUser(userInDatabase.id, {status: "Online"});
 			changeUser(userInDatabase)
 		}
 	}
@@ -59,6 +72,8 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
  }
 
 	return (<div>
+						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
+						{signup ? <h1>Log in</h1> : <h1>Sign up</h1>}
 						<label>Name:</label><br/>
 						<input className={cs.textInput} type="text" value={name} onChange={(e)=>setName(e.target.value)} required/>
 						{signup && <br/>}
@@ -72,26 +87,11 @@ const LogForm: React.FC<{changeUser: (newUser: UserDto | null) => void, signup: 
 												<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
 											 </label>}
 						<br/><br/>
-						{accountAlreadyInUse && <p>This account already exists, try another one</p>}
-						{nonExistingAccount && <p>This account does not exist, try another one</p>}
+						{accountAlreadyInUse && <p>This account already exists</p>}
+						{nonExistingAccount && <p>This account does not exist</p>}
+						{alreadyConnected && <p>User is already connected</p>}
 						<button className={cs.submitButton} type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}>Submit</button>
 				</div>);
-}
-
-const Signup: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
-	return (<div>
-						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
-						<h1>Sign up</h1>
-						<LogForm changeUser={changeUser} signup={true}/>
-					</div>);
-}
-
-const Login: React.FC<{changePage: (newPage: string) => void, changeUser: (newUser: UserDto | null) => void}> = ({ changePage, changeUser }) => {
-	return (<div>
-						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
-						<h1>Log in</h1>
-						<LogForm changeUser={changeUser} signup={false}/>
-					</div>);
 }
 
 const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}> = ({user, changeTwoFA}) => {
@@ -118,12 +118,13 @@ const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}
 				  </div>)
 }
 
-const Start: React.FC<{changePage: (newPage: string) => void}> = ({ changePage }) => {
+const Start: React.FC<{changePage: (newPage: string) => void, alreadyConnected: boolean}> = ({ changePage, alreadyConnected }) => {
 	return (<div>
 						<h1>Pong Game</h1>
 						<button className={styles.loginButton} onClick={()=>{changePage('login')}}>Log in</button><>&nbsp;&nbsp;</>
 						<button className={styles.signupButton} onClick={()=>{changePage('signup')}}>Sign up</button><>&nbsp;&nbsp;</>
 						<button className={styles.intraLoginButton} onClick={()=>{window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;}}>Intra 42</button>
+						{alreadyConnected && <p>User is already connected</p>}
 					</div>);
 }
 
@@ -133,6 +134,7 @@ const Authentification: React.FC = () => {
 	const [user, setUser] = useState<UserDto | null>(null);
 	const [page, setPage] = useState<string>('start');
 	const [twoFA, setTwoFA] = useState<boolean>(false);
+	const [alreadyConnected, setAlreadyConnected] = useState<boolean>(false);
 
 	useEffect(() => {
 		const user42 = async () => {
@@ -144,7 +146,12 @@ const Authentification: React.FC = () => {
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
 					}
-					if (userInDatabase.status === "Offline") { userInDatabase.status = "Online"; await updateUser(userInDatabase.id, {status: "Online"}); }
+					if (userInDatabase.status === "Online") {
+						changeAlreadyConnected(true);
+						return ;
+					}
+					userInDatabase.status = "Online";
+					await updateUser(userInDatabase.id, {status: "Online"});
 					setTwoFA(userInDatabase.hasTwoFactorAuthentication);
 					setUser(userInDatabase);
 				}
@@ -158,11 +165,16 @@ const Authentification: React.FC = () => {
 	}
 
 	const changePage: (newPage: string) => void = (newPage) => {
+		changeAlreadyConnected(false);
 		setPage(newPage);
 	}
 
 	const changeTwoFA: () => void = () => {
 		setTwoFA(!twoFA);
+	}
+
+	const changeAlreadyConnected: (newValue: boolean) => void = (newValue) => {
+		setAlreadyConnected(newValue);
 	}
 
 	if (user !== null) {
@@ -172,11 +184,10 @@ const Authentification: React.FC = () => {
 		if (page !== "start") changePage("start");
 		return (<Home user={user} changeUser={changeUser}/>);
 	} else if (page === "start") {
-		return (<Start changePage={changePage}/>);
-	} else if (page === "signup") {
-		return (<Signup changePage={changePage} changeUser={changeUser}/>);
-	} else if (page === "login"){
-		return (<Login changePage={changePage} changeUser={changeUser}/>);
+		return (<Start changePage={changePage} alreadyConnected={alreadyConnected}/>);
+	} else if (page === "signup" || page === "login") {
+		return (<LogForm changePage={changePage} changeUser={changeUser}
+			signup={page === "signup" ? true : false} alreadyConnected={alreadyConnected} changeAlreadyConnected={changeAlreadyConnected}/>);
 	} else {
 		return <h1>Authentification Error</h1>;
 	}

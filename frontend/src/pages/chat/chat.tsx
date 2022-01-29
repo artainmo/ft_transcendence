@@ -248,8 +248,7 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 
 	const createGame: (message: ChannelMessageDto | DmMessageDto, game: {speed: number, map: string, random: boolean}) => void = async (message, game) => {
 		let userMessage = await getUser(message.user.id);
-		if (userMessage !== null && userMessage.id === (dm ? userOrchannelUser.id : userOrchannelUser.user.id)) return ;
-		if (userMessage !== null && userMessage.status === "Online") {
+		if (userMessage !== null && userMessage.id !== (dm ? userOrchannelUser.id : userOrchannelUser.user.id) && userMessage.status === "Online") {
 			if (game.random) {
 				game.speed = Math.floor(Math.random() * 3) + 1;
 				game.map = Maps[Math.floor(Math.random() * 5)];

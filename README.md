@@ -1,5 +1,6 @@
 # ft_transcendence
 
+
 * artainmo:
   - [x] /database -> create the database in the backend
   - [x] /routes -> create the routes (module, controller, provider) for CRUD requests on database in backend
@@ -32,21 +33,28 @@
 
 * Alissio:
   - [ ] docker-compose
-  - [ ] API KEYS in .env
+  - [ ] API KEYS in .env (frontend 42api authentification & backend typeorm)
 <br>
 
 * Other:
   * CSS
     - [ ] css positioning?
-    - [ ] profile extra css?
+    - [ ] profile extra css? buttons to display ?
     - [ ] clean message chat css/material-ui?
   * Potential bugs
-    - [ ] change state "in game" vs "search game"
-    - [ ] Change state after refresh? not deleting a game after refresh?
-    - [ ] User logs in multiple times on different pages?
-    - [ ] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
-    - [ ] ban a user and directly after the user tries to access the channel
+    - [x] change state "in game" vs "search game" & online/offline
+    - [x] Change state and remove active game after refresh/back/close-tab?
+    - [ ] User refresh during game, what happen to other player/live-viewers and match-history??
+    - [x] User logs in multiple times on different pages? (can create bugs related to status...)
+    - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
+    - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
+    - [ ] After some time of the ball fastening it slows down again?
+    - [ ] user refresh but cancels, user is set as offline or game is removed? changeGame(null)?
   * clean
-    - [ ] clean game.gateway
-    - [ ] Validate incoming data in websockets
+    - [ ] clean all console.log
+  * additions?
+	- [ ] page with all live games
+	- [x] if user clicks on own play invite in chat he deactivates the invite
+	- [x] Let viewing user have a back button and do not remove the game in this case...
+	- [ ] separate user login (with encrypted password) independent of intra 42
   * test & reread pdf
