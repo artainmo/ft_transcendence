@@ -15,8 +15,8 @@ import { addMatchHistory, createNewMatchHistory } from "../../../api/match-histo
 import { getUser } from "../../../api/user/user.api";
 import cs from "../../../css/convention.module.css";
 
-const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void }) => {
-	const [quitPermited, setQuitPermited] = useState<boolean>(false);
+const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void, player: boolean}) => {
+	const [quitPermited, setQuitPermited] = useState<boolean>(!props.player);
 
  	useEffect ( () => {
 		var p: number = 0;
@@ -55,7 +55,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 				props.changeUser(latestUser);
 				setQuitPermited(true);
 			}
-			scoreToDatabase();
+			if (props.player) scoreToDatabase();
 		})
 		return () => {
 			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button

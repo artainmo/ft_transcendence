@@ -9,8 +9,6 @@ import { getAllGames, removeGame } from "../../api/games/games.api";
 import styles from "../../css/home.module.css";
 
 const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string) => void}> = ({user, changeMenuPage }) => {
-	updateUser(user.id, {status: "Online"});
-
 	return (<div>
 				{/* <h1>Welcome to the Pong Game</h1> */}
 				<button className={styles.homeButtonPlay} onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
@@ -23,6 +21,63 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	const [menuPage, setMenuPage] = useState<string>("home");
 	const [game, setGame] = useState<GameDto | null>(null);
 
+	/*
+	**Goal: Perform actions before user quits unexpectedly (close tabs, refresh, goes to other link...), especially set user status as offline...
+
+	** Method 1:
+	** First try to prop the user if he is sure he wants to close the window, this will enable enough time to do the async operations during onunload event... --> Method used!!
+
+	** Method 2:
+	**Maintain the onunload disconnect user, more than one api call will not work because the application will close down before it can await the calls...
+	**Before creating game remove already existing game and when searching only start a game with a player that is online too...
+	**If user quits during game... verify if other user is still connected at end of game and if he is not, send his points to the db from the other user or cancel the match and points...
+	**If user just connected and has an active game in its name, delete that game...
+
+	** Method 3: (cleanest method)
+	**Onunload method is not very reliable (different browsers can act differently, only functional on single-page-apps, function length can only be short, if server shuts down problem will occur...)
+	**usually a setInterval is used to send time while user is online, once he is offline this will stop and by the difference between actual time and last logged time we can know if the user is online or not...
+
+	** Documentation: https://stackoverflow.com/questions/37900110/how-to-set-offline-a-user-in-the-db-when-it-closes-the-browser
+	*/
+	useEffect(() => {
+    window.onbeforeunload = (event: any) => { //Following method works at least in google chrome...
+			const removeActiveGame: () => void = async () => { //Call in an async function
+				//Remove all games associated with the user that have not been finished yet
+				let myGame = await findMyGame();
+				if (myGame !== null) await removeGame(myGame.id);
+			}
+			removeActiveGame();
+			updateUser(user.id, {status: "Offline"}); //Set User offline //Call without await to gain time
+			//Give user a warning before quiting page on all browsers //This will create significant time gain, enough for the await functions to execute...
+			const e = event || window.event;
+			e.preventDefault();
+			if (e) e.returnValue = ''; // Legacy method for cross browser support
+			return ''; // Legacy method for cross browser support
+    }
+    return () => { window.onbeforeunload = null };
+	//eslint-disable-next-line
+	}, []);
+
+	//Change user status, check if game exists with user in it, if it does and is the only user he is searching the game else he is in a game...
+	useEffect(()=>{
+    const findGameAndSetStatus: () => Promise<void> = async () => {
+			let latestUser = await getUser(user.id);
+			if (latestUser === null) return ;
+			let myGame = await findMyGame();
+			if (myGame === null) {
+					if (latestUser.status !== "Online") await updateUser(user.id, {status: "Online"})
+			} else if (myGame.user2 === null) {
+				if (latestUser.status !== "Searching a game") await updateUser(user.id, {status: "Searching a game"});
+			} else {
+				if (latestUser.status !== "In a game") await updateUser(user.id, {status: "In a game"});
+				if (latestUser.status === "Online") changeGame(myGame); //If someone accepts game demand from chat launch it...
+			}
+    }
+    const interval = setInterval(findGameAndSetStatus, 2000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line
+}, []);
+
 	const findMyGame: () => Promise<GameDto | null> = async () => {
 		const games = await getAllGames();
 		let myGame = games.find((findGame: GameDto) =>
@@ -30,44 +85,6 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 		if (myGame === undefined) return null;
 		return myGame;
 	}
-
-	useEffect(() => {
-		const alertUser = (e: any) => {
-	    e.preventDefault();
-	    e.returnValue = "";
-			alert("jjjj");
-	  };
-	  window.addEventListener("beforeunload", alertUser);
-	  return () => { window.removeEventListener("beforeunload", alertUser); };
-	}, []);
-
-	// useEffect(() => {
-    // window.onbeforeunload = async () => {
-		// 	//Set user offline
-		// 	alert("hhh");
-		// 	await updateUser(user.id, {status: "Offline"});
-		// 	//Remove all games associated with the user that have not been finished yet
-		// 	let myGame = await findMyGame();
-		// 	if (myGame !== null) await removeGame(myGame.id);
-		// 	console.log(myGame);
-		// 	alert("hhh");
-		// 	await new Promise(resolve => setTimeout(resolve, 4000));
-    // };
-    // return () => { window.onbeforeunload = null };
-	// eslint-disable-next-line
-//	}, [])
-
-	useEffect(()=>{
-    const findGame: () => Promise<void> = async () => {
-			let latestUser = await getUser(user.id);
-			if (latestUser === null || latestUser.status !== "Online") return ;
-			let myGame = await findMyGame();
-			if (myGame !== null) changeGame(myGame);
-    }
-    const interval = setInterval(findGame, 2000);
-    return () => clearInterval(interval);
-  // eslint-disable-next-line
-  }, [])
 
 	const changeGame: (newGame: GameDto | null) => void = (newGame) => {
     setGame(newGame);
