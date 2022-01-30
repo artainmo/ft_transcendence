@@ -212,4 +212,18 @@ export class Game {
 			this.ctx.fillText(output1, 350 * this.coeff, 300 * this.coeff);
 			this.ctx.fillText(output2, 350 * this.coeff, 350 * this.coeff);
 		}
+
+		/*
+		** Draw message if an user left the game
+		*/
+		public drawUserLeft(name: string) {
+			this.destroyGame();
+			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
+			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px fantasy";
+			this.ctx.fillStyle = this.scriptureColor;
+			this.ctx.textAlign = "center";
+
+			var msg: string = "Player \"" + name + "\" has left the game :(";
+			this.ctx.fillText(msg,(CONSTS.GAME_WIDTH / 2) * this.coeff, (CONSTS.GAME_HEIGHT / 2) * this.coeff);
+		}
 }

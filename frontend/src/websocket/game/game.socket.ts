@@ -22,8 +22,8 @@ export const startGame: (socket: any, message : {room: string, player: number, s
 /*
 ** Stop game loop interval in backend
 */
-export const stopGame: (socket: any, room: string) => void  = (socket, room) => {
-  socket.emit('stopGame', room);
+export const stopGame: (socket: any, message : {room: string, name: string}) => void  = (socket, message) => {
+  socket.emit('stopGame', message);
 }
 
 /*

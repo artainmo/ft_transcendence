@@ -201,7 +201,6 @@ export class GameGateway {
   sendGameData(room: string) {
     var data = this.games[room].game.update();
 
-    // console.log("we are in sendgamedata ! room : " + room);
     if (this.games[room].game.isEnd()) {
       this.games[room].game.setStatus = 'e';
       this.clearGame(room);
@@ -216,14 +215,14 @@ export class GameGateway {
   ** Stop game
   */
   @SubscribeMessage('stopGame')
-  stopGame(client: Socket, room: string): void {
+  stopGame(client: Socket, message: {room: string, name: string }): void {
 
-    if (this.games[room] != undefined) {
-      this.clearGame(room);
+    if (this.games[message.room] != undefined) {
+      this.clearGame(message.room);
     }
 
-    if (this.games[room] != undefined) {
-      delete this.games[room];
+    if (this.games[message.room] != undefined) {
+      delete this.games[message.room];
     }
   }
 

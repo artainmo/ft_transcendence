@@ -15,10 +15,14 @@ import { addMatchHistory, createNewMatchHistory } from "../../../api/match-histo
 import { getUser } from "../../../api/user/user.api";
 import cs from "../../../css/convention.module.css";
 
+
+
 const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void, player: boolean}) => {
 	const [quitPermited, setQuitPermited] = useState<boolean>(!props.player);
 
  	useEffect ( () => {
+		window.addEventListener('beforeunload', disconnectUser);
+
 		var p: number = 0;
 		if (props.user.name === props.gameInfos.user1.name)
 			p = 1;
@@ -57,14 +61,23 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			}
 			if (props.player) scoreToDatabase();
 		})
+		socket.on('userLeft', (name: string) => {
+			game.drawUserLeft(name);
+		})
 		return () => {
 			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
-				stopGame(socket, game.myRoom);
+				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);
+			window.removeEventListener('beforeunload', disconnectUser);
 		}
 	// eslint-disable-next-line
 	}, [])
+
+	const disconnectUser = () => {
+		alert("On remove le user ???");
+		//stopGame(socket, {room: game.myRoom, name: props.user.name});
+	}
 
 	console.log("Gameinfos : ");
 	console.log(props.gameInfos);
