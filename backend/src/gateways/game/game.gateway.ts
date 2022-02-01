@@ -215,13 +215,16 @@ export class GameGateway {
   ** Stop game
   */
   @SubscribeMessage('stopGame')
-  stopGame(client: Socket, message: {room: string, name: string }): void {
+  stopGame(client: Socket, message: {room: string, username: string }): void {
 
     if (this.games[message.room] != undefined) {
       this.clearGame(message.room);
     }
 
     if (this.games[message.room] != undefined) {
+      if (this.games[message.room].game.status != 'e') {
+        this.server.to(message.room).emit('userLeft', message.username);
+      }
       delete this.games[message.room];
     }
   }

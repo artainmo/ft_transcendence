@@ -18,6 +18,11 @@ body {
   cursor: pointer;
 }
 
+.clickable:hover {
+  cursor: pointer;
+  color: gray;
+}
+
 .smallButton {
   cursor: pointer;
   color: black;
@@ -83,3 +88,57 @@ input[type="radio"] {
   border-radius: 5px;
   padding: 0.5em;
 }
+
+
+
+.chatMessageClass {
+  background: linear-gradient(#27C7FF, white);
+  color: black;
+  border-radius: 15px;;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  word-wrap: break-word;
+}
+
+.currUserChatMessageClass {
+  text-align: right;
+  background: linear-gradient(#27C7FF, white);
+  color: black;
+  border-radius: 15px;;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  word-wrap: break-word;
+}
+
+.chatMessageBoxClass {
+  max-width: 500px;
+  margin-left: 75px;
+  border: solid 2px black;
+  padding: 20px;
+}
+
+.chatUserNameClass {
+  font-size: 15px;
+  font-style: italic;
+}
+
+.chatUserMessageClass {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chatRootClass {
+  margin: 20px;
+}
+
+.chatTitle {
+  border-bottom: 1px solid black;
+}
+
+/* .chatTitleLink {
+  display: inline;
+} */

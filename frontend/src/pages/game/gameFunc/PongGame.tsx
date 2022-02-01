@@ -21,7 +21,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 	const [quitPermited, setQuitPermited] = useState<boolean>(!props.player);
 
  	useEffect ( () => {
-		window.addEventListener('beforeunload', disconnectUser);
+		window.addEventListener('unload', disconnectUser);
 
 		var p: number = 0;
 		if (props.user.name === props.gameInfos.user1.name)
@@ -69,7 +69,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);
-			window.removeEventListener('beforeunload', disconnectUser);
+			window.removeEventListener('unload', disconnectUser);
 		}
 	// eslint-disable-next-line
 	}, [])
