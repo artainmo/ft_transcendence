@@ -1,0 +1,74 @@
+version: '3'
+services:
+
+  db:
+    container_name: postgres
+    image: postgres:14.1-alpine
+    networks:
+      - database
+    ports:
+      - '5432:5432'
+    expose:
+      - "5432"
+    env_file:
+      - ./db/.env
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_table
+    restart: always
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: frontend
+    networks:
+      - front
+#    depends_on:
+#      - backend
+    restart: always
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    hostname: frontend
+ #   links:
+ #     - backend
+    ports:
+      - '3000:3000'
+#    command: npm start
+#    command: ["./wait-for-it/wait-for-it.sh", "backend:3001", "--", "npm",  "start"]
+
+#  backend:
+#    container_name: backend
+#    build:
+#      context: ./backend
+#      dockerfile: Dockerfile
+#    image: backend
+#    networks:
+#      - database
+#      - front
+#    depends_on:
+#      - db
+#    restart: always
+#    hostname: backend
+#    links:
+#      - db
+#    ports:
+#      - '3001:3001'
+#    command: ["./wait.sh", "db", "npm", "start"]
+#    command: npm start dev
+#    command: ["./wait-for-it/wait-for-it.sh", "db:5432", "--", "npm",  "start"]
+
+networks:
+  front:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+  database:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+
+volumes:
+  db:

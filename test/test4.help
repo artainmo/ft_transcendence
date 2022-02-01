@@ -1,0 +1,52 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.4
+    networks:
+      - database
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./db/.env
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+    restart: always
+    container_name: db
+    hostname: db
+
+  front:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - back
+    networks:
+      - webapp
+    ports:
+      - 3000:3000
+    restart: always
+    container_name: front
+    hostname: front
+    command: ['./wait-for-it.sh', 'back:3001', '--', 'npm', 'start']
+
+  back:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks:
+      - webapp
+      - database
+    ports:
+      - 3001:3001
+    depends_on:
+      - db
+    restart: always
+    container_name: back
+    hostname: back
+    command: ['./wait-for-it.sh', 'db:5432', '--', 'npm', 'start']
+
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge

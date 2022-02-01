@@ -55,5 +55,12 @@
   },
   "devDependencies": {
     "@types/underscore": "^1.11.4"
+  },
+
+  "scripts": {
+    "pm2": "pm2 start processes.json --no-daemon",
+    "start": "node ./bin/www",
+    "test": "jest",
+    "migrate": "node ./bin/migrate.js"
   }
 }

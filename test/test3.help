@@ -3,16 +3,14 @@ services:
 
   db:
     container_name: postgres
-    image: 'postgres:latest'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    network_mode: "host"
+    image: postgres:14.1-alpine
     ports:
       - '5432:5432'
+    env_file:
+      - ./db/.env
     volumes:
       - db:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_table
     restart: always
 
   frontend:
@@ -22,18 +20,15 @@ services:
       dockerfile: Dockerfile
     image: frontend
     restart: always
-    depends_on:
-      - backend
-      - db
     volumes:
       - /app/node_modules
       - ./frontend:/app
     hostname: frontend
-    network_mode: "host"
+    environment:
+      PORT: 3000
+      PROXY_API: http://frontend:8080/
     ports:
       - '3000:3000'
-    command: npm start
-
 
   backend:
     container_name: backend
@@ -41,14 +36,17 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: backend
-    depends_on:
-      - db
     restart: always
     hostname: backend
-    network_mode: "host"
+    environment:
+      PORT: 3001
+      PROXY_API: http://backend:8080/
     ports:
       - '3001:3001'
-    command: npm start
+    links:
+      - db
+    depends_on:
+      - db
 
 volumes:
   db:

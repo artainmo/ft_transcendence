@@ -8,4 +8,4 @@ RUN npm install --quiet
 
 COPY . .
 
-#CMD [ "node", "server.js" ]
+EXPOSE 3001 

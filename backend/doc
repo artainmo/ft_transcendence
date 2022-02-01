@@ -1,0 +1,5 @@
+  "scripts":{
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm",
+    "migration:generate": "npm start typeorm -- migration:generate --config src/config/ormconfig.json --connection  --name ",
+    "migration:run": "npm start typeorm -- migration:run"
+  }
