@@ -25,36 +25,26 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 	**Goal: Perform actions before user quits unexpectedly (close tabs, refresh, goes to other link...), especially set user status as offline...
 
 	** Method 1:
-	** First try to prop the user if he is sure he wants to close the window, this will enable enough time to do the async operations during onunload event... --> Method used!!
+	** First try to prop the user if he is sure he wants to close the window, this will enable enough time to do the async operations during onbeforeunload event...
+	-> Worked on chrome but not on safari... (even when using onunload or onhiddenpage event)
 
-	** Method 2:
-	**Maintain the onunload disconnect user, more than one api call will not work because the application will close down before it can await the calls...
-	**Before creating game remove already existing game and when searching only start a game with a player that is online too...
-	**If user quits during game... verify if other user is still connected at end of game and if he is not, send his points to the db from the other user or cancel the match and points...
-	**If user just connected and has an active game in its name, delete that game...
-
-	** Method 3: (cleanest method)
+	** Method 2: (cleanest method) -> Method used
 	**Onunload method is not very reliable (different browsers can act differently, only functional on single-page-apps, function length can only be short, if server shuts down problem will occur...)
 	**usually a setInterval is used to send time while user is online, once he is offline this will stop and by the difference between actual time and last logged time we can know if the user is online or not...
+	**When searching only start a game with a player that is online too...
+	**If user quits during game... verify if other user is still connected at end of game and if he is not, send his points to the db from the other user or cancel the match and points...
+	**If user just connected and has an active game in its name, delete that game...
 
 	** Documentation: https://stackoverflow.com/questions/37900110/how-to-set-offline-a-user-in-the-db-when-it-closes-the-browser
 	*/
 	useEffect(() => {
-    window.onbeforeunload = (event: any) => { //Following method works at least in google chrome...
 			const removeActiveGame: () => void = async () => { //Call in an async function
 				//Remove all games associated with the user that have not been finished yet
 				let myGame = await findMyGame();
 				if (myGame !== null) await removeGame(myGame.id);
-			}
-			removeActiveGame();
 			updateUser(user.id, {status: "Offline"}); //Set User offline //Call without await to gain time
-			//Give user a warning before quiting page on all browsers //This will create significant time gain, enough for the await functions to execute...
-			const e = event || window.event;
-			e.preventDefault();
-			if (e) e.returnValue = ''; // Legacy method for cross browser support
-			return ''; // Legacy method for cross browser support
-    }
-    return () => { window.onbeforeunload = null };
+		}
+		removeActiveGame();
 	//eslint-disable-next-line
 	}, []);
 

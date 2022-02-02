@@ -16,9 +16,10 @@ interface logFormProps {
 	signup: boolean
 	alreadyConnected: boolean
 	changeAlreadyConnected: (newValue: boolean) => void
+	changeTwoFA: any
 }
 
-const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alreadyConnected, changeAlreadyConnected }) => {
+const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alreadyConnected, changeAlreadyConnected, changeTwoFA }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
 	let [name, setName] = useState<string>('');
@@ -40,6 +41,7 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 			}
 			userInDatabase.status = "Online";
 			await updateUser(userInDatabase.id, {status: "Online"});
+			changeTwoFA(userInDatabase.hasTwoFactorAuthentication);
 			changeUser(userInDatabase)
 		}
 	}
@@ -51,7 +53,9 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 			await addUser(createNewUser(name, login, avatar));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
-			if (userInDatabase!.status === "Offline") { userInDatabase!.status = "Online"; await updateUser(userInDatabase!.id, {status: "Online"}); }
+			userInDatabase!.status = "Online";
+			await updateUser(userInDatabase!.id, {status: "Online"});
+			changeTwoFA(userInDatabase!.hasTwoFactorAuthentication);
 			changeUser(userInDatabase);
 		} else {
 			setAccountAlreadyInUse(true);
@@ -73,7 +77,7 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 
 	return (<div>
 						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
-						{signup ? <h1>Log in</h1> : <h1>Sign up</h1>}
+						{!signup ? <h1>Log in</h1> : <h1>Sign up</h1>}
 						<label>Name:</label><br/>
 						<input className={cs.textInput} type="text" value={name} onChange={(e)=>setName(e.target.value)} required/>
 						{signup && <br/>}
@@ -94,7 +98,7 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 				</div>);
 }
 
-const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}> = ({user, changeTwoFA}) => {
+const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: (newValue: boolean) => void, twoFA: boolean}> = ({user, changeTwoFA, twoFA}) => {
 	let [token, setToken] = useState<string>('');
 	let [wrongToken, setWrongToken] = useState<boolean>(false);
 
@@ -103,7 +107,7 @@ const TwoFactorAuthentication: React.FC<{user: UserDto, changeTwoFA: () => void}
 		const correct = await verifyTwoFactorAuthentication(user.twoFactorAuthenticationSecret, token);
 		if (correct) {
 			setWrongToken(false);
-			changeTwoFA()
+			changeTwoFA(!twoFA)
 		} else {
 			setWrongToken(true);
 		}
@@ -152,7 +156,7 @@ const Authentification: React.FC = () => {
 					}
 					userInDatabase.status = "Online";
 					await updateUser(userInDatabase.id, {status: "Online"});
-					setTwoFA(userInDatabase.hasTwoFactorAuthentication);
+					changeTwoFA(userInDatabase.hasTwoFactorAuthentication);
 					setUser(userInDatabase);
 				}
 			}
@@ -169,8 +173,8 @@ const Authentification: React.FC = () => {
 		setPage(newPage);
 	}
 
-	const changeTwoFA: () => void = () => {
-		setTwoFA(!twoFA);
+	const changeTwoFA: (newValue: boolean) => void = (newValue) => {
+		setTwoFA(newValue);
 	}
 
 	const changeAlreadyConnected: (newValue: boolean) => void = (newValue) => {
@@ -179,7 +183,7 @@ const Authentification: React.FC = () => {
 
 	if (user !== null) {
 		if (twoFA) {
-			return (<TwoFactorAuthentication user={user} changeTwoFA={changeTwoFA}/>)
+			return (<TwoFactorAuthentication user={user} changeTwoFA={changeTwoFA} twoFA={twoFA}/>)
 		}
 		if (page !== "start") changePage("start");
 		return (<Home user={user} changeUser={changeUser}/>);
@@ -187,7 +191,8 @@ const Authentification: React.FC = () => {
 		return (<Start changePage={changePage} alreadyConnected={alreadyConnected}/>);
 	} else if (page === "signup" || page === "login") {
 		return (<LogForm changePage={changePage} changeUser={changeUser}
-			signup={page === "signup" ? true : false} alreadyConnected={alreadyConnected} changeAlreadyConnected={changeAlreadyConnected}/>);
+			signup={page === "signup" ? true : false} alreadyConnected={alreadyConnected}
+			changeAlreadyConnected={changeAlreadyConnected} changeTwoFA={changeTwoFA}/>);
 	} else {
 		return <h1>Authentification Error</h1>;
 	}
