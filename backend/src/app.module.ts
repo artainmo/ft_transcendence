@@ -9,6 +9,8 @@ import { UserModule } from "./user/user.module";
 import { ChatGateway } from './gateways/chat/chat.gateway';
 import { GameGateway } from './gateways/game/game.gateway';
 import { channelPasswordEncryptionMiddleware } from './middleware/passwordEncryption.middleware';
+import * as dotenv from "dotenv";
+dotenv.config();
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UserModule, ChannelsModule, DmsModule,
