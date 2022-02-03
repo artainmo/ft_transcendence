@@ -38,13 +38,13 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 
  	useEffect( () => {
 		var p: number = 0;
-		if (props.user.name === props.gameInfos.user1.name)
+		if (props.user.login === props.gameInfos.user1.login)
 			p = 1;
-		else if (props.user.name === props.gameInfos.user2!.name)
+		else if (props.user.login === props.gameInfos.user2!.login)
 			p = 2;
 
 		var socket = connect();
-		var game = new Game(props.gameInfos, props.user.name, socket); // classe avec les toutes les infos de la game
+		var game = new Game(props.gameInfos, props.user.login, socket); // classe avec les toutes les infos de la game
 
 		joinRoom(socket, props.gameInfos.id.toString());
 		if (p !== 0) {

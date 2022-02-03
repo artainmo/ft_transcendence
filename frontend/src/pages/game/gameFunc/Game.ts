@@ -44,9 +44,9 @@ export class Game {
 			this.w = w;
 			this.h = h;
 
-			this.nameP1 = baseGame.user1.name;
+			this.nameP1 = baseGame.user1.login.substring(0, 15);
 			if (baseGame.user2 !== null)
-				this.nameP2 = baseGame.user2.name;
+				this.nameP2 = baseGame.user2.login.substring(0, 15);
 			this.room = baseGame.id.toString();
 			this.bgColor = maps[baseGame.map][0];
 			this.scriptureColor = maps[baseGame.map][1];
