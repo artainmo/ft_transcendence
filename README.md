@@ -52,7 +52,8 @@
     - [x] After some time of the ball fastening it slows down again?
     - [ ] user demands game in chat returns in home menu and other player accepts
     - [x] Both users disconnect unexpectedly and come back to replay
-    - [ ] Watch live end of game
+    - [x] Watch live end of game
+    - [ ] Long names go out of scope game | game on safari font
   * clean
     - [ ] clean all console.log
   * additions?

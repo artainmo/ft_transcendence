@@ -13,6 +13,7 @@ import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
 import { Game } from "./Game";
 import { addMatchHistory, createNewMatchHistory } from "../../../api/match-history/match-history.api";
 import { getUser } from "../../../api/user/user.api";
+import { removeGame } from "../../../api/games/games.api";
 import cs from "../../../css/convention.module.css";
 
 const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void, player: boolean}) => {
@@ -55,6 +56,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		socket.on('finalScore', (scores: playerScoreDto) => {
 			game.drawEnd(scores);
 			const scoreToDatabase: () => void = async () => {
+				removeGame(props.gameInfos.id);
 				let user2 = props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2! : props.gameInfos.user1
 				// console.log('hey');
 				// await new Promise(r => setTimeout(r, 3000));
@@ -77,7 +79,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 				setEndGame(true);
 				setQuitPermited(true);
 			}
-			if (props.player) scoreToDatabase();
+			if (props.player) { scoreToDatabase(); } else { setEndGame(true); }
 		})
 		return () => {
 			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
