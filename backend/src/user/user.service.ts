@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 const speakeasy = require('speakeasy');
+const bcrypt = require('bcrypt');
+
 
 @Injectable()
 export class UserService {
@@ -58,5 +60,10 @@ export class UserService {
       token: token
     });
     return res;
+  }
+
+  async passwordVerification(id: number, password: string): Promise<boolean> {
+    const user = await this.UserRepo.findOne(id);
+    return await bcrypt.compare(password, user.password); //compare non-encrypted-password with encrypted-password-in-database using bcrypt
   }
 }

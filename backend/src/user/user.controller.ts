@@ -56,4 +56,9 @@ export class UserController {
   verifyTwoFactorAuthentication(@Body() obj: { secret: string, token: string }) {
     return this.userService.verifyTwoFactorAuthentication(obj.secret, obj.token);
   }
+
+  @Get('/password_verification/:id/:password')
+  passwordVerification(@Param('id', ParseIntPipe) id: number, @Param('password') password: string) {
+    return this.userService.passwordVerification(+id, password);
+  }
 }

@@ -104,7 +104,7 @@ const NewChannel: React.FC<newChannelProps> = ({ user, changeCurrentChat }) => {
   return (<div>
               <br/>
               <label>Channel name: </label>
-              <input className={cs.textInput} type="text" value={name} name="channelname" onChange={(e)=>setName(e.target.value)} required/><br/><br/>
+              <input className={cs.textInput} type="text" maxLength={20} value={name} name="channelname" onChange={(e)=>setName(e.target.value)} required/><br/><br/>
               <label className={type === "public" ? cs.radioButtonOn : cs.radioButton}>public
               	<input type="radio" name="channeltype" onChange={()=>setType("public")} required/>
 							</label>
