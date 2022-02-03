@@ -200,7 +200,7 @@ export class GameGateway {
     var data = this.games[room].game.update();
 
     if (this.games[room].game.isEnd()) {
-      this.games[room].game.setStatus = 'e';
+      this.games[room].game.status = 'e';
       this.clearGame(room);
       this.server.to(room).emit('finalScore', this.games[room].game.getScore());
     }
