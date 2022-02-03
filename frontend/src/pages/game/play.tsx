@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { GameDto } from "../../api/games/dto/game.dto";
 import { addGame, getAllGames, getGame as GetGame, removeGame, updateGame } from "../../api/games/games.api";
 import { UserDto } from "../../api/user/dto/user.dto";
-import { updateUser } from "../../api/user/user.api";
 import PongGame from "./gameFunc/PongGame";
 import styles from "../../css/play.module.css";
 import cs from "../../css/convention.module.css";
@@ -135,7 +134,6 @@ const CreateGame: React.FC<createGameProps> = ({ user, changeGetGame, changeGame
 
 const Play: React.FC<playProps> = ({ user, changeUser, changeMenuPage, game, changeGame }) => {
   const [getGame, setGetGame] = useState<"create" | "join" | null>(null);
-  updateUser(user.id, {status: "Searching a game"});
 
   const changeGetGame: (page: "create" | "join" | null) => void = (page) => {
     setGetGame(page)
@@ -143,19 +141,13 @@ const Play: React.FC<playProps> = ({ user, changeUser, changeMenuPage, game, cha
 
   const quitGame: () => void = async () => {
     if (game === null) return ;
-    await removeGame(game.id);
-    await updateUser(user.id, {status: "Online"});
+    if (game.user1.id === user.id || game.user2!.id === user.id) await removeGame(game.id);
     changeGame(null);
     changeGetGame(null);
   }
 
   if (game !== null && game.user2 !== null) {
-    if (game.user1.id === user.id || game.user2.id === user.id) {
-      updateUser(user.id, {status: "In a game"});
-    } else {
-      updateUser(user.id, {status: "Watching a game"});
-    }
-    return (<PongGame gameInfos={game} user={user} changeUser={changeUser} back={quitGame}/>);
+    return (<PongGame gameInfos={game} user={user} changeUser={changeUser} back={quitGame} player={(game.user1.id === user.id || game.user2.id === user.id)}/>);
   } else if (game !== null) {
     return <PreGamePage getGame={getGame} changeGetGame={changeGetGame} game={game} changeGame={changeGame}/>;
   } else if (getGame === null) {
