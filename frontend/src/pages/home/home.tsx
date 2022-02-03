@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Profile from '../userAccount/profile';
 import ChatsView from '../chat/chatsView';
 import Play from '../game/play';
+import Watch from '../game/watch';
 import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser, getUser } from "../../api/user/user.api";
 import { GameDto } from "../../api/games/dto/game.dto";
@@ -13,7 +14,8 @@ const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string
 				{/* <h1>Welcome to the Pong Game</h1> */}
 				<button className={styles.homeButtonPlay} onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
 				<button className={styles.homeButtonChat} onClick={()=>{changeMenuPage('chat')}}>Chat</button><>&nbsp;&nbsp;&nbsp;</>
-				<button className={styles.homeButtonProfile} onClick={()=>{changeMenuPage('profile')}}>Profile</button>
+				<button className={styles.homeButtonProfile} onClick={()=>{changeMenuPage('profile')}}>Profile</button><>&nbsp;&nbsp;&nbsp;</>
+				<button className={styles.homeButtonWatch} onClick={()=>{changeMenuPage('watch')}}>Watch</button>
 			</div>);
 }
 
@@ -105,6 +107,8 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage} changeGame={changeGame}/>;
 	} else if (menuPage === "profile") {
 		return <Profile user={user} changeUser={changeUser} back={back} myAccount={true} changeGame={changeGame}/>;
+	} else if (menuPage === "watch") {
+		return <Watch back={back} changeGame={changeGame}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

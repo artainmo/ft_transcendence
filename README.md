@@ -52,10 +52,11 @@
     - [x] After some time of the ball fastening it slows down again?
     - [ ] user demands game in chat returns in home menu and other player accepts
     - [x] Both users disconnect unexpectedly and come back to replay
+    - [ ] Watch live end of game
   * clean
     - [ ] clean all console.log
   * additions?
-	- [ ] page with all live games
+	- [x] page with all live games
 	- [x] if user clicks on own play invite in chat he deactivates the invite
 	- [x] Let viewing user have a back button and do not remove the game in this case...
 	- [x] separate user login (with encrypted password) independent of intra 42

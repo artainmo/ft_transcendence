@@ -12,3 +12,8 @@
   composes: bigButton from "./convention.module.css";
   background-color: #EDCBB1;
 }
+
+.homeButtonWatch {
+  composes: bigButton from "./convention.module.css";
+  background-color: #FF6663;
+}
