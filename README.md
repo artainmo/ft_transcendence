@@ -38,9 +38,9 @@
 
 * Other:
   * CSS
-    - [ ] css positioning?
-    - [ ] profile extra css? buttons to display ?
-    - [ ] clean message chat css/material-ui?
+    - [x] css positioning?
+    - [x] profile extra css? buttons to display ?
+    - [x] clean message chat css/material-ui?
   * Potential bugs
     - [ ] change state "in game" vs "search game"
     - [ ] Change state after refresh/back/close-tab? not deleting a game after refresh?
