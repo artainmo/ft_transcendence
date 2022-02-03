@@ -1,0 +1,7 @@
+.watchGame {
+  composes: smallButton from "./convention.module.css";
+  width: auto;
+  border-radius: 5px;
+  padding: 8px;
+  background-color: #BFD7EA;
+}

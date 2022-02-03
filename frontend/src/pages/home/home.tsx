@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Profile from '../userAccount/profile';
 import ChatsView from '../chat/chatsView';
 import Play from '../game/play';
+import Watch from '../game/watch';
 import { UserDto } from "../../api/user/dto/user.dto";
 import { updateUser, getUser } from "../../api/user/user.api";
 import { GameDto } from "../../api/games/dto/game.dto";
@@ -13,7 +14,8 @@ const HomeDisplay: React.FC<{user: UserDto, changeMenuPage: (newMenuPage: string
 				{/* <h1>Welcome to the Pong Game</h1> */}
 				<button className={styles.homeButtonPlay} onClick={()=>{changeMenuPage('play')}}>Play</button><>&nbsp;&nbsp;&nbsp;</>
 				<button className={styles.homeButtonChat} onClick={()=>{changeMenuPage('chat')}}>Chat</button><>&nbsp;&nbsp;&nbsp;</>
-				<button className={styles.homeButtonProfile} onClick={()=>{changeMenuPage('profile')}}>Profile</button>
+				<button className={styles.homeButtonProfile} onClick={()=>{changeMenuPage('profile')}}>Profile</button><>&nbsp;&nbsp;&nbsp;</>
+				<button className={styles.homeButtonWatch} onClick={()=>{changeMenuPage('watch')}}>Watch</button>
 			</div>);
 }
 
@@ -42,11 +44,28 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 				//Remove all games associated with the user that have not been finished yet
 				let myGame = await findMyGame();
 				if (myGame !== null) await removeGame(myGame.id);
-			updateUser(user.id, {status: "Offline"}); //Set User offline //Call without await to gain time
 		}
-		removeActiveGame();
+		if (user.status === "Offline") removeActiveGame(); //Before user will be set as Online, so only called once at connection
 	//eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		const keepOnline: () => void = async () => {
+			const unixTimeStamp = Math.round(new Date().getTime() / 1000).toString();
+			await updateUser(user.id, {latestTimeOnline: unixTimeStamp});
+		}
+ 		const interval = setInterval(keepOnline, 1500);
+		return () => clearInterval(interval);
+	//eslint-disable-next-line
+	}, []);
+
+	const findMyGame: () => Promise<GameDto | null> = async () => {
+		const games = await getAllGames();
+		let myGame = games.find((findGame: GameDto) =>
+					(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
+		if (myGame === undefined) return null;
+		return myGame;
+	}
 
 	//Change user status, check if game exists with user in it, if it does and is the only user he is searching the game else he is in a game...
 	useEffect(()=>{
@@ -68,14 +87,6 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
   // eslint-disable-next-line
 }, []);
 
-	const findMyGame: () => Promise<GameDto | null> = async () => {
-		const games = await getAllGames();
-		let myGame = games.find((findGame: GameDto) =>
-					(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
-		if (myGame === undefined) return null;
-		return myGame;
-	}
-
 	const changeGame: (newGame: GameDto | null) => void = (newGame) => {
     setGame(newGame);
   }
@@ -96,6 +107,8 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 		return <ChatsView user={user} changeUser={changeUser} changeMenuPage={changeMenuPage} changeGame={changeGame}/>;
 	} else if (menuPage === "profile") {
 		return <Profile user={user} changeUser={changeUser} back={back} myAccount={true} changeGame={changeGame}/>;
+	} else if (menuPage === "watch") {
+		return <Watch back={back} changeGame={changeGame}/>;
 	} else {
 		return <h1>Home Error</h1>;
 	}

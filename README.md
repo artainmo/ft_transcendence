@@ -44,17 +44,21 @@
   * Potential bugs
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
-    - [ ] User refresh during game, what happen to other player/live-viewers and match-history??
+    - [x] User refresh during game, what happen to other player/live-viewers and match-history??
+    - [ ] User refresh at end of game? MatchHistory?
     - [x] User logs in multiple times on different pages? (can create bugs related to status...)
     - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
     - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
-    - [ ] After some time of the ball fastening it slows down again?
-    - [ ] user refresh but cancels, user is set as offline or game is removed? changeGame(null)?
+    - [x] After some time of the ball fastening it slows down again?
+    - [x] user demands game in chat returns in home menu and other player accepts
+    - [x] Both users disconnect unexpectedly and come back to replay
+    - [x] Watch live end of game
+    - [ ] Long names go out of scope game | game on safari font (set same font as rest website: Courier New) | change name with login
   * clean
     - [ ] clean all console.log
   * additions?
-	- [ ] page with all live games
+	- [x] page with all live games
 	- [x] if user clicks on own play invite in chat he deactivates the invite
 	- [x] Let viewing user have a back button and do not remove the game in this case...
-	- [ ] separate user login (with encrypted password) independent of intra 42
+	- [x] separate user login (with encrypted password) independent of intra 42
   * test & reread pdf

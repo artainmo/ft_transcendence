@@ -79,7 +79,7 @@ const JoinGame: React.FC<joinGameProps> = ({ user, changeGetGame, changeGame }) 
   useEffect(()=>{
     const findGame: () => void = async () => {
       const games = await getAllGames();
-      let myGame = games.find(game => game.user2 === null);
+      let myGame = games.find(game => game.user2 === null && game.user1.status !== "Offline");
       if (myGame === undefined) return ;
       myGame.user2 = user;
       await updateGame(myGame.id, { user2: myGame.user2 });
