@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3001 80
 
-CMD npm start
+CMD npm run start
