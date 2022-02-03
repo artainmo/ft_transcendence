@@ -30,14 +30,8 @@ const findUserObj: (obj: any) => any = (obj) => {
 export class setUserStatusInterceptor<T> implements NestInterceptor<T, Response<T>> {
     intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
         return next.handle().pipe(map(data => {
-          // console.log('----------------------');
-          // console.dir(data, { depth: null });
-          // console.log('--');
           if (data === undefined || data === null) return data;
           data = findUserObj(data);
-          // console.log('--');
-          // console.dir(data, { depth: null });
-          // console.log('----------------------');
           return data;
          }));
     }

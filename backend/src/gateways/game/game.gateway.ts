@@ -171,8 +171,6 @@ export class GameGateway {
 
   @SubscribeMessage('startgame')
   connectPlayer(client: Socket, message: any): void {
-    console.log("le player : " + message.player);
-    console.log("la room : " + message.room);
 
     if (this.games[message.room] == undefined) { //status :  w = waiting | p = playing | e = end
       this.games[message.room] = {players: {p1: false, p2: false}, game: new gameRender(lodash.cloneDeep(startGameInfos), message.speed), loop: null, room: message.room};
@@ -201,7 +199,6 @@ export class GameGateway {
   sendGameData(room: string) {
     var data = this.games[room].game.update();
 
-    // console.log("we are in sendgamedata ! room : " + room);
     if (this.games[room].game.isEnd()) {
       this.games[room].game.setStatus = 'e';
       this.clearGame(room);
@@ -229,7 +226,6 @@ export class GameGateway {
 
   public clearGame(room: string) {
     if (this.games[room].loop != null) {
-      console.log("On clear l'interval de la room : " + room);
 
       clearInterval(this.games[room].loop);
       this.games[room].loop = null;

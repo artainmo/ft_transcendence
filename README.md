@@ -55,7 +55,7 @@
     - [x] Watch live end of game
     - [ ] Long names go out of scope game | game on safari font (set same font as rest website: Courier New) | change name with login
   * clean
-    - [ ] clean all console.log
+    - [x] clean all console.log
   * additions?
 	- [x] page with all live games
 	- [x] if user clicks on own play invite in chat he deactivates the invite
