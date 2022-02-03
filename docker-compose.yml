@@ -1,54 +1,30 @@
 version: '3'
 services:
-
-  db:
+  postgres:
     container_name: postgres
     image: 'postgres:latest'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    network_mode: "host"
     ports:
       - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
     restart: always
-
   frontend:
     container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend/.
     image: frontend
     restart: always
     depends_on:
       - backend
-      - db
-    volumes:
-      - /app/node_modules
-      - ./frontend:/app
-    hostname: frontend
-    network_mode: "host"
     ports:
       - '3000:3000'
-    command: npm start
-
-
   backend:
     container_name: backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend/.
     image: backend
     depends_on:
-      - db
+      - postgres
     restart: always
-    hostname: backend
-    network_mode: "host"
     ports:
       - '3001:3001'
-    command: npm start
-
-volumes:
-  db:
