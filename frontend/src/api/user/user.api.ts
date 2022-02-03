@@ -17,7 +17,7 @@ export const createNewUser: (name: string, login: string, avatar: string) => Cre
     avatar: avatar,
     hasTwoFactorAuthentication: false,
     twoFactorAuthenticationSecret: '',
-    status: "online",
+    status: "Online",
     nbrVicotry: 0,
     nbrLoss: 0,
     matchHistory: [],
@@ -26,7 +26,8 @@ export const createNewUser: (name: string, login: string, avatar: string) => Cre
     dms_messages: [],
     channels: [],
     channels_messages: [],
-    channels_users: []
+    channels_users: [],
+    latestTimeOnline: Math.round(new Date().getTime() / 1000).toString()
   }
   return createUserDto;
 }

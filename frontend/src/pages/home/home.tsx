@@ -42,11 +42,28 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 				//Remove all games associated with the user that have not been finished yet
 				let myGame = await findMyGame();
 				if (myGame !== null) await removeGame(myGame.id);
-			updateUser(user.id, {status: "Offline"}); //Set User offline //Call without await to gain time
 		}
 		removeActiveGame();
 	//eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		const keepOnline: () => void = async () => {
+			const unixTimeStamp = Math.round(new Date().getTime() / 1000).toString();
+			await updateUser(user.id, {latestTimeOnline: unixTimeStamp});
+		}
+ 		const interval = setInterval(keepOnline, 1500);
+		return () => clearInterval(interval);
+	//eslint-disable-next-line
+	}, []);
+
+	const findMyGame: () => Promise<GameDto | null> = async () => {
+		const games = await getAllGames();
+		let myGame = games.find((findGame: GameDto) =>
+					(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
+		if (myGame === undefined) return null;
+		return myGame;
+	}
 
 	//Change user status, check if game exists with user in it, if it does and is the only user he is searching the game else he is in a game...
 	useEffect(()=>{
@@ -67,14 +84,6 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
     return () => clearInterval(interval);
   // eslint-disable-next-line
 }, []);
-
-	const findMyGame: () => Promise<GameDto | null> = async () => {
-		const games = await getAllGames();
-		let myGame = games.find((findGame: GameDto) =>
-					(findGame.user1.id === user.id || (findGame.user2 !== null && findGame.user2.id === user.id)));
-		if (myGame === undefined) return null;
-		return myGame;
-	}
 
 	const changeGame: (newGame: GameDto | null) => void = (newGame) => {
     setGame(newGame);

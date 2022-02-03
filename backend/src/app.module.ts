@@ -9,11 +9,14 @@ import { UserModule } from "./user/user.module";
 import { ChatGateway } from './gateways/chat/chat.gateway';
 import { GameGateway } from './gateways/game/game.gateway';
 import { channelPasswordEncryptionMiddleware } from './middleware/passwordEncryption.middleware';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { setUserStatusInterceptor } from './interceptors/userStatus.interceptor';
+
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UserModule, ChannelsModule, DmsModule,
             FriendsModule, GamesModule, MatchHistoryModule],
-  providers: [ChatGateway, GameGateway]
+  providers: [ChatGateway, GameGateway, { provide: APP_INTERCEPTOR, useClass: setUserStatusInterceptor}]
 })
 export class AppModule {
   async configure(consumer: MiddlewareConsumer) {

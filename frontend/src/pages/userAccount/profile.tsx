@@ -315,8 +315,9 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
               <h1>{profile.login}</h1>
               {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='100em' width='100em'/> : <MdOutlinePersonOutline size='3em'/>}
               <p>Name: {profile.name}</p>
-							<span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>
-							{profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
+							{!ownAccount && <span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>}
+							{!ownAccount && profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
+							{ownAccount && <span style={{color: "green"}}>Online</span>}
 							<br/>
               <h3>Stats</h3>
 							<p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>

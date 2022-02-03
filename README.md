@@ -38,18 +38,20 @@
 
 * Other:
   * CSS
-    - [ ] css positioning?
-    - [ ] profile extra css? buttons to display ?
-    - [ ] clean message chat css/material-ui?
+    - [x] css positioning?
+    - [x] profile extra css? buttons to display ?
+    - [x] clean message chat css/material-ui?
   * Potential bugs
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
-    - [ ] User refresh during game, what happen to other player/live-viewers and match-history??
+    - [x] User refresh during game, what happen to other player/live-viewers and match-history??
+    - [x] User refresh at end of game?
     - [x] User logs in multiple times on different pages? (can create bugs related to status...)
     - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
     - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
-    - [ ] After some time of the ball fastening it slows down again?
-    - [ ] user refresh but cancels, user is set as offline or game is removed? changeGame(null)?
+    - [x] After some time of the ball fastening it slows down again?
+	- [ ] user demands game in chat returns in home menu and other player accepts
+	- [x]  Both users disconnect unexpectedly and come back to replay
   * clean
     - [ ] clean all console.log
   * additions?

@@ -27,6 +27,7 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 	let [avatar, setAvatar] = useState<string>('');
 
 	const onSubmitLogin: () => void = async () => {
+		await new Promise(r => setTimeout(r, 1000));
 		let userInDatabase = await getUserByName(name);
 		if (userInDatabase === null) {
 			setNonExistingAccount(true);
@@ -146,6 +147,7 @@ const Authentification: React.FC = () => {
 				const ACCESS_TOKEN = await OAuth42_access_token(AUTH_CODE);
 				if (ACCESS_TOKEN !== null) {
 					const user = await OAuth42_user(ACCESS_TOKEN);
+					await new Promise(r => setTimeout(r, 1500));
 					let userInDatabase = await getUserByName(user.name);
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));

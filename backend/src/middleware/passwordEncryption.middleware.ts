@@ -2,6 +2,8 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 const bcrypt = require('bcrypt');
 
+//Cleaner method would be to encrypt a password in appropriate entity @BeforeInsert function...
+
 @Injectable()
 export class channelPasswordEncryptionMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {

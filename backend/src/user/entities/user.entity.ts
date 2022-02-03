@@ -6,7 +6,7 @@ import { ChannelsUsersEntity } from "../../channels/entities/channels_users.enti
 import { ChannelsMessagesEntity } from "../../channels/entities/channels_messages.entity";
 import { DmsEntity } from "../../dms/entities/dms.entity";
 import { DmsMessagesEntity } from "../../dms/entities/dms_messages.entity";
-import { ValidateNested, IsNotEmpty, IsString, IsBoolean, IsInt, Min, IsArray, IsOptional } from "class-validator";
+import { ValidateNested, IsNotEmpty, IsString, IsBoolean, IsInt, Min, IsArray, IsOptional, IsNumberString, IsIn } from "class-validator";
 import { Type } from 'class-transformer';
 
 @Entity()
@@ -37,8 +37,7 @@ export class UserEntity {
     twoFactorAuthenticationSecret: string;
 
     @Column()
-    @IsNotEmpty()
-    @IsString()
+    @IsIn(["Online", "Offline", "In a game", "Searching a game"])
     status: string;
 
     @Column()
@@ -79,4 +78,10 @@ export class UserEntity {
     @ValidateNested({ each: true })
     @Type(() => ChannelsEntity)
     channels: ChannelsEntity[]
+
+    @Column()
+    @IsString()
+    @IsNotEmpty()
+    @IsNumberString()
+    latestTimeOnline: string
 }

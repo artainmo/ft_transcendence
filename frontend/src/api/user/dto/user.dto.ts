@@ -23,4 +23,5 @@ export interface UserDto {
   channels: ChannelDto[]
   channels_messages: ChannelMessageDto[]
   channels_users: ChannelUserDto[]
+  latestTimeOnline: string
 }
