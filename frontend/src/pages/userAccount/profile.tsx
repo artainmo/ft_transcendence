@@ -306,27 +306,57 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 		changeGame(Game);
 	}
 
-  return (<div>
-              {g_viewed_users_history.length === 0 && <><button className={cs.backButton} onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;</></>}
-							{ownAccount && <><button className={!settings ? styles.settingsButton : styles.settingsButtonOn} onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button><>&nbsp;&nbsp;</></>}
-              {ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Log out</button>}
-							{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
-              {g_viewed_users_history.length !== 0 && <button className={cs.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
-              <h1>{profile.login}</h1>
-              {profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='100em' width='100em'/> : <MdOutlinePersonOutline size='3em'/>}
-              <p>Name: {profile.name}</p>
-							{!ownAccount && <span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>}
-							{!ownAccount && profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
-							{ownAccount && <span style={{color: "green"}}>Online</span>}
-							<br/>
-              <h3>Stats</h3>
-							<p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>
-              <p>Victories: {profile.nbrVicotry}</p>
-              <p>Losses: {profile.nbrLoss}</p>
-              <h3>Match History</h3>
-              {userMatchHistory.length ? userMatchHistory.map((elem)=><p>{`${elem.me.login} VS ${elem.opponent.login} -> ${elem.my_score} : ${elem.opponent_score}`}</p>) : <p>No matches</p>}
-              <Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner}/>
-          </div>);
+	return (
+	<div className={styles.profileRoot}>
+	<div className={styles.profileNavBarSize}>
+		<div className={styles.profileNavBar}>
+		{g_viewed_users_history.length === 0 && <><button className={cs.backButton} onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;</></>}
+						{ownAccount && <><button className={!settings ? styles.settingsButton : styles.settingsButtonOn} onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button><>&nbsp;&nbsp;</></>}
+		{ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Log out</button>}
+						{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
+		{g_viewed_users_history.length !== 0 && <button className={cs.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
+		</div>
+	</div>
+	<div className={styles.profileBodySize}>
+		<div className={styles.profileHeader}>
+			<h1>{profile.login}</h1>
+			{profile.avatar ? <img src={profile.avatar} alt={"avatar"} height='100em' width='100em'/> : <MdOutlinePersonOutline size='3em'/>}
+		</div>
+		<div className={styles.profileBody}>
+			<div className={styles.profileUserInfos}>
+				<h3>User informations</h3>
+				<p><strong>Name: </strong>{profile.name}</p>
+
+				<strong>Status : </strong>{!ownAccount && <span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>}
+					{!ownAccount && profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
+					{ownAccount && <span style={{color: "green"}}>Online</span>}
+
+				<div className={styles.profileFriends}>
+					<Friends profile={profile} changeProfile={changeProfile} ownAccount={ownAccount} changeAccountOwner={changeAccountOwner}/>
+				</div>
+			</div>
+			<div className={styles.profileMatchHistory}>
+				<h3>Match History</h3>
+				<table style={{"margin": "auto"}}>
+					{userMatchHistory.length ? userMatchHistory.map((elem)=><tr>
+							<td className={styles.profileMatchsDescription}>{`${elem.me.login} VS ${elem.opponent.login}`}</td>
+							<td>|</td>
+							<td className={styles.profileMatchsDescription}>{`${elem.my_score} : ${elem.opponent_score}`}</td>
+						</tr>) : <p>No matches</p>}
+				</table>
+
+
+			</div>
+			<div className={styles.profileGameStats}>
+				<h3>Stats</h3>
+				<p>Ratio: {(profile.nbrVicotry / profile.nbrLoss) ? (profile.nbrVicotry / profile.nbrLoss) : 0}</p>
+				<p>Victories: {profile.nbrVicotry}</p>
+				<p>Losses: {profile.nbrLoss}</p>
+			</div>
+		</div>
+	</div>
+</div>
+	);
 }
 
 export default Profile;
