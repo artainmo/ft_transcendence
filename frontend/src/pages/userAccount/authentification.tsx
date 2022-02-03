@@ -6,9 +6,10 @@ import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, veri
 import { UserDto } from "../../api/user/dto/user.dto";
 import styles from "../../css/authentification.module.css";
 import cs from "../../css/convention.module.css";
-
-const CLIENT_ID = process.env.CLIENT_ID;
-const REDIRECT_URI = process.env.REDIRECT_URI;
+import * as dotenv from "dotenv";
+dotenv.config();
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
 
 interface logFormProps {
 	changePage: (newPage: string) => void

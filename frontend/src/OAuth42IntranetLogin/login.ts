@@ -1,9 +1,11 @@
 const axios = require('axios');
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export const OAuth42_access_token = async (AUTH_CODE: string) => {
-	const CLIENT_ID = process.env.CLIENT_ID;
-	const CLIENT_SECRET = process.env.CLIENT_SECRET;
-	const REDIRECT_URI = process.env.REDIRECT_URI;
+	const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+	const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
+	const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
 
 	const queryParams = "?"
 	+ "grant_type=authorization_code&"

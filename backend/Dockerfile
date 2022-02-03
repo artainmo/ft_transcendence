@@ -5,10 +5,9 @@ WORKDIR /usr/app
 COPY package.json .
 
 RUN npm install --quiet
-RUN npm i dotenv
 
 COPY . .
 
-EXPOSE 3001 
+EXPOSE 3001
 
-CMD npm start
+CMD npm run start
