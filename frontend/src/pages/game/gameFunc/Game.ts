@@ -148,7 +148,7 @@ export class Game {
 		{
 			this.ctx.textAlign = "center";
 			this.ctx.fillStyle = color;
-			this.ctx.font = fontSize.toString() + "px fantasy";
+			this.ctx.font = fontSize.toString() + "px Courier New";
 			this.ctx.fillText(text, x, y);
 		}
 
@@ -192,7 +192,7 @@ export class Game {
 
 			this.destroyGame();
 			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
-			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px fantasy";
+			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px Courier New";
 			this.ctx.fillStyle = this.scriptureColor;
 			this.ctx.textAlign = "center";
 
@@ -203,7 +203,7 @@ export class Game {
 				result = "You loose ...";
 			this.ctx.fillText(result, 350 * this.coeff, 150 * this.coeff);
 
-			this.ctx.font = Math.floor(35 * this.coeff).toString() +  "px fantasy";
+			this.ctx.font = Math.floor(35 * this.coeff).toString() +  "px Courier New";
 			var output1 = this.nameP1;
 			var output2 = this.nameP2;
 
@@ -219,7 +219,7 @@ export class Game {
 		public drawUserLeft(name: string) {
 			this.destroyGame();
 			this.fillRect(this.bgColor, 0, 0, CONSTS.GAME_WIDTH * this.coeff, CONSTS.GAME_HEIGHT * this.coeff);
-			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px fantasy";
+			this.ctx.font = Math.floor(50 * this.coeff).toString() + "px Courier New";
 			this.ctx.fillStyle = this.scriptureColor;
 			this.ctx.textAlign = "center";
 
