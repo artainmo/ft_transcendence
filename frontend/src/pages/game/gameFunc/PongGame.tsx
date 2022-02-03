@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-//import { GAME_HEIGHT, GAME_WIDTH, MAX_HEIGHT, MAX_WIDTH } from './utils/gameConstants';
 import {
 	connect,
 	startGame,
@@ -87,24 +86,10 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);
-			window.removeEventListener('unload', disconnectUser);
 		}
 	// eslint-disable-next-line
 	}, [])
 
-<<<<<<< HEAD
-=======
-	const disconnectUser = () => {
-		alert("On remove le user ???");
-		//stopGame(socket, {room: game.myRoom, name: props.user.name});
-	}
-
-	console.log("Gameinfos : ");
-	console.log(props.gameInfos);
-	console.log("user : ");
-	console.log(props.user);
-
->>>>>>> jules
 	return (
 		<div>
 			{quitPermited && <><button className={cs.backButton} onClick={()=>props.back()}>Back</button><br/><br/></>}

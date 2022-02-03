@@ -292,8 +292,6 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		}
 	}
 
-// console.log(currentChat);
-
   return (<div className={cs.chatMessageBoxClass}>
 						<h2 className={cs.chatTitle}>Messages</h2><br/>
             {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
