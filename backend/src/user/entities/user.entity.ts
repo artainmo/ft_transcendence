@@ -84,4 +84,8 @@ export class UserEntity {
     @IsNotEmpty()
     @IsNumberString()
     latestTimeOnline: string
+    
+    @Column()
+    @IsString()
+    password: string
 }

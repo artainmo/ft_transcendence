@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
-import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, verifyTwoFactorAuthentication } from "../../api/user/user.api";
+import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, verifyTwoFactorAuthentication, userPasswordVerification } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import styles from "../../css/authentification.module.css";
 import cs from "../../css/convention.module.css";
@@ -22,20 +22,31 @@ interface logFormProps {
 const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alreadyConnected, changeAlreadyConnected, changeTwoFA }) => {
 	let [accountAlreadyInUse, setAccountAlreadyInUse] = useState<boolean>(false);
 	let [nonExistingAccount, setNonExistingAccount] = useState<boolean>(false);
+	let [wrongPassword, setWrongPassword] = useState<boolean>(false);
 	let [name, setName] = useState<string>('');
 	let [login, setLogin] = useState<string>('');
 	let [avatar, setAvatar] = useState<string>('');
+	let [password, setPassword] = useState<string>('');
 
 	const onSubmitLogin: () => void = async () => {
+		if (password === "" || name === "") return ;
 		await new Promise(r => setTimeout(r, 1000));
 		let userInDatabase = await getUserByName(name);
 		if (userInDatabase === null) {
 			setNonExistingAccount(true);
+			setWrongPassword(false);
 			setName('');
 			setLogin('');
 			setAvatar('');
+			setPassword('');
 		} else {
 			setNonExistingAccount(false);
+			if (!(await userPasswordVerification(userInDatabase.id, password))) {
+				setPassword('');
+				setWrongPassword(true);
+				return ;
+			}
+			setWrongPassword(false);
 			if (userInDatabase.status === "Online") {
 				changeAlreadyConnected(true);
 				return ;
@@ -48,10 +59,11 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 	}
 
 	const onSubmitSignup: () => void = async () => {
+		if (password === "" || name === "" || login === "") return ;
 		let userInDatabaseByName = await getUserByName(name);
 		let userInDatabaseByLogin = await getUserByLogin(login);
 		if (userInDatabaseByName === null && userInDatabaseByLogin === null) {
-			await addUser(createNewUser(name, login, avatar));
+			await addUser(createNewUser(name, login, avatar, password));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
 			userInDatabase!.status = "Online";
@@ -86,15 +98,20 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 						{signup && <label>Login:</label>}
 						{signup && <br/>}
 						{signup && <input className={cs.textInput} type="text" value={login} onChange={(e)=>setLogin(e.target.value)} required/>}
+						<br/><br/>
+						<label>Password:</label>
+						<br/>
+						<input className={cs.textInput} type="password" value={password} maxLength={20} onChange={(e)=>setPassword(e.target.value)} required/>
 						{signup && <br/>}
 						{signup && <br/>}
-						{signup && <label className={cs.chooseFileButton}>Download Avatar Image
+						{signup && <><label className={cs.chooseFileButton}>Download Avatar Image
 												<input type="file" accept="image/*" onChange={(e)=>changeAvatar(e)}/>
-											 </label>}
+											</label><br/></>}
 						<br/><br/>
 						{accountAlreadyInUse && <p>This account already exists</p>}
 						{nonExistingAccount && <p>This account does not exist</p>}
 						{alreadyConnected && <p>User is already connected</p>}
+						{wrongPassword && <p>Wrong Password</p>}
 						<button className={cs.submitButton} type="submit" onClick={()=> signup ? onSubmitSignup() : onSubmitLogin()}>Submit</button>
 				</div>);
 }

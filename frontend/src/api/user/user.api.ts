@@ -10,7 +10,7 @@ export const addUser: (createUserDto: CreateUserDto) => Promise<UserDto> = async
   return response.data;
 }
 
-export const createNewUser: (name: string, login: string, avatar: string) => CreateUserDto = (name, login, avatar) => {
+export const createNewUser: (name: string, login: string, avatar: string, password?: string) => CreateUserDto = (name, login, avatar, password="") => {
   let createUserDto: CreateUserDto = {
     name: name,
     login: login,
@@ -27,7 +27,8 @@ export const createNewUser: (name: string, login: string, avatar: string) => Cre
     channels: [],
     channels_messages: [],
     channels_users: [],
-    latestTimeOnline: Math.round(new Date().getTime() / 1000).toString()
+    latestTimeOnline: Math.round(new Date().getTime() / 1000).toString(),
+    password: password
   }
   return createUserDto;
 }
@@ -73,13 +74,14 @@ export const getTwoFactorAuthenticationSecret: () => Promise<any> = async () => 
   return (await axios.get('user/2fa/secret')).data;
 }
 
-// export const getTwoFactorAuthenticationQRcode: (secret: string) => Promise<string> = async (secret) => {
-//   return (await axios.get(`user/2fa/qrcode/${secret}`)).data;
-// }
-
 export const verifyTwoFactorAuthentication: (secret: any, token: string) => Promise<boolean> = async (secret, token) => {
   return (await axios.post(`user/2fa/verify`, {
     secret: secret,
     token: token
   })).data;
 } //Post is used because it allows to send a body while get does not
+
+export const userPasswordVerification: (id: number, password: string) => Promise<boolean> = async (id, password) => {
+  const response = await axios.get(`/user/password_verification/${id}/${password}`);
+  return response.data;
+}
