@@ -16,6 +16,8 @@ import { getUser } from "../../../api/user/user.api";
 import { removeGame } from "../../../api/games/games.api";
 import cs from "../../../css/convention.module.css";
 
+
+
 const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void, player: boolean}) => {
 	const [endGame, setEndGame] = useState<boolean>(false);
 	const [quitPermited, setQuitPermited] = useState<boolean>(!props.player);
@@ -77,15 +79,32 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			}
 			if (props.player) { scoreToDatabase(); } else { setEndGame(true); }
 		})
+		socket.on('userLeft', (name: string) => {
+			game.drawUserLeft(name);
+		})
 		return () => {
 			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
-				stopGame(socket, game.myRoom);
+				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);
+			window.removeEventListener('unload', disconnectUser);
 		}
 	// eslint-disable-next-line
 	}, [])
 
+<<<<<<< HEAD
+=======
+	const disconnectUser = () => {
+		alert("On remove le user ???");
+		//stopGame(socket, {room: game.myRoom, name: props.user.name});
+	}
+
+	console.log("Gameinfos : ");
+	console.log(props.gameInfos);
+	console.log("user : ");
+	console.log(props.user);
+
+>>>>>>> jules
 	return (
 		<div>
 			{quitPermited && <><button className={cs.backButton} onClick={()=>props.back()}>Back</button><br/><br/></>}
