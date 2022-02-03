@@ -4612,6 +4612,13 @@
   "resolved" "https://registry.npmjs.org/fs-monkey/-/fs-monkey-1.0.3.tgz"
   "version" "1.0.3"
 
+"fs-web@^1.0.1":
+  "integrity" "sha1-UxfnF6+U2xaH2oKkj8buT4CLEhs="
+  "resolved" "https://registry.npmjs.org/fs-web/-/fs-web-1.0.1.tgz"
+  "version" "1.0.1"
+  dependencies:
+    "path" "git://github.com/component/path.git#7b4f23c38833a5232cd5e3d50ccb8cd13dbcd2f4"
+
 "fs.realpath@^1.0.0":
   "integrity" "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
@@ -6735,6 +6742,11 @@
   "integrity" "sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw=="
   "resolved" "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   "version" "4.0.0"
+
+"path@git://github.com/component/path.git#7b4f23c38833a5232cd5e3d50ccb8cd13dbcd2f4":
+  "integrity" "sha512-weCqFe+FoOstAysrn4Op/Ie201rkZecCASSgKTOY072Gf1FZGSetpv8PHGPEjXLQ5FrOSiu8LrU3CYe5cG+thQ=="
+  "resolved" "git+ssh://git@github.com/component/path.git#7b4f23c38833a5232cd5e3d50ccb8cd13dbcd2f4"
+  "version" "1.0.0"
 
 "performance-now@^2.1.0":
   "integrity" "sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns="
