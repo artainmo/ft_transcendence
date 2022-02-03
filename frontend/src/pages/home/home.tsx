@@ -45,7 +45,7 @@ const Home: React.FC<{user: UserDto, changeUser: (newUser: UserDto | null) => vo
 				let myGame = await findMyGame();
 				if (myGame !== null) await removeGame(myGame.id);
 		}
-		removeActiveGame();
+		if (user.status === "Offline") removeActiveGame(); //Before user will be set as Online, so only called once at connection
 	//eslint-disable-next-line
 	}, []);
 

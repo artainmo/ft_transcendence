@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import Home from '../home/home';
 import { OAuth42_access_token, OAuth42_user } from '../../OAuth42IntranetLogin/login';
-import { getUserByName, getUserByLogin, createNewUser, addUser, updateUser, verifyTwoFactorAuthentication, userPasswordVerification } from "../../api/user/user.api";
+import { getUserByName, getUserByLogin, createNewUser, addUser, verifyTwoFactorAuthentication, userPasswordVerification } from "../../api/user/user.api";
 import { UserDto } from "../../api/user/dto/user.dto";
 import styles from "../../css/authentification.module.css";
 import cs from "../../css/convention.module.css";
@@ -51,8 +51,6 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 				changeAlreadyConnected(true);
 				return ;
 			}
-			userInDatabase.status = "Online";
-			await updateUser(userInDatabase.id, {status: "Online"});
 			changeTwoFA(userInDatabase.hasTwoFactorAuthentication);
 			changeUser(userInDatabase)
 		}
@@ -66,8 +64,6 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 			await addUser(createNewUser(name, login, avatar, password));
 			let userInDatabase = await getUserByName(name);
 			setAccountAlreadyInUse(false);
-			userInDatabase!.status = "Online";
-			await updateUser(userInDatabase!.id, {status: "Online"});
 			changeTwoFA(userInDatabase!.hasTwoFactorAuthentication);
 			changeUser(userInDatabase);
 		} else {
@@ -173,8 +169,6 @@ const Authentification: React.FC = () => {
 						changeAlreadyConnected(true);
 						return ;
 					}
-					userInDatabase.status = "Online";
-					await updateUser(userInDatabase.id, {status: "Online"});
 					changeTwoFA(userInDatabase.hasTwoFactorAuthentication);
 					setUser(userInDatabase);
 				}

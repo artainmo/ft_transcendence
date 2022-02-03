@@ -50,7 +50,7 @@
     - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
     - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
     - [x] After some time of the ball fastening it slows down again?
-    - [ ] user demands game in chat returns in home menu and other player accepts
+    - [x] user demands game in chat returns in home menu and other player accepts
     - [x] Both users disconnect unexpectedly and come back to replay
     - [x] Watch live end of game
     - [ ] Long names go out of scope game | game on safari font
