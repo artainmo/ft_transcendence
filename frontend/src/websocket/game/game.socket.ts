@@ -30,7 +30,6 @@ export const stopGame: (socket: any, room: string) => void  = (socket, room) => 
 ** Disconnect the socket
 */
 export const disconnect : (socket: any) => void = (socket) => {
-  console.log("Client disconnected");
   socket.disconnect();
 }
 
@@ -38,7 +37,6 @@ export const disconnect : (socket: any) => void = (socket) => {
 ** Join the room
 */
 export const joinRoom: (socket: any, room: string) => void = (socket, room) => {
-  console.log("Join room : " + room);
   socket.emit("joinRoom", room);
 }
 

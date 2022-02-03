@@ -47,7 +47,6 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 
 		joinRoom(socket, props.gameInfos.id.toString());
 		if (p !== 0) {
-			console.log("On start la game pour player : " + p.toString())
 			startGame(socket, {room: props.gameInfos.id.toString(), player: p, speed: props.gameInfos.ballspeed});
 		}
 		socket.on('gameData', (data: GameInfosDto) => {
@@ -57,10 +56,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			game.drawEnd(scores);
 			const scoreToDatabase: () => void = async () => {
 				removeGame(props.gameInfos.id);
-				let user2 = props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2! : props.gameInfos.user1
-				// console.log('hey');
-				// await new Promise(r => setTimeout(r, 3000));
-				// console.log('hey2');
+				let user2 = props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2! : props.gameInfos.user1;
 				let latestUser2 = await getUser(user2.id);
 				if (latestUser2 === null || latestUser2.status !== "In a game" || userDisconnected) return ;
 				await addMatchHistory(createNewMatchHistory(props.user,
@@ -89,11 +85,6 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		}
 	// eslint-disable-next-line
 	}, [])
-
-	console.log("Gameinfos : ");
-	console.log(props.gameInfos);
-	console.log("user : ");
-	console.log(props.user);
 
 	return (
 		<div>
