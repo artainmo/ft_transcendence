@@ -88,12 +88,12 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 						<button className={cs.backButton} onClick={()=>{changePage("start")}}>Back</button>
 						{!signup ? <h1>Log in</h1> : <h1>Sign up</h1>}
 						<label>Name:</label><br/>
-						<input className={cs.textInput} type="text" value={name} onChange={(e)=>setName(e.target.value)} required/>
+						<input className={cs.textInput} type="text" value={name} maxLength={40} onChange={(e)=>setName(e.target.value)} required/>
 						{signup && <br/>}
 						{signup && <br/>}
 						{signup && <label>Login:</label>}
 						{signup && <br/>}
-						{signup && <input className={cs.textInput} type="text" value={login} onChange={(e)=>setLogin(e.target.value)} required/>}
+						{signup && <input className={cs.textInput} type="text" value={login} maxLength={20} onChange={(e)=>setLogin(e.target.value)} required/>}
 						<br/><br/>
 						<label>Password:</label>
 						<br/>

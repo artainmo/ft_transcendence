@@ -53,7 +53,7 @@
     - [x] user demands game in chat returns in home menu and other player accepts
     - [x] Both users disconnect unexpectedly and come back to replay
     - [x] Watch live end of game
-    - [ ] Long names go out of scope game | game on safari font
+    - [ ] Long names go out of scope game | game on safari font (set same font as rest website: Courier New) | change name with login
   * clean
     - [ ] clean all console.log
   * additions?
