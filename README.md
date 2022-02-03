@@ -33,7 +33,7 @@
 
 * Alessio:
   - [x] docker-compose
-  - [ ] API KEYS in .env
+  - [x] API KEYS in .env
 <br>
 
 * Other:
