@@ -31,16 +31,16 @@
   - [x] Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately
 <br>
 
-* Alissio:
-  - [ ] docker-compose
-  - [ ] API KEYS in .env (frontend 42api authentification & backend typeorm)
+* Alessio:
+  - [x] docker-compose
+  - [ ] API KEYS in .env
 <br>
 
 * Other:
   * CSS
-    - [ ] css positioning?
-    - [ ] profile extra css? buttons to display ?
-    - [ ] clean message chat css/material-ui?
+    - [x] css positioning?
+    - [x] profile extra css? buttons to display ?
+    - [x] clean message chat css/material-ui?
   * Potential bugs
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
