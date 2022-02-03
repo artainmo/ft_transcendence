@@ -45,13 +45,13 @@
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
     - [x] User refresh during game, what happen to other player/live-viewers and match-history??
-    - [x] User refresh at end of game?
+    - [ ] User refresh at end of game? MatchHistory?
     - [x] User logs in multiple times on different pages? (can create bugs related to status...)
     - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
     - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
     - [x] After some time of the ball fastening it slows down again?
-	- [ ] user demands game in chat returns in home menu and other player accepts
-	- [x]  Both users disconnect unexpectedly and come back to replay
+    - [ ] user demands game in chat returns in home menu and other player accepts
+    - [ ]  Both users disconnect unexpectedly and come back to replay
   * clean
     - [ ] clean all console.log
   * additions?
