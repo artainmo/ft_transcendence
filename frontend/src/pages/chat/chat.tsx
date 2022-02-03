@@ -55,7 +55,8 @@ interface messageProps {
 	currentChat: any, //type narrowing does not function correctly and typescript gives faulty type errors back, use any to avoid typescript type checking
 	currentChatLatestUpdates: () => void,
 	dm: boolean,
-	socket: any
+	socket: any,
+	currUser: any;
 }
 
 interface chatProps {
@@ -227,7 +228,7 @@ const ChannelInfo: React.FC<channelInfoProps> = ({ channelUser, changeUser, chan
           </div>);
 }
 
-const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm, socket }) => {
+const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, currentChatLatestUpdates, dm, socket, currUser }) => {
   const [message, setMessage] = useState<string>('');
 	const Maps = ['black', 'white', 'winter', 'summer', 'night'];
 
@@ -276,12 +277,23 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
 			return (<><br/><span>{`${message.user.login} --- `}</span><button className={styles.playDisabledButton} disabled>PLAY</button><br/><br/></>)
 		} else {
-			return (<><span>{`${message.user.login} --- ${message.content}`}</span><br/><br/></>);
+			return (<>
+				<div className={message.user.id === currUser ? cs.currUserChatMessageClass : cs.chatMessageClass}>
+					<div className={cs.chatUserNameClass}>
+						{`${message.user.login}`}
+					</div>
+					<div className={cs.chatUserMessageClass}>
+						{`${message.content}`}
+					</div>
+				</div>
+				<br/>
+				<br/>
+				</>); //css jules
 		}
 	}
 
-  return (<div>
-						<h2>Messages</h2><br/>
+  return (<div className={cs.chatMessageBoxClass}>
+						<h2 className={cs.chatTitle}>Messages</h2><br/>
             {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
 						<br/>
             <input className={cs.textInput} type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
@@ -365,16 +377,17 @@ const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurren
 	}
 
 	if (viewProfile !== undefined) return <Profile user={viewProfile} changeUser={changeUser} back={backFromViewProfile} myAccount={false} changeGame={changeGame}/>;
-  return (<div>
+
+  return (<div className={cs.chatRootClass}>
             <button className={cs.backButton} onClick={()=>changeCurrentChat(null)}>Back</button>
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
 							&& <><>&nbsp;&nbsp;</><button className={styles.blockButton} onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
             {!dm && <><>&nbsp;&nbsp;</><button className={styles.leaveChannelButton} onClick={()=>leaveChannel()}>Leave</button></>}
-						{dm && <h1 className={cs.clickable} onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}>{currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
-            {!dm && <h1>{currentChat.name}</h1>}
+						{dm && <h1>Chat with<span className={cs.clickable} onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}> {currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</span></h1>}
+            {!dm && <h1> {currentChat.name}</h1>}
             {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
 						<br/>
-            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket}/>
+            <Message userOrchannelUser={dm ? user : currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} dm={dm} socket={socket} currUser={user.id}/>
           </div>);
 }
 

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-//import { GAME_HEIGHT, GAME_WIDTH, MAX_HEIGHT, MAX_WIDTH } from './utils/gameConstants';
 import {
 	connect,
 	startGame,
@@ -15,6 +14,8 @@ import { addMatchHistory, createNewMatchHistory } from "../../../api/match-histo
 import { getUser } from "../../../api/user/user.api";
 import { removeGame } from "../../../api/games/games.api";
 import cs from "../../../css/convention.module.css";
+
+
 
 const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUser: UserDto | null) => void, back: () => void, player: boolean}) => {
 	const [endGame, setEndGame] = useState<boolean>(false);
@@ -77,9 +78,12 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			}
 			if (props.player) { scoreToDatabase(); } else { setEndGame(true); }
 		})
+		socket.on('userLeft', (name: string) => {
+			game.drawUserLeft(name);
+		})
 		return () => {
 			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
-				stopGame(socket, game.myRoom);
+				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);
 		}

@@ -32,3 +32,70 @@
   width: 115px;
   background-color: #4ECDC4;
 }
+
+.profileNavBar {
+  
+ /**/
+}
+
+.profileRoot {
+  width: 100%;
+  
+}
+
+.profileHeader {
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid black;
+  margin-bottom: 50px;
+}
+
+.profileBody {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-content: space-around;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.profileMatchHistory{
+  flex: 2;
+  text-align: center;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+}
+
+.profileUserInfos {
+  flex: 1;
+  text-align: left;
+}
+
+.profileGameStats {
+  flex: 1;
+  text-align: center;
+}
+
+.profileBodySize {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
+.profileFriends {
+  margin-top: 50px;
+}
+
+.profileTableMatchs {
+  margin: auto;
+}
+
+.profileMatchsDescription {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 5px;
+}
+
+.profileNavBarSize {
+  margin-top: 30px;
+  margin-left: 100px;
+}

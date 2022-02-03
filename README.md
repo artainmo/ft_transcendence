@@ -54,7 +54,6 @@
     - [x] Both users disconnect unexpectedly and come back to replay
     - [x] Watch live end of game
     - [ ] Long names go out of scope game | game on safari font (set same font as rest website: Courier New) | change name with login
-    - [ ] Point does not stop in game, until ball slows down and point is given to one player
   * clean
     - [x] clean all console.log
   * additions?

@@ -197,7 +197,7 @@ const ChatsView: React.FC<chatsViewProps> = ({ user, changeUser, changeMenuPage,
     if (currentChat !== null) {
       return (<Chat user={user} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} changeGame={changeGame}/>);
     } else {
-      return (<div>
+      return (<div className={cs.chatRootClass}>
                 <button className={cs.backButton} onClick={()=>{changeMenuPage('home')}}>Back</button>
 								<h1>Chat</h1>
                 <button className={!newdm ? styles.newDmButton : styles.newDmButtonOn} onClick={()=> {setNewdm(!newdm); setNewchannel(false); setJoinchannel(false); setViewChatCommands(false);}}>New DM</button><>&nbsp;&nbsp;</>
