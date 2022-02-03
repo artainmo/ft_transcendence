@@ -31,8 +31,8 @@
   - [x] Responsive game: setInterval (check window dimensions) -> if they change -> change state of game window dimensions appropriately
 <br>
 
-* Alissio:
-  - [ ] docker-compose
+* Alessio:
+  - [x] docker-compose
   - [ ] API KEYS in .env
 <br>
 
