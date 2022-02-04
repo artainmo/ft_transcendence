@@ -46,7 +46,8 @@
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
     - [x] User refresh during game, what happen to other player/live-viewers and match-history??
-    - [ ] User refresh at end of game? MatchHistory?
+    - [x] User refresh at end of game? MatchHistory?
+    - [ ] User already connected when creating account from intra 42
     - [x] User logs in multiple times on different pages? (can create bugs related to status...)
     - [x] BackButton while playing game? -> Only set backbutton after games finishes and pushes datas to database
     - [x] ban a user and directly after the user tries to access the channel -> Unable to recreate bug
