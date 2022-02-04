@@ -83,7 +83,7 @@ class gameRender {
 				this.velocityX = direction * (this.speed * Math.cos(angleRad));
 				this.velocityY = this.speed * Math.sin(angleRad);
 
-        if (this.speed <= 10) { this.speed += 0.5; }
+        if (this.speed <== 14) { this.speed += 0.5; }
 			}
 
 			if (this.gameInfos.ballX - this.radius < 0)

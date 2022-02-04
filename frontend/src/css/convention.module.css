@@ -89,7 +89,7 @@ input[type="radio"] {
   padding: 0.5em;
 }
 
-
+/* Jules CSS (not convention)*/
 
 .chatMessageClass {
   background: linear-gradient(#27C7FF, white);
@@ -116,9 +116,11 @@ input[type="radio"] {
 
 .chatMessageBoxClass {
   max-width: 500px;
+  height: 600px;
   margin-left: 75px;
   border: solid 2px black;
   padding: 20px;
+  overflow: scroll;
 }
 
 .chatUserNameClass {
@@ -139,6 +141,8 @@ input[type="radio"] {
   border-bottom: 1px solid black;
 }
 
-/* .chatTitleLink {
-  display: inline;
-} */
+.messageInput {
+  composes: textInput;
+  width: 200px;
+  height: 50px;
+}

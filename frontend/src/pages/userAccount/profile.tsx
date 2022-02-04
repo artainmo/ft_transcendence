@@ -167,7 +167,7 @@ const FindFriends: React.FC<FindFriendsProps> = ({ profile, userFriends, renderF
             {searchResults.map((item) => <div>
                                             <br/>
                                             <span>{item.login}</span><>&nbsp;&nbsp;</>
-                                            <button onClick={()=> _addFriend(item)} className={styles.addFriendButton}>Add Friend</button>
+                                            <button onClick={()=> _addFriend(item)} className={styles.addFriendButton}>Add</button>
                                          </div>)}
           </div>);
 }
@@ -214,10 +214,10 @@ const Friends: React.FC<FriendsProps> = ({ profile, changeProfile, ownAccount, c
   return (<div>
             <h3>Friends</h3>
             {userFriends.length ? userFriends.map((elem) => <div>
-																															<span className={cs.clickable} onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;&nbsp;</>
+																															<span className={cs.clickable} onClick={()=> seeFriendProfile(elem)}>{`${elem.login}`}</span><>&nbsp;&nbsp;</>
 																															{ownAccount && <><button className={styles.removeFriendButton}
 																																onClick={(e)=> _removeFriend(elem.id)}>
-																																Remove Friend</button><br/><br/></>}
+																																Remove</button><br/><br/></>}
 																														</div>)
 																	: <p>No friends</p>}
 						<br/>
@@ -308,15 +308,13 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 
 	return (
 	<div className={styles.profileRoot}>
-	<div className={styles.profileNavBarSize}>
-		<div className={styles.profileNavBar}>
-		{g_viewed_users_history.length === 0 && <><button className={cs.backButton} onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;</></>}
-						{ownAccount && <><button className={!settings ? styles.settingsButton : styles.settingsButtonOn} onClick={()=>{setSettings(!settings); renderPage();}}>Settings</button><>&nbsp;&nbsp;</></>}
-		{ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Log out</button>}
-						{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
-		{g_viewed_users_history.length !== 0 && <button className={cs.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
+		<div className={styles.profileNavBarSize}>
+				{g_viewed_users_history.length === 0 && <><button className={cs.backButton} onClick={()=>{back()}}>Back</button><>&nbsp;&nbsp;</></>}
+				{ownAccount && <><button className={!settings ? styles.settingsButton : styles.settingsButtonOn} onClick={()=>{setSettings(!settings); renderPage();}}>Change</button><>&nbsp;&nbsp;</></>}
+				{ownAccount && <button className={styles.logoutButton} onClick={()=>{logout()}}>Logout</button>}
+				{settings && <Settings user={user} changeUser={changeUser} renderPage={renderPage}/>}
+				{g_viewed_users_history.length !== 0 && <button className={cs.backButton} onClick={()=>{backFromViewedProfile()}}>Back</button>}
 		</div>
-	</div>
 	<div className={styles.profileBodySize}>
 		<div className={styles.profileHeader}>
 			<h1>{profile.login}</h1>
@@ -324,11 +322,12 @@ const Profile: React.FC<profileProps> = ({ user, changeUser, back, myAccount, ch
 		</div>
 		<div className={styles.profileBody}>
 			<div className={styles.profileUserInfos}>
-				<h3>User informations</h3>
-				<p><strong>Name: </strong>{profile.name}</p>
+				<h3>User Info</h3>
+				<p><strong>Name</strong><br/>{profile.name}</p>
 
-				<strong>Status : </strong>{!ownAccount && <span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>}
-					{!ownAccount && profile.status === "In a game" && <><>&nbsp;&nbsp;</><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch Game</button></>}
+				<strong>Status</strong><br/>
+					{!ownAccount && <span style={profile.status === "Offline" ? {color: "red"} : {color: "green"}}>{profile.status}</span>}
+					{!ownAccount && profile.status === "In a game" && <><br/><br/><button className={styles.watchGameButton} onClick={()=>watchGame()}>Watch</button></>}
 					{ownAccount && <span style={{color: "green"}}>Online</span>}
 
 				<div className={styles.profileFriends}>

@@ -82,7 +82,7 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 			game.drawUserLeft(name);
 		})
 		return () => {
-			if (p === 1|| p === 2) { // to avoid a viewer to destroy the game if he click on back button
+			if (props.player) { // to avoid a viewer to destroy the game if he click on back button
 				stopGame(socket, {room: game.myRoom, name: props.user.name});
 			}
 			disconnect(socket);

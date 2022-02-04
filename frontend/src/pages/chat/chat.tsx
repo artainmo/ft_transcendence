@@ -260,46 +260,52 @@ const Message: React.FC<messageProps> = ({ userOrchannelUser, currentChat, curre
 		await currentChatLatestUpdates();
 	}
 
-	const ChatCommands: React.FC<{message: ChannelMessageDto | DmMessageDto}> = ({message}) => {
+	const ChatMessage: React.FC<{message: ChannelMessageDto | DmMessageDto}> = ({message}) => {
 		let game = {speed: 1, map: "black", random: false};
 
-		if (message.content.substring(0,6) === "*PLAY*") {
-			if (message.content.substring(7,13) === "random") {
-				game.random = true;
-				return (<><span>{`${message.user.login} --- random game --- `}</span><button className={styles.playRandomButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
-			} else if (message.content.length > 6) {
-				game.speed = Number(message.content.substring(7,8));
-				game.map = message.content.substring(9, message.content.length);
-				if (!(game.speed > 0 && game.speed < 4) || !(Maps.find((_map: string) => _map === game.map))) return <></>;
-				return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playCustomButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
+		const ChatCommands: React.FC<{}> = () => {
+			if (message.content.substring(0,6) === "*PLAY*") {
+				if (message.content.substring(7,13) === "random") {
+					game.random = true;
+					return (<><span>{`random game --- `}</span><button className={styles.playRandomButton} onClick={()=>createGame(message, game)}>PLAY</button></>)
+				} else if (message.content.length > 6) {
+					game.speed = Number(message.content.substring(7,8));
+					game.map = message.content.substring(9, message.content.length);
+					if (!(game.speed > 0 && game.speed < 4) || !(Maps.find((_map: string) => _map === game.map))) return <></>;
+					return (<><span>{`speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playCustomButton} onClick={()=>createGame(message, game)}>PLAY</button></>)
+				}
+				return (<><span>{`speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playDefaultButton} onClick={()=>createGame(message, game)}>PLAY</button></>)
+			} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
+				return (<><button className={styles.playDisabledButton} disabled>PLAY</button></>)
+			} else {
+				return (<span>{message.content}</span>);
 			}
-			return (<><span>{`${message.user.login} --- speed: ${game.speed} map: ${game.map} --- `}</span><button className={styles.playDefaultButton} onClick={()=>createGame(message, game)}>PLAY</button><br/><br/></>)
-		} else if (message.content === "/*PLAY*") { //If game is finished change message so that score is appended to it and show it in the chat!!!!!!!!!
-			return (<><br/><span>{`${message.user.login} --- `}</span><button className={styles.playDisabledButton} disabled>PLAY</button><br/><br/></>)
-		} else {
-			return (<>
-				<div className={message.user.id === currUser ? cs.currUserChatMessageClass : cs.chatMessageClass}>
-					<div className={cs.chatUserNameClass}>
-						{`${message.user.login}`}
-					</div>
-					<div className={cs.chatUserMessageClass}>
-						{`${message.content}`}
-					</div>
-				</div>
-				<br/>
-				<br/>
-				</>); //css jules
 		}
+
+		return (<>
+			<div className={message.user.id === currUser ? cs.currUserChatMessageClass : cs.chatMessageClass}>
+				<div className={cs.chatUserNameClass}>
+					{`${message.user.login}`}
+				</div>
+				<div className={cs.chatUserMessageClass}>
+					<ChatCommands/>
+				</div>
+			</div>
+			<br/>
+			<br/>
+			</>); //css jules
 	}
 
-  return (<div className={cs.chatMessageBoxClass}>
+  return (<>
+						<div className={cs.chatMessageBoxClass}>
 						<h2 className={cs.chatTitle}>Messages</h2><br/>
-            {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatCommands message={message}/>)}
+            {currentChat.messages.map((message: ChannelMessageDto | DmMessageDto)=><ChatMessage message={message}/>)}
 						<br/>
             <input className={cs.textInput} type="text" value={message} onChange={(e)=>setMessage(e.target.value)}/>
             {((dm && currentChat.block) || (!dm && userOrchannelUser.mute)) && <input className={styles.messageDisabledButton} type="submit" value="Message" disabled/>}
 						{((dm && !currentChat.block) || (!dm && !userOrchannelUser.mute)) && <input className={styles.messageButton} type="submit" value="Message" onClick={(e)=>submitMessage()}/>}
-          </div>);
+						</div>
+          </>);
 }
 
 const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurrentChat, changeGame }) => {
@@ -383,7 +389,7 @@ const Chat: React.FC<chatProps> = ({ user, changeUser, currentChat, changeCurren
             {dm && (!currentChat.block || (currentChat.block && currentChat.user_id_who_initiated_blocking === user.id))
 							&& <><>&nbsp;&nbsp;</><button className={styles.blockButton} onClick={()=>setBlock()}>{currentChat.block === false ? "Block" : "Unblock"}</button></>}
             {!dm && <><>&nbsp;&nbsp;</><button className={styles.leaveChannelButton} onClick={()=>leaveChannel()}>Leave</button></>}
-						{dm && <h1>Chat with<span className={cs.clickable} onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}> {currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</span></h1>}
+						{dm && <h1 className={cs.clickable} onClick={()=>changeViewProfile(currentChat.users.find((userDm: UserDto) => userDm.id !== user.id))}> {currentChat.users.find((userDm: UserDto) => userDm.id !== user.id).login}</h1>}
             {!dm && <h1> {currentChat.name}</h1>}
             {!dm && <ChannelInfo channelUser={currentChat.channel_users.find((channelUser: ChannelUserDto)=> channelUser.user.id === user.id)} changeUser={changeUser} changeCurrentChat={changeCurrentChat} currentChat={currentChat} currentChatLatestUpdates={currentChatLatestUpdates} changeViewProfile={changeViewProfile}/>}
 						<br/>
