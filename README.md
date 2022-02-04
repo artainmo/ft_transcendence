@@ -41,6 +41,7 @@
     - [x] css positioning?
     - [x] profile extra css? buttons to display ?
     - [x] clean message chat css/material-ui?
+    - [ ] review profile and message css
   * Potential bugs
     - [x] change state "in game" vs "search game" & online/offline
     - [x] Change state and remove active game after refresh/back/close-tab?
