@@ -8,7 +8,7 @@ export interface Response<T> {
 
 const verifyUserStatus: (o: UserEntity) => UserEntity = (o) => {
   var currentTime = Number(Math.round(new Date().getTime() / 1000).toString());
-  if (o.status !== 'Offline' && (currentTime - Number(o.latestTimeOnline)) > 3) {
+  if (o.status !== 'Offline' && (currentTime - Number(o.latestTimeOnline)) > 4) {
       o.status = 'Offline';
   }
   return o;

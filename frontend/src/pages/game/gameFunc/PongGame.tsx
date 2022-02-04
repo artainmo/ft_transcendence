@@ -10,7 +10,7 @@ import { UserDto } from "../../../api/user/dto/user.dto";
 import { updateUser } from "../../../api/user/user.api";
 import { GameInfosDto, playerScoreDto } from "./utils/gameInfosDto";
 import { Game } from "./Game";
-import { addMatchHistory, createNewMatchHistory } from "../../../api/match-history/match-history.api";
+import { addMatchHistory, createNewMatchHistory, getMatchHistoryOfUser } from "../../../api/match-history/match-history.api";
 import { getUser } from "../../../api/user/user.api";
 import { removeGame } from "../../../api/games/games.api";
 import cs from "../../../css/convention.module.css";
@@ -46,6 +46,8 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		var socket = connect();
 		var game = new Game(props.gameInfos, props.user.login, socket); // classe avec les toutes les infos de la game
 
+		let user2 = props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2! : props.gameInfos.user1;
+
 		joinRoom(socket, props.gameInfos.id.toString());
 		if (p !== 0) {
 			startGame(socket, {room: props.gameInfos.id.toString(), player: p, speed: props.gameInfos.ballspeed});
@@ -56,8 +58,8 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 		socket.on('finalScore', (scores: playerScoreDto) => {
 			game.drawEnd(scores);
 			const scoreToDatabase: () => void = async () => {
+				let numberOfMatchHistoryOpponent: number = (await getMatchHistoryOfUser(user2.login)).length;
 				removeGame(props.gameInfos.id);
-				let user2 = props.user.id === props.gameInfos.user1.id ? props.gameInfos.user2! : props.gameInfos.user1;
 				let latestUser2 = await getUser(user2.id);
 				if (latestUser2 === null || latestUser2.status !== "In a game" || userDisconnected) return ;
 				await addMatchHistory(createNewMatchHistory(props.user,
@@ -66,10 +68,21 @@ const PongGame = (props : {gameInfos: GameDto, user: UserDto, changeUser: (newUs
 					game.myNum === scores.win.p ? scores.loose.score : scores.win.score));
 				if (game.myNum === scores.win.p) {
 					await updateUser(props.user.id, {nbrVicotry: props.user.nbrVicotry + 1});
-					await updateUser(user2.id, {nbrLoss: user2.nbrLoss + 1});
 				} else {
 					await updateUser(props.user.id, {nbrLoss: props.user.nbrLoss + 1});
-					await updateUser(user2.id, {nbrVicotry: user2.nbrVicotry + 1});
+				}
+				await new Promise(r => setTimeout(r, 1000));
+				let numberOfMatchHistoryOpponentAfter: number = (await getMatchHistoryOfUser(user2.login)).length;
+				if (numberOfMatchHistoryOpponent === numberOfMatchHistoryOpponentAfter) {
+					await addMatchHistory(createNewMatchHistory(user2,
+						game.myNum !== scores.win.p ? scores.win.score : scores.loose.score,
+						props.user.id,
+						game.myNum !== scores.win.p ? scores.loose.score : scores.win.score));
+						if (game.myNum !== scores.win.p) {
+							await updateUser(user2.id, {nbrVicotry: user2.nbrVicotry + 1});
+						} else {
+							await updateUser(user2.id, {nbrLoss: user2.nbrLoss + 1});
+						}
 				}
 				let latestUser = await getUser(props.user.id);
 				props.changeUser(latestUser);
