@@ -160,10 +160,11 @@ const Authentification: React.FC = () => {
 				const ACCESS_TOKEN = await OAuth42_access_token(AUTH_CODE);
 				if (ACCESS_TOKEN !== null) {
 					const user = await OAuth42_user(ACCESS_TOKEN);
-					await new Promise(r => setTimeout(r, 1500));
+					await new Promise(r => setTimeout(r, 2000));
 					let userInDatabase = await getUserByName(user.name);
 					if (userInDatabase === null) {
 						userInDatabase = await addUser(createNewUser(user.name, user.login, user.avatar));
+						userInDatabase.status = "Offline";
 					}
 					if (userInDatabase.status === "Online") {
 						changeAlreadyConnected(true);
