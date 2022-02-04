@@ -71,6 +71,7 @@ const LogForm: React.FC<logFormProps> = ({ changePage, changeUser, signup, alrea
 			setName('');
 			setLogin('');
 			setAvatar('');
+			setPassword('');
 		}
 	}
 

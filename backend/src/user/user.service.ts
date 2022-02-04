@@ -23,6 +23,10 @@ export class UserService {
     return await this.UserRepo.find();
   }
 
+  async findAllRank(): Promise<UserEntity[]> {
+    return await this.UserRepo.find({order: {nbrVicotry: "DESC"}});
+  }
+
   async findOne(id: number): Promise<UserEntity> {
     return await this.UserRepo.findOne(id);
   }

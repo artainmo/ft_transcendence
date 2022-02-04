@@ -38,6 +38,11 @@ export const getAllUsers: () => Promise<UserDto[]> = async () => {
   return response.data;
 }
 
+export const getAllUsersRank: () => Promise<UserDto[]> = async () => {
+  const response = await axios.get("/user/rank");
+  return response.data;
+}
+
 export const getUser: (id: number) => Promise<UserDto | null> = async (id) => {
   const response = await axios.get(`/user/${id}`);
   if (response.data === "") { return null; }

@@ -61,7 +61,7 @@
     - [x] clean all console.log
   * additions?
 	- [x] page with all live games
-	- [ ] On page with all live games also have a "ladder"
+	- [x] On page with all live games also have a "ladder"
 	- [x] if user clicks on own play invite in chat he deactivates the invite
 	- [x] Let viewing user have a back button and do not remove the game in this case...
 	- [x] separate user login (with encrypted password) independent of intra 42

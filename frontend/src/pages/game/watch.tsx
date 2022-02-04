@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GameDto } from "../../api/games/dto/game.dto";
+import { UserDto } from "../../api/user/dto/user.dto";
+import { getAllUsersRank } from "../../api/user/user.api";
 import { getAllGames, getGame } from "../../api/games/games.api";
 import styles from "../../css/watch.module.css";
 import cs from "../../css/convention.module.css";
@@ -11,6 +13,7 @@ interface profileProps {
 
 const Watch: React.FC<profileProps> = ({ back, changeGame }) => {
   const [activeGames, setActiveGames] = useState<GameDto[]>([]);
+	const [rankingUsers, setRankingUsers] = useState<UserDto[]>([]);
 
   useEffect(() => {
     const getActiveGames: () => void = async () => {
@@ -24,6 +27,15 @@ const Watch: React.FC<profileProps> = ({ back, changeGame }) => {
 		return () => clearInterval(interval);
   }, [])
 
+	useEffect(() => {
+		const getRanking: () => void = async () => {
+			setRankingUsers((await getAllUsersRank()))
+		}
+		getRanking();
+		const interval = setInterval(getRanking, 5000);
+		return () => clearInterval(interval);
+	}, [])
+
   const watchGame: (game: GameDto) => void = async (game) => {
 		const latestGame = await getGame(game.id);
     if (latestGame !== null && latestGame.user1.status === "In a game"
@@ -32,6 +44,8 @@ const Watch: React.FC<profileProps> = ({ back, changeGame }) => {
 
   return (<div>
             <button className={cs.backButton} onClick={()=>{back()}}>Back</button>
+						<h2>Ranking</h2>
+						{rankingUsers.length > 1 ? rankingUsers.slice(0, 5).map((user: UserDto) => <p>{`${user.login} --- ${user.nbrVicotry} victories`}</p>): "Not enough users"}
             <h1>Watch Live</h1>
             {!activeGames.length ? <p>No Active Games</p> :
               activeGames.map((game)=> <><span className={styles.watchGame} onClick={()=>watchGame(game)}>
