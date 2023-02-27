@@ -3,7 +3,14 @@
 42 school [subject](https://cdn.intra.42.fr/pdf/pdf/68431/en.subject.pdf).
 
 In this project we have to create a website that allows playing pong, login via 42API as 42student, see profiles, chat in DM or channel, have two-factor authentication and more...<br>
-This website is a single page application, with backend written in NestJS, database used being PostgreSQL and frontend written in Typescript React.
+This website is a single page application, with backend written in NestJS, database used being PostgreSQL and frontend written in Typescript React. We use docker-compose to launch the app with frontend, backend and database being in separate containers.
+
+### Run
+```
+docker-compose up --build
+```
+
+Usually the .env should be added and not be present in this repository. However we let it inside this repository because being an exercise this is not dangerous. 
 
 ### TODOs left
 * artainmo:
