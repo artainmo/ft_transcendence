@@ -1,6 +1,11 @@
 # ft_transcendence
 
+42 school [subject](https://cdn.intra.42.fr/pdf/pdf/68431/en.subject.pdf).
 
+In this project we have to create a website that allows playing pong, login via 42API as 42student, see profiles, chat in DM or channel, have two-factor authentication and more...<br>
+This website is a single page application, with backend written in NestJS, database used being PostgreSQL and frontend written in Typescript React.
+
+# TODOs left
 * artainmo:
   - [x] /database -> create the database in the backend
   - [x] /routes -> create the routes (module, controller, provider) for CRUD requests on database in backend
